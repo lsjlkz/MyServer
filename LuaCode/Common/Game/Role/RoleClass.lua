@@ -11,13 +11,12 @@ Role = Role or {}
 Role.RoleID = 0
 Role.RoleName = ""
 
-function Role:new(o, id, name)
-
-    o = o or {}
-    setmetatable(o, self)
-    self.__index = self
-    self.RoleID = id
-    self.RoleName = name
+function Role:new(id, name)
+    o = o or {
+        RoleID = id or 0,
+        RoleName = name or ""
+    }
+    setmetatable(o, {__index = self})
     return o
 end
 
@@ -32,6 +31,6 @@ end
 __G__RoleTable = __G__RoleTable or {}
 
 function __G__RoleTable.CreateRole(id, name)
-    return Role:new(nil, id, name)
+    return Role:new(id, name)
 end
 return __G__RoleTable

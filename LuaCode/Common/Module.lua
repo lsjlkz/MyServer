@@ -52,10 +52,6 @@ function __G__Module_Table.load_all_module(package_name)
     currentFolder = currentFolder .. package_name
     input_table = {}
     __G__Module_Table.findindir(currentFolder, "%.lua", input_table, true)--查找lua文件，这里可以改的
-    print(input_table)
-    for i, v in pairs(input_table) do
-        print(i, v)
-    end
 end
 
 return __G__Module_Table

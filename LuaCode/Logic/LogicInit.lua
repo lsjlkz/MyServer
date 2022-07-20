@@ -22,8 +22,9 @@ function __G__LogicTable.Init()
     f.load_all_module("Logic")
 
     local rm = require("Logic/Game/Role/RoleMgr")
-    local role = rm.CreateRole(6542, "123")
-
+    local role = rm.CreateRole(6542, "DebugRole")
+    local p = require("Common/Print")
+    p.pprint(role)
 end
 
 return __G__LogicTable
