@@ -12,6 +12,7 @@ Role.RoleID = 0
 Role.RoleName = ""
 
 function Role:new(o, id, name)
+
     o = o or {}
     setmetatable(o, self)
     self.__index = self
