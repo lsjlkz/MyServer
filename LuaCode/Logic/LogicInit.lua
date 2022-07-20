@@ -12,19 +12,17 @@ function __G__LogicTable.test(param)
 end
 
 
-function __G__LogicTable.init()
+function __G__LogicTable.Init()
     print("Logic Start...")
     local cGameServer = require("cGameServer")
     cGameServer.CreateNetwork(100, cDefineTable.LogicID, 10010)
 
-    local f = require("Common/Game/Function")
-    require("Common/Game/Message")
-    local idx = f.RegMesFunction(__G__LogicTable.test)
-    f.TriMesFunction(idx, 3)
-    cGameServer.CallLuaFunc(idx, 555);
+    local f = require("Common/Module")
+    f.load_all_module("Common")
+    f.load_all_module("Logic")
 
-    local message = require("Common/Game/Message")
-    message.Debug()
+    local rm = require("Logic/Game/Role/RoleMgr")
+    local role = rm.CreateRole(6542, "123")
 
 end
 

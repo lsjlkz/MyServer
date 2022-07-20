@@ -18,17 +18,17 @@ end
 local function world()
     --初始化游戏世界
     local world_init = require("World/WorldInit")
-    world_init.init()
+    world_init.Init()
 end
 
 local function logic()
     local logic_init = require("Logic/LogicInit")
-    logic_init.init()
+    logic_init.Init()
 end
 
 local function gateway()
     local gateway_init = require("GateWay/GateWayInit")
-    gateway_init.init()
+    gateway_init.Init()
 end
 
 
