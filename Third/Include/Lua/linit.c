@@ -50,6 +50,8 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_MATHLIBNAME, luaopen_math},
   {LUA_UTF8LIBNAME, luaopen_utf8},
   {LUA_DBLIBNAME, luaopen_debug},
+  {LUA_LFSLIBNAME, luaopen_lfs},
+  {LUA_LUAMYSQLLIBNAME, luaopen_luasql_mysql},
   {NULL, NULL}
 };
 
