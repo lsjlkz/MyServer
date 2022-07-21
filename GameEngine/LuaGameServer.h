@@ -54,7 +54,6 @@ int luaopen_luagameserver_libs(lua_State* L);
 static luaL_Reg lua_reg_libs[] = {
 		{"base", luaopen_base},
 		{"cGameServer", luaopen_luagameserver_libs},
-//		{"luasql", luaopen_luasql_mysql},
 		{NULL, NULL}
 };
 
