@@ -14,12 +14,15 @@ end
 
 function __G__LogicTable.Init()
     print("Logic Start...")
+
+
     local cGameServer = require("cGameServer")
     cGameServer.CreateNetwork(100, cDefineTable.LogicID, 10010)
 
     local f = require("Common/Module")
     f.load_all_module("Common")
     f.load_all_module("Logic")
+    f.load_all_module("ServerDB")
 
     local rm = require("Logic/Game/Role/RoleMgr")
     local role = rm.CreateRole(6542, "DebugRole")

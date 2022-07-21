@@ -7,9 +7,9 @@
 #define MYSERVER_LUAENGINE_H
 
 #include "Head.h"
+//#include "luasql.h"
+//#include "ls_mysql.h"
 #include "GENetPack.h"
-// 需要加上这一行才行
-#pragma comment(lib, "Lua.lib")
 
 class LuaEngine:public SingleTon<LuaEngine>{
 private:

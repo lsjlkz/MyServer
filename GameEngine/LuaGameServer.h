@@ -5,8 +5,8 @@
 #ifndef MYSERVER_LUAGAMESERVER_H
 #define MYSERVER_LUAGAMESERVER_H
 
-#include "GameServer.h"
 #include "LuaEngine.h"
+#include "GameServer.h"
 #include "GENetPack.h"
 
 static void RegLuaModule();
@@ -54,6 +54,7 @@ int luaopen_luagameserver_libs(lua_State* L);
 static luaL_Reg lua_reg_libs[] = {
 		{"base", luaopen_base},
 		{"cGameServer", luaopen_luagameserver_libs},
+//		{"luasql", luaopen_luasql_mysql},
 		{NULL, NULL}
 };
 
