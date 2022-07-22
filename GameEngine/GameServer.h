@@ -6,7 +6,9 @@
 #define MYSERVER_GAMESERVER_H
 
 #include "SingleTon.h"
+#include "GEDateTime.h"
 #include "GENetWork.h"
+#include "LuaEvent.h"
 
 class GameServer: public SingleTon<GameServer>{
 public:
@@ -23,6 +25,12 @@ public:
 private:
 	GENetWork* geNetWork;
 	int GameServerID = 0;
+
+	int lastUpdateSecond = 0;
+	int lastUpdateMinute = 0;
+	int lastUpdateHour = 0;
+	int lastUpdateDay = 0;
+
 };
 
 

@@ -6,13 +6,14 @@
 
 local s = require("Common/String")
 local p = require("Common/Print")
+local gs_event = require("Server/GSEvent")
 __G__PersistentDataTable = __G__PersistentDataTable or {}
 
 
 __G__PersistentDataTable.DataTable = {}
 
 
-function __G__PersistentBaseTable.test()
+function __G__PersistentDataTable.test()
     --load from mysql
     --local rm = require("Server/PersistentData")
     --rm.load_data()
@@ -25,6 +26,14 @@ function __G__PersistentBaseTable.test()
     --role:set_key_value(7, 8)
     --local sdb = require("ServerDB/ServerData")
     --sdb.save_data()
+end
+
+local function after_load_all_script(reg_param, p1, p2, p3)
+    print(reg_param, p1, p2, p3)
+end
+
+function __G__PersistentDataTable.init()
+    gs_event.reg_event(gs_event.AfterLoadAllScripts, after_load_all_script, "__G__PersistentDataTable")
 end
 
 

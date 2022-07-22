@@ -22,6 +22,11 @@ int GameServer::Init(char* argv[]) {
 }
 
 void GameServer::Loop() {
+	GEDateTime::Instance()->UpdateDateTime();
+	this->lastUpdateSecond = GEDateTime::Instance()->Second();
+	this->lastUpdateMinute = GEDateTime::Instance()->Minute();
+	this->lastUpdateHour = GEDateTime::Instance()->Hour();
+	this->lastUpdateDay = GEDateTime::Instance()->Day();
 	while(this->geNetWork->isRun()){
 		this->Time();
 		this->Cycle();
@@ -29,9 +34,29 @@ void GameServer::Loop() {
 }
 
 void GameServer::Time() {
-	// TODO 时间事件，tick事件等
+	GEDateTime::Instance()->UpdateDateTime();
+	if(this->lastUpdateSecond == GEDateTime::Instance()->Second())
+		return;
+	this->lastUpdateSecond = GEDateTime::Instance()->Second();
+	LuaEvent::Instance()->CCallLuaPerSecond();
+
+	if(this->lastUpdateMinute == GEDateTime::Instance()->Minute())
+		return;
+	this->lastUpdateMinute = GEDateTime::Instance()->Minute();
+	LuaEvent::Instance()->CCallLuaPerMinute();
+
+	if(this->lastUpdateHour == GEDateTime::Instance()->Hour())
+		return;
+	this->lastUpdateHour = GEDateTime::Instance()->Hour();
+	LuaEvent::Instance()->CCallLuaPerHour();
+
+	if(this->lastUpdateDay == GEDateTime::Instance()->Day())
+		return;
+	this->lastUpdateDay = GEDateTime::Instance()->Day();
+	LuaEvent::Instance()->CCallLuaPerDay();
 }
 
 void GameServer::Cycle() {
 	// 消息接受等
+
 }

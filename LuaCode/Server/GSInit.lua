@@ -5,6 +5,9 @@
 ---
 
 
+
+__G__GSInitTable = __G__GSInitTable or {}
+
 package.path = package.path .. ";../LuaCode/?.lua;"
 local cDefineTable = require("Common/CDefine")
 
@@ -15,30 +18,29 @@ local function get_this_lua_path()
 end
 
 
-local function world()
+function __G__GSInitTable.world()
     --初始化游戏世界
     local world_init = require("World/WorldInit")
     world_init.Init()
 end
 
-local function logic()
+function __G__GSInitTable.logic()
     local logic_init = require("Logic/LogicInit")
     logic_init.Init()
 end
 
-local function gateway()
+function __G__GSInitTable.gateway()
     local gateway_init = require("GateWay/GateWayInit")
     gateway_init.Init()
 end
 
+local initFuncTable = { __G__GSInitTable.world, __G__GSInitTable.gateway, __G__GSInitTable.logic}
 
-local initFuncTable = { world, gateway, logic}
-
-local function main()
+function __G__GSInitTable.main(p1, p2)
     print("GSInit start...")
     local cGameServer = require("cGameServer")
     initFuncTable[cGameServer.GetGameServerID()]()
 end
 
 
-main()
+return __G__GSInitTable
