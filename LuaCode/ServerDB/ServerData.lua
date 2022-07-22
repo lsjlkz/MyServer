@@ -5,26 +5,20 @@
 ---
 
 
-__G__SERVERTABLE = __G__SERVERTABLE or {}
+__G__ServerTable = __G__ServerTable or {}
 
 
-function __G__SERVERTABLE.init()
+function __G__ServerTable.init()
     local mysql = require("luasql.mysql").mysql()
     local db_define = require("ServerDB/ServerDBDefine")
     local con = mysql:connect("world", db_define.User, db_define.Password, db_define.Host, db_define.Port)
-    local cur = con:execute("select * from city")
-    local row = cur:fetch({}, "a")
 
-    while row do
+end
 
-        var = string.format("%s %s\n", row.ID, row.Name)
-
-        print(var)
-
-
-        row = cur:fetch(row,"a")
-    end
+function __G__ServerTable.save_data()
+    local persistent = require("Server/PersistentData")
+    persistent.save_data()
 end
 
 
-return __G__SERVERTABLE
+return __G__ServerTable

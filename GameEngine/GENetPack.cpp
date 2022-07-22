@@ -196,6 +196,8 @@ void PackMessage::ClearCache() {
 		bigMsgPool->push_back(this->bigMsgQueue->back());
 		this->bigMsgQueue->pop_back();
 	}
+	this->curBufHead = nullptr;
+	this->curBufEmpty = 0;
 }
 
 bool PackMessage::PackMsgType(int msgType) {

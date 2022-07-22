@@ -8,8 +8,6 @@
 --lua角色类
 Role = Role or {}
 
-Role.RoleID = 0
-Role.RoleName = ""
 
 function Role:new(id, name)
     o = o or {
