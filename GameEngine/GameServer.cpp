@@ -58,5 +58,6 @@ void GameServer::Time() {
 
 void GameServer::Cycle() {
 	// 消息接受等
-
+	// 没有消息就休眠1ms
+	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }

@@ -5,6 +5,8 @@
 #ifndef MYSERVER_GAMESERVER_H
 #define MYSERVER_GAMESERVER_H
 
+#include <chrono>
+#include <thread>
 #include "SingleTon.h"
 #include "GEDateTime.h"
 #include "GENetWork.h"
