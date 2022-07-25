@@ -8,9 +8,11 @@ local cGameServer = require("cGameServer")
 
 __G__AllotIDTable = __G__AllotIDTable or {}
 
+__G__AllotIDTable.curID = 0
+
 function __G__AllotIDTable.AllotID()
-    math.randomseed(cGameServer.Seconds())
-    return cGameServer.Seconds() * 10000 + math.random(0, 9999)
+    __G__AllotIDTable.curID = __G__AllotIDTable.curID + 1
+    return cGameServer.Seconds() * 10000 + __G__AllotIDTable.curID
 end
 
 

@@ -164,7 +164,7 @@ int LuaGameServer::Seconds(lua_State *L) {
 	lua_settop(L, 0);
 	// TODO 这里有问题
 	lua_pushinteger(L, GEDateTime::Instance()->UnixTime());
-	return 0;
+	return 1;
 }
 
 int luaopen_luagameserver_libs(lua_State *L) {

@@ -7,6 +7,7 @@
 GEDateTime::GEDateTime() {
 	// 初始化默认时间
 	tzset();
+	this->UpdateDateTime();
 }
 
 void GEDateTime::CacheDateTime() {
@@ -24,10 +25,38 @@ void GEDateTime::CacheDateTime() {
 
 void GEDateTime::UpdateDateTime() {
 	unsigned long long mseconds = GESystemTime::GetSystemMSeconds();
-	unsigned long now_time = mseconds / 1000;
+	long now_time = mseconds / 1000;
 	if(this->tm_unixTime != now_time){
 		// 过了一秒
 		this->tm_unixTime = now_time;
 		this->CacheDateTime();
 	}
+}
+
+long GEDateTime::Year() {
+	return this->tm_year;
+}
+
+long GEDateTime::Month() {
+	return this->tm_month;
+}
+
+long GEDateTime::Day() {
+	return this->tm_day;
+}
+
+long GEDateTime::Hour() {
+	return this->tm_hour;
+}
+
+long GEDateTime::Minute() {
+	return this->tm_minute;
+}
+
+long GEDateTime::Second() {
+	return this->tm_second;
+}
+
+long GEDateTime::UnixTime() {
+	return this->tm_unixTime;
 }
