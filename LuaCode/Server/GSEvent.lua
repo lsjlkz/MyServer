@@ -6,6 +6,7 @@
 
 local cur_event_allot_id = 0
 
+--为什么这里用负数，因为玩家身上存储了正数的索引，当玩家的数据改变后，也会触发事件
 local function allot_event_id()
     cur_event_allot_id = cur_event_allot_id - 1
     return cur_event_allot_id
@@ -19,8 +20,10 @@ end
 __G__GSEventTable = __G__GSEventTable or {}
 
 __G__GSEventTable._Event_Function = {}
+__G__GSEventTable._DelayEvent_Trigger = {}
 
 
+--事件分配
 __G__GSEventTable.AfterLoadAllScripts = make_event()
 __G__GSEventTable.AfterInitLogic = make_event()
 __G__GSEventTable.AfterLoadPersistentTable = make_event()
@@ -29,6 +32,8 @@ __G__GSEventTable.AfterCallPerSecond = make_event()
 __G__GSEventTable.AfterCallPerMinute = make_event()
 __G__GSEventTable.AfterCallPerHour = make_event()
 __G__GSEventTable.AfterCallPerDay = make_event()
+__G__GSEventTable.TestDelayEvent = make_event()
+
 
 
 function __G__GSEventTable.reg_event(event_id, func, reg_param)
@@ -38,15 +43,57 @@ function __G__GSEventTable.reg_event(event_id, func, reg_param)
     table.insert(__G__GSEventTable._Event_Function[event_id], {func, reg_param})
 end
 
-
 function __G__GSEventTable.trigger_event(event_id, param1, param2, param3, param4)
-    if __G__GSEventTable._Event_Function[event_id] ~= nil then
-        for _, v in ipairs(__G__GSEventTable._Event_Function[event_id]) do
-            func = v[1]
-            reg_param = v[2]
-            func(reg_param, param1, param2, param3, param4)
-        end
+    if __G__GSEventTable._Event_Function[event_id] == nil then
+        return
     end
+    for _, v in ipairs(__G__GSEventTable._Event_Function[event_id]) do
+        func = v[1]
+        reg_param = v[2]
+        func(reg_param, param1, param2, param3, param4)
+    end
+end
+
+function __G__GSEventTable.trigger_delay_event(event_id, param1, param2, param3, param4)
+    if __G__GSEventTable._Event_Function[event_id] == nil then
+        return
+    end
+    __G__GSEventTable._DelayEvent_Trigger[event_id] = {event_id, param1, param2, param3, param4}
+end
+
+function __G__GSEventTable.call_per_sec_delay_event()
+    if __G__GSEventTable._DelayEvent_Trigger == {} then
+        return
+    end
+    for event_id, param in pairs(__G__GSEventTable._DelayEvent_Trigger) do
+        param1 = param[1]
+        param2 = param[2]
+        param3 = param[3]
+        param4 = param[4]
+        __G__GSEventTable.trigger_event(event_id, param1, param2, param3, param4)
+    end
+    __G__GSEventTable._DelayEvent_Trigger = {}
+end
+
+function __G__GSEventTable.init()
+    --注册每秒的事件
+    __G__GSEventTable.reg_event(__G__GSEventTable.AfterCallPerSecond, __G__GSEventTable.call_per_sec_delay_event)
+end
+
+function __G__GSEventTable.test()
+    __G__GSEventTable.reg_event(__G__GSEventTable.TestDelayEvent, __G__GSEventTable.test1)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+    __G__GSEventTable.trigger_delay_event(__G__GSEventTable.TestDelayEvent, 3, 4, 5, 6)
+end
+
+function __G__GSEventTable.test1(param1, param2, param3, param4)
+    print('test1')
+    print(param1, param2, param3, param4)
 end
 
 
