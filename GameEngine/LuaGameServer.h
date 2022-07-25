@@ -49,15 +49,11 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{NULL, NULL}
 };
 
-static const luaL_Reg lua_reg_gameserver_create_funcs[] = {
-		{NULL, NULL}
-};
 
-int luaopen_luagameserver_libs(lua_State* L);
+LUA_API int (luaopen_luagameserver_libs)(lua_State* L);
 
 
 static luaL_Reg lua_reg_libs[] = {
-		{"base", luaopen_base},
 		{"cGameServer", luaopen_luagameserver_libs},
 		{NULL, NULL}
 };

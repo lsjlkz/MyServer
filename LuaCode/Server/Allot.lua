@@ -5,7 +5,6 @@
 ---
 local cGameServer = require("cGameServer")
 
-
 __G__AllotIDTable = __G__AllotIDTable or {}
 
 __G__AllotIDTable.curID = 0
