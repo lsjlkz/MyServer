@@ -11,7 +11,7 @@ Role = Role or {}
 local role_enum = require("Common/Game/Enum/EnumRoleInt")
 
 function Role:new(id, name)
-    o = o or {
+    local o = o or {
         RoleID = id or 0,
         RoleName = name or "",
         IntTable = {},

@@ -24,9 +24,6 @@ function __G__RoleMgrTable.init()
     role_1 = __G__RoleMgrTable.CreateRole(1, "1")
     role_2 = __G__RoleMgrTable.CreateRole(2, "2")
     role_3 = __G__RoleMgrTable.CreateRole(3, "3")
-    p.pprint(role_1)
-    p.pprint(role_2)
-    p.pprint(role_3)
 end
 
 

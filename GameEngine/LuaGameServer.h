@@ -19,7 +19,7 @@ public:
 
 	static int GetGameServerID(lua_State* L);
 	static int CreateNetwork(lua_State* L);
-	static int CallLuaFunc(lua_State* L);		//
+//	static int CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
 	static int PackMsg(lua_State* L);
 	static int ReceiveMsg(char* bufHead);
 	static int DebugReceiveMsg(lua_State* L);
@@ -36,7 +36,6 @@ public:
 static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"CreateNetwork", LuaGameServer::CreateNetwork},
 		{"GetGameServerID", LuaGameServer::GetGameServerID},
-		{"CallLuaFunc", LuaGameServer::CallLuaFunc},
 		{"PackMsg", LuaGameServer::PackMsg},
 		{"DebugReceiveMsg", LuaGameServer::DebugReceiveMsg},
 		{"Year", LuaGameServer::Year},

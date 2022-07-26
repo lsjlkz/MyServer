@@ -12,7 +12,7 @@ function __G__ServerTable.init()
     local mysql = require("luasql.mysql").mysql()
     local db_define = require("ServerDB/ServerDBDefine")
     local con = mysql:connect("world", db_define.User, db_define.Password, db_define.Host, db_define.Port)
-
+    con:close()
 end
 
 function __G__ServerTable.save_data()

@@ -13,6 +13,7 @@ local function load_logic_module()
     f.load_all_module("Common")
     f.load_all_module("Logic")
     f.load_all_module("Server")
+    f.load_all_module("ServerDB")
     gs_event.trigger_event(gs_event.AfterLoadAllScripts)
 end
 

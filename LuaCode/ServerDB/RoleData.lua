@@ -6,10 +6,19 @@
 
 
 local s = require("Common/String")
+local t = require("ServerDB/CreateTable")
 
 __G__RoleDataTable = __G__RoleDataTable or {}
 
 __G__RoleDataTable.DataTable = {}
+
+function __G__RoleDataTable.init()
+    tb = t.CreateTable("role_data", "world")
+    tb:add_field("role_id", t.Int, true)
+    tb:add_field("role_name", t.ShortVChar)
+    tb:add_field("int_table", t.BLOB)
+    tb:add_field("obj_table", t.BLOB)
+end
 
 function __G__RoleDataTable.save_data()
     local mysql = require("luasql.mysql").mysql()
@@ -21,14 +30,15 @@ function __G__RoleDataTable.save_data()
         obj_table = role.ObjTable
         serialize_int = s.Serialize(int_table)
         serialize_obj = s.Serialize(obj_table)
-        local cur = con:execute(string.format("INSERT INTO roledata
-        (role_id, role_name, int_table, obj_table)
-        values (%s, '%s', '%s', '%s') ON DUPLICATE KEY
-        UPDATE role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
-                role_id, role_name, serialize_int, serialize_obj,
-                role_id, role_name, serialize_int, serialize_obj
-        ))
+        --local cur = con:execute(string.format("INSERT INTO roledata
+        --(role_id, role_name, int_table, obj_table)
+        --values (%s, '%s', '%s', '%s') ON DUPLICATE KEY
+        --UPDATE role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
+        --        role_id, role_name, serialize_int, serialize_obj,
+        --        role_id, role_name, serialize_int, serialize_obj
+        --))
     end
+    con:close()
 end
 
 function __G__RoleDataTable.load_data()
@@ -40,9 +50,11 @@ function __G__RoleDataTable.load_data()
     local cur = con:execute("select role_id, role_name, int_table, obj_table roledata;")
     local row = cur:fetch({}, "a")
     while row do
+        --TODO
         __G__PersistentDataTable.DataTable[row.name] = s.unSerialize(row.data)
         row = cur:fetch(row,"a")
     end
+    con:close()
 end
 
 return __G__RoleDataTable

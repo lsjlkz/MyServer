@@ -15,21 +15,20 @@ __G__PersistentDataTable.DataTable = {}
 
 function __G__PersistentDataTable.test()
     --load from mysql
-    --local rm = require("Server/PersistentData")
-    --rm.load_data()
+    local rm = require("ServerDB/PersistentData")
+    rm.load_data()
 
     --write to mysql
-    --local rm = require("Server/PersistentBase")
-    --local role = rm:new("DebugTable")
-    --role:set_key_value(3, 4)
-    --role:set_key_value(5, 6)
-    --role:set_key_value(7, 8)
-    --local sdb = require("ServerDB/ServerData")
-    --sdb.save_data()
+    local rm = require("ServerDB/PersistentBase")
+    local role = rm:new("DebugTable")
+    role:set_key_value(3, 4)
+    role:set_key_value(5, 6)
+    role:set_key_value(7, 8)
+    local sdb = require("ServerDB/ServerData")
+    sdb.save_data()
 end
 
 local function after_load_all_script(reg_param, p1, p2, p3)
-    print(reg_param, p1, p2, p3)
 end
 
 function __G__PersistentDataTable.init()
@@ -47,6 +46,7 @@ function __G__PersistentDataTable.load_data()
         __G__PersistentDataTable.DataTable[row.name] = s.unSerialize(row.data)
         row = cur:fetch(row,"a")
     end
+    con:close()
 end
 
 
@@ -59,6 +59,7 @@ function __G__PersistentDataTable.save_data()
         local serialize_str = s.Serialize(v)
         cur = con:execute(string.format("INSERT INTO persistentdata (name, data) values ('%s', '%s') ON DUPLICATE KEY UPDATE name = '%s', data='%s';", k, serialize_str, k, serialize_str))
     end
+    con:close()
 end
 
 return __G__PersistentDataTable

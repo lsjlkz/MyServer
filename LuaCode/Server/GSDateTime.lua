@@ -8,12 +8,11 @@ local gs_event = require("Server/GSEvent")
 
 __G__GSDateTimeTable = __G__GSDateTimeTable or {}
 
-
+--为什么把每秒调用放到lua线程，因为简单
 
 function __G__GSDateTimeTable.CCallPerSecond()
     gs_event.trigger_event(gs_event.AfterCallPerSecond)
 end
-
 
 function __G__GSDateTimeTable.CCallPerMinute()
     gs_event.trigger_event(gs_event.AfterCallPerMinute)
