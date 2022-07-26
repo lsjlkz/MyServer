@@ -38,6 +38,7 @@ __G__GSEventTable.AfterCallPerHour = make_event()
 __G__GSEventTable.AfterCallPerDay = make_event()
 __G__GSEventTable.TestDelayEvent = make_event()
 __G__GSEventTable.AfterLoadAllRole = make_event()
+__G__GSEventTable.AfterLoadAllPersistentData = make_event()
 
 
 

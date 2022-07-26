@@ -19,10 +19,10 @@ function __G__RoleDataTable.CreateRole(role_name)
     local con = mysql:connect(db_define.RoleDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
     local sql = string.format("insert into %s (role_name) values('%s');", db_define.RoleTableName, role_name)
     local cur = con:execute(sql)
-    sql = "SELECT LAST_INSERT_ID();"
+    sql = "SELECT LAST_insert_ID();"
     cur = con:execute(sql)
     local row = cur:fetch({}, "a")
-    role_id = row["LAST_INSERT_ID()"]
+    role_id = row["LAST_insert_ID()"]
     con:close()
     return role_id
 end
@@ -36,7 +36,7 @@ function __G__RoleDataTable.save_all_data(t)
         obj_table = role.ObjTable
         serialize_int = s.Serialize(int_table)
         serialize_obj = s.Serialize(obj_table)
-        con:execute(string.format("INSERT INTO %s (role_id, role_name, int_table, obj_table) values (%s, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
+        con:execute(string.format("insert into %s (role_id, role_name, int_table, obj_table) values (%s, '%s', '%s', '%s') on duplicate key update role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
                 db_define.RoleTableName, role_id, role_name, serialize_int, serialize_obj,
                 role_id, role_name, serialize_int, serialize_obj
         ))

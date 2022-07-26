@@ -53,7 +53,7 @@ function __G__RoleMgrTable.load_role()
 
     local roledb = require("ServerDB/RoleData")
     local t = roledb.load_data()
-    cnt = 0
+    local cnt = 0
     for i, v in ipairs(t) do
         cnt = cnt + 1
         role_id = v[1]
