@@ -23,6 +23,7 @@ public:
 	void Loop();
 	void Time();
 	void Cycle();
+	void SetStop();
 
 private:
 	GENetWork* geNetWork;
@@ -32,6 +33,8 @@ private:
 	int lastUpdateMinute = 0;
 	int lastUpdateHour = 0;
 	int lastUpdateDay = 0;
+
+	bool isRun = true;
 
 };
 

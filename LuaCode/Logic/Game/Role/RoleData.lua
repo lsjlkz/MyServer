@@ -8,11 +8,9 @@ __G__RoleDataTable = __G__RoleDataTable or {}
 
 
 
-__G__RoleDataTable.RoleDataTable = {}
+__G__RoleDataTable.RoleDataNameTable = __G__RoleDataTable.RoleDataNameTable or {}
 
-__G__RoleDataTable.RoleDataNameTable = {}
-
-__G__RoleDataTable.RoleDataIDTable = {}
+__G__RoleDataTable.RoleDataIDTable = __G__RoleDataTable.RoleDataIDTable or {}
 
 
 return __G__RoleDataTable

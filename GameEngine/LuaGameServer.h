@@ -16,6 +16,7 @@ private:
 	std::unordered_map<int, int> map;
 public:
 	static int Init();
+	static int Close();
 
 	static int GetGameServerID(lua_State* L);
 	static int CreateNetwork(lua_State* L);
@@ -30,6 +31,7 @@ public:
 	static int Minute(lua_State* L);
 	static int Second(lua_State* L);
 	static int Seconds(lua_State* L);
+	static int SetServerStop(lua_State* L);
 };
 
 
@@ -45,6 +47,7 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"Minute", LuaGameServer::Minute},
 		{"Second", LuaGameServer::Second},
 		{"Seconds", LuaGameServer::Seconds},
+		{"SetServerStop", LuaGameServer::SetServerStop},
 		{NULL, NULL}
 };
 

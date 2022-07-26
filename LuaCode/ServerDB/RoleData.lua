@@ -6,55 +6,61 @@
 
 
 local s = require("Common/String")
-local t = require("ServerDB/CreateTable")
+local db_define = require("ServerDB/ServerDBDefine")
+local p = require("Common/Print")
 
 __G__RoleDataTable = __G__RoleDataTable or {}
 
-__G__RoleDataTable.DataTable = {}
 
-function __G__RoleDataTable.init()
-    tb = t.CreateTable("role_data", "world")
-    tb:add_field("role_id", t.Int, true)
-    tb:add_field("role_name", t.ShortVChar)
-    tb:add_field("int_table", t.BLOB)
-    tb:add_field("obj_table", t.BLOB)
+local role_table_name = "role_data"
+
+function __G__RoleDataTable.CreateRole(role_name)
+    local mysql = require("luasql.mysql").mysql()
+    local con = mysql:connect(db_define.RoleDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
+    local sql = string.format("insert into %s (role_name) values('%s');", db_define.RoleTableName, role_name)
+    local cur = con:execute(sql)
+    sql = "SELECT LAST_INSERT_ID();"
+    cur = con:execute(sql)
+    local row = cur:fetch({}, "a")
+    role_id = row["LAST_INSERT_ID()"]
+    con:close()
+    return role_id
 end
 
-function __G__RoleDataTable.save_data()
+function __G__RoleDataTable.save_all_data(t)
     local mysql = require("luasql.mysql").mysql()
-    local db_define = require("ServerDB/ServerDBDefine")
-    local con = mysql:connect("roledata", db_define.User, db_define.Password, db_define.Host, db_define.Port)
-    for role_id, role in pairs(__G__RoleDataTable.DataTable) do
+    local con = mysql:connect(db_define.RoleDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
+    for role_id, role in pairs(t) do
         role_name = role:GetRoleName()
         int_table = role.IntTable
         obj_table = role.ObjTable
         serialize_int = s.Serialize(int_table)
         serialize_obj = s.Serialize(obj_table)
-        --local cur = con:execute(string.format("INSERT INTO roledata
-        --(role_id, role_name, int_table, obj_table)
-        --values (%s, '%s', '%s', '%s') ON DUPLICATE KEY
-        --UPDATE role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
-        --        role_id, role_name, serialize_int, serialize_obj,
-        --        role_id, role_name, serialize_int, serialize_obj
-        --))
+        con:execute(string.format("INSERT INTO %s (role_id, role_name, int_table, obj_table) values (%s, '%s', '%s', '%s') ON DUPLICATE KEY UPDATE role_id = %s, role_name = '%s', int_table='%s', obj_table='%s';",
+                db_define.RoleTableName, role_id, role_name, serialize_int, serialize_obj,
+                role_id, role_name, serialize_int, serialize_obj
+        ))
     end
     con:close()
+    print("save role end...")
 end
 
 function __G__RoleDataTable.load_data()
     --TODO
     -- TODO 读取mysql的角色数据，数据库部分肯定要逻辑分离，从Logic的Server拆分，拆分到ServerDB中
     local mysql = require("luasql.mysql").mysql()
-    local db_define = require("ServerDB/ServerDBDefine")
-    local con = mysql:connect("world", db_define.User, db_define.Password, db_define.Host, db_define.Port)
-    local cur = con:execute("select role_id, role_name, int_table, obj_table roledata;")
+    local con = mysql:connect(db_define.RoleDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
+    local cur = con:execute(string.format("select role_id, role_name, int_table, obj_table from %s;", db_define.RoleTableName))
     local row = cur:fetch({}, "a")
+    t = {}
     while row do
         --TODO
-        __G__PersistentDataTable.DataTable[row.name] = s.unSerialize(row.data)
+        table.insert(t, {row.role_id, row.role_name, row.int_table, row.obj_table})
         row = cur:fetch(row,"a")
     end
     con:close()
+    return t
 end
+
 
 return __G__RoleDataTable

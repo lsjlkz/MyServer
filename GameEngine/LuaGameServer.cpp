@@ -146,6 +146,29 @@ int LuaGameServer::Seconds(lua_State *L) {
 	return 1;
 }
 
+int LuaGameServer::SetServerStop(lua_State *L) {
+	GameServer::Instance()->SetStop();
+	return 1;
+}
+
+int LuaGameServer::Close() {
+	lua_State* L = LuaEngine::Instance()->GetLuaState();
+	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSInit.lua");
+	if(ret){
+		return ret;
+	}
+	// 获取元表
+	lua_getglobal(L, "__G__GSInitTable");
+	lua_pushstring(L, "close");
+	lua_gettable(L, -2);
+	ret = lua_pcall(L, 0, 0, 0);
+	if(ret){
+		std::cout << "lua call err:" << lua_tostring(L, -1) << std::endl;
+		return ret;
+	}
+	return 1;
+}
+
 int luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");
 	lua_pushvalue(L, -1);

@@ -37,5 +37,11 @@ __G__ServerDBDefineTable.User = "admin"
 __G__ServerDBDefineTable.Password = "admin"
 __G__ServerDBDefineTable.Port = 3306
 
+__G__ServerDBDefineTable.RoleDBName = "world"
+__G__ServerDBDefineTable.RoleTableName = "role_data"
+
+__G__ServerDBDefineTable.PersistentDBName = "world"
+__G__ServerDBDefineTable.PersistentTableName = "persistent_data"
+
 
 return __G__ServerDBDefineTable

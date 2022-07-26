@@ -11,13 +11,6 @@ __G__GSInitTable = __G__GSInitTable or {}
 package.path = package.path .. ";../LuaCode/?.lua;"
 local cDefineTable = require("Common/CDefine")
 
-local function get_this_lua_path()
-    module = require("Common/Module")
-    path = module.get_root_folder()
-    return path
-end
-
-
 function __G__GSInitTable.world()
     --初始化游戏世界
     local world_init = require("World/WorldInit")
@@ -42,5 +35,10 @@ function __G__GSInitTable.main(p1, p2)
     initFuncTable[cGameServer.GetGameServerID()]()
 end
 
+function __G__GSInitTable.close()
+    local gs_event = require("Server/GSEvent")
+    print('server close...')
+    gs_event.trigger_event(gs_event.BeforeServerClose)
+end
 
 return __G__GSInitTable

@@ -27,7 +27,7 @@ void GameServer::Loop() {
 	this->lastUpdateMinute = GEDateTime::Instance()->Minute();
 	this->lastUpdateHour = GEDateTime::Instance()->Hour();
 	this->lastUpdateDay = GEDateTime::Instance()->Day();
-	while(this->geNetWork->isRun()){
+	while(this->isRun && this->geNetWork->isRun()){
 		this->Time();
 		this->Cycle();
 	}
@@ -60,4 +60,8 @@ void GameServer::Cycle() {
 	// 消息接受等
 	// 没有消息就休眠1ms
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+}
+
+void GameServer::SetStop() {
+	this->isRun = false;
 }

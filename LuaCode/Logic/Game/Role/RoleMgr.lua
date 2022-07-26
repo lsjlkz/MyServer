@@ -6,24 +6,73 @@
 
 local RoleClass = require("Common/Game/Role/RoleClass")
 local p = require("Common/Print")
+local s = require("Common/String")
+local logic_role_data = require("Logic/Game/Role/RoleData")
+local gs_event = require("Server/GSEvent")
 
 __G__RoleMgrTable = __G__RoleMgrTable or {}
 
-
-function __G__RoleMgrTable.CreateRole(id, name)
-    return RoleClass.CreateRole(id, name)
+function __G__RoleMgrTable.DBCreateRole(role_name)
+    --DB创建角色，返回id
+    local roledb = require("ServerDB/RoleData")
+    local role_id = roledb.CreateRole(role_name)
+    role = RoleClass.CreateRole(role_id, role_name)
+    logic_role_data.RoleDataIDTable[role_id] = role
+    logic_role_data.RoleDataNameTable[role_name] = role
+    return role
 end
 
-function __G__RoleMgrTable.LoadRole(id, name, int_table, obj_table)
-    --TODO
-    return RoleClass.LoadRole(id, name, int_table, obj_table)
+function __G__RoleMgrTable.CreateRole(role_name)
+    if logic_role_data.RoleDataNameTable[role_name] ~= nil then
+        print("role name repeat")
+        return
+    end
+    role = __G__RoleMgrTable.DBCreateRole(role_name)
+    return role
 end
 
+function __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
+    role = RoleClass.LoadRole(role_id, role_name, int_table, obj_table)
+    logic_role_data.RoleDataIDTable[role_id] = role
+    logic_role_data.RoleDataNameTable[role_name] = role
+    return role
+end
 
 function __G__RoleMgrTable.init()
-    role_1 = __G__RoleMgrTable.CreateRole(1, "1")
-    role_2 = __G__RoleMgrTable.CreateRole(2, "2")
-    role_3 = __G__RoleMgrTable.CreateRole(3, "3")
+    gs_event.reg_event(gs_event.AfterLoadAllScripts, __G__RoleMgrTable.after_load_script)
+    gs_event.reg_event(gs_event.BeforeServerClose, __G__RoleMgrTable.before_server_close)
+    gs_event.reg_event(gs_event.AfterLoadAllRole, __G__RoleMgrTable.after_load_all_role)
+end
+
+function __G__RoleMgrTable.before_server_close()
+    local roledb = require("ServerDB/RoleData")
+    roledb.save_all_data(logic_role_data.RoleDataIDTable)
+end
+
+function __G__RoleMgrTable.load_role()
+
+    local roledb = require("ServerDB/RoleData")
+    local t = roledb.load_data()
+    cnt = 0
+    for i, v in ipairs(t) do
+        cnt = cnt + 1
+        role_id = v[1]
+        role_name = v[2]
+        int_table = s.unSerialize(v[3])
+        obj_table = s.unSerialize(v[4])
+        role = __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
+    end
+    print("load role end... cnt:", cnt)
+end
+
+function __G__RoleMgrTable.after_load_script()
+    __G__RoleMgrTable.load_role()
+    gs_event.trigger_event(gs_event.AfterLoadAllRole)
+end
+
+function __G__RoleMgrTable.after_load_all_role()
+    __G__RoleMgrTable.CreateRole("debug_role")
+    __G__RoleMgrTable.CreateRole("debug_role_2")
 end
 
 

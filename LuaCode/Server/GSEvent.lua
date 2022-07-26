@@ -20,12 +20,14 @@ end
 
 __G__GSEventTable = __G__GSEventTable or {}
 
-__G__GSEventTable._Event_Function = {}
-__G__GSEventTable._DelayEvent_Function = {}
-__G__GSEventTable._DelayEvent_Trigger = {}
+__G__GSEventTable._Event_Function = __G__GSEventTable._Event_Function or {}
+__G__GSEventTable._DelayEvent_Function = __G__GSEventTable._DelayEvent_Function or {}
+__G__GSEventTable._DelayEvent_Trigger = __G__GSEventTable._DelayEvent_Trigger or {}
 
 
 --事件分配
+
+__G__GSEventTable.BeforeServerClose = make_event()
 __G__GSEventTable.AfterLoadAllScripts = make_event()
 __G__GSEventTable.AfterInitLogic = make_event()
 __G__GSEventTable.AfterLoadPersistentTable = make_event()
@@ -35,6 +37,7 @@ __G__GSEventTable.AfterCallPerMinute = make_event()
 __G__GSEventTable.AfterCallPerHour = make_event()
 __G__GSEventTable.AfterCallPerDay = make_event()
 __G__GSEventTable.TestDelayEvent = make_event()
+__G__GSEventTable.AfterLoadAllRole = make_event()
 
 
 

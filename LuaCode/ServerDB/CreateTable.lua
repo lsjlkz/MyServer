@@ -5,26 +5,31 @@
 ---
 
 local gs_event = require("Server/GSEvent")
+local db_define = require("ServerDB/ServerDBDefine")
 
 __G__CreateTable = __G__CreateTable or {}
 
 
 
 
-__G__CreateTable._CreateTable = {}
+__G__CreateTable._CreateTable = __G__CreateTable._CreateTable or {}
 
 CreateTable = {}
 
-__G__CreateTable.Int = "int"
-__G__CreateTable.ShortVChar = "varchar(20)"
-__G__CreateTable.LongVChar = "varchar(60)"
-__G__CreateTable.BLOB = "blob"
+Int = "int"
+ShortVChar = "varchar(20)"
+LongVChar = "varchar(60)"
+BLOB = "blob"
 
-function CreateTable:add_field(field_name, field_type, is_key)
+function CreateTable:add_field(field_name, field_type, is_key, auto_inc)
     self.FieldTable[field_name] = field_type
     if is_key ~= nil then
         table.insert(self.PrimaryKeyTable, field_name)
         self.PrimaryKeyTable[field_name] = true
+    end
+    if auto_inc ~= nil then
+        table.insert(self.AutoIncKeyTable, field_name)
+        self.AutoIncKeyTable[field_name] = true
     end
 end
 
@@ -35,6 +40,9 @@ function CreateTable:get_sql()
         sql = sql .. "`" .. field_name .. "` " .. field_type
         if self.PrimaryKeyTable[field_name] ~= nil then
             sql = sql .. " not null"
+        end
+        if self.AutoIncKeyTable[field_name] ~= nil then
+            sql = sql .. " auto_increment"
         end
         sql = sql .. ",\n"
     end
@@ -48,7 +56,8 @@ function CreateTable:new(table_name, dbname)
         TableName = table_name,
         DBName = dbname,
         FieldTable = {},
-        PrimaryKeyTable = {}
+        PrimaryKeyTable = {},
+        AutoIncKeyTable = {}
     }
     setmetatable(o, {__index=self})
     table.insert(__G__CreateTable._CreateTable, o)
@@ -56,13 +65,28 @@ function CreateTable:new(table_name, dbname)
 end
 
 function __G__CreateTable.init()
-    gs_event.reg_event(gs_event.AfterLoadAllScripts, __G__CreateTable.CreateAllTable)
+    __G__CreateTable.TableInit()
 end
 
+
+function __G__CreateTable.TableInit()
+    --角色表
+    local tb = CreateTable:new(db_define.RoleTableName, db_define.RoleDBName)
+    tb:add_field("role_id", Int, true, true)
+    tb:add_field("role_name",ShortVChar)
+    tb:add_field("int_table", BLOB)
+    tb:add_field("obj_table", BLOB)
+
+    tb = CreateTable:new(db_define.PersistentTableName, db_define.PersistentDBName)
+    tb:add_field("table_name", ShortVChar, true)
+    tb:add_field("table_data", BLOB)
+
+    __G__CreateTable.CreateAllTable()
+end
+
+
 function __G__CreateTable.CreateAllTable()
-    print("create mysql table start...")
     local mysql = require("luasql.mysql").mysql()
-    local db_define = require("ServerDB/ServerDBDefine")
     for i, table_obj in ipairs(__G__CreateTable._CreateTable) do
         local con = mysql:connect(table_obj.DBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
         con:execute(table_obj:get_sql())
@@ -70,11 +94,5 @@ function __G__CreateTable.CreateAllTable()
     end
     print("create mysql table end...")
 end
-
-function __G__CreateTable.CreateTable(table_name, dbname)
-    t = CreateTable:new(table_name, dbname)
-    return t
-end
-
 
 return __G__CreateTable

@@ -10,7 +10,7 @@ local gs_event = require("Server/GSEvent")
 __G__PersistentDataTable = __G__PersistentDataTable or {}
 
 
-__G__PersistentDataTable.DataTable = {}
+__G__PersistentDataTable.DataTable = __G__PersistentDataTable.DataTable or {}
 
 
 function __G__PersistentDataTable.test()
@@ -28,19 +28,13 @@ function __G__PersistentDataTable.test()
     sdb.save_data()
 end
 
-local function after_load_all_script(reg_param, p1, p2, p3)
-end
-
-function __G__PersistentDataTable.init()
-    gs_event.reg_event(gs_event.AfterLoadAllScripts, after_load_all_script, "__G__PersistentDataTable")
-end
 
 
-function __G__PersistentDataTable.load_data()
+local function load_data()
     local mysql = require("luasql.mysql").mysql()
     local db_define = require("ServerDB/ServerDBDefine")
-    local con = mysql:connect("world", db_define.User, db_define.Password, db_define.Host, db_define.Port)
-    local cur = con:execute("select name, data from persistentdata;")
+    local con = mysql:connect(db_define.PersistentDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
+    local cur = con:execute(string.format("select table_name, table_data from %s;", db_define.PersistentTableName))
     local row = cur:fetch({}, "a")
     while row do
         __G__PersistentDataTable.DataTable[row.name] = s.unSerialize(row.data)
@@ -50,16 +44,23 @@ function __G__PersistentDataTable.load_data()
 end
 
 
-function __G__PersistentDataTable.save_data()
+local function save_data()
     --    保存数据
     local mysql = require("luasql.mysql").mysql()
     local db_define = require("ServerDB/ServerDBDefine")
-    local con = mysql:connect("world", db_define.User, db_define.Password, db_define.Host, db_define.Port)
+    local con = mysql:connect(db_define.PersistentDBName, db_define.User, db_define.Password, db_define.Host, db_define.Port)
     for k, v in pairs(__G__PersistentDataTable.DataTable) do
         local serialize_str = s.Serialize(v)
-        cur = con:execute(string.format("INSERT INTO persistentdata (name, data) values ('%s', '%s') ON DUPLICATE KEY UPDATE name = '%s', data='%s';", k, serialize_str, k, serialize_str))
+        cur = con:execute(string.format("INSERT INTO %s (name, data) values ('%s', '%s') ON DUPLICATE KEY UPDATE name = '%s', data='%s';", db_define.PersistentTableName, k, serialize_str, k, serialize_str))
     end
     con:close()
+    print("save persistent data end...")
 end
+
+function __G__PersistentDataTable.init()
+    gs_event.reg_event(gs_event.AfterLoadAllScripts, load_data)
+    gs_event.reg_event(gs_event.BeforeServerClose, save_data)
+end
+
 
 return __G__PersistentDataTable

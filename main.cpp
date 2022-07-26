@@ -9,5 +9,8 @@ int main(int argc, char* argv[]) {
 	LuaGameServer::Init();// 初始化LuaGameServer
 
 	GameServer::Instance()->Loop();
+
+	LuaGameServer::Close();
+
 	return 0;
 }

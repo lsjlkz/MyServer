@@ -50,6 +50,7 @@ function __G__RoleTable.LoadRole(id, name, int_table, obj_table)
     role = Role:new(id, name)
     role.IntTable = int_table
     role.ObjTable = obj_table
+    return role
 end
 
 return __G__RoleTable
