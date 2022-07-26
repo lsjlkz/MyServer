@@ -6,11 +6,28 @@
 
 __G__WorldTable = __G__WorldTable or {}
 local cDefineTable = require("Common/CDefine")
+local f = require("Common/Module")
+local cGameServer = require("cGameServer")
+local gs_tick = require("Server/GSTick")
+local gs_event = require("Server/GSEvent")
 
-function __G__WorldTable.init()
-    print("World Start...")
-    local cGameServer = require("cGameServer")
+local function test_close()
+    cGameServer.SetServerStop()
+end
+
+local function load_world_module()
+    f.load_all_module("Common")
+    f.load_all_module("Server")
+    f.load_all_module("ServerDB")
+    f.load_all_module("World")
+    gs_event.trigger_event(gs_event.AfterLoadAllScripts)
+    gs_tick.reg_tick(nil, 3, test_close)
+end
+
+
+function __G__WorldTable.Init()
     cGameServer.CreateNetwork(100, cDefineTable.WorldID, 10000)
+    load_world_module()
 end
 
 return __G__WorldTable

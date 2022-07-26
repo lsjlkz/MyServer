@@ -16,7 +16,7 @@ function __G__RoleMgrTable.DBCreateRole(role_name)
     --DB创建角色，返回id
     local roledb = require("ServerDB/RoleData")
     local role_id = roledb.CreateRole(role_name)
-    role = RoleClass.CreateRole(role_id, role_name)
+    local role = RoleClass.CreateRole(role_id, role_name)
     logic_role_data.RoleDataIDTable[role_id] = role
     logic_role_data.RoleDataNameTable[role_name] = role
     return role
@@ -27,12 +27,11 @@ function __G__RoleMgrTable.CreateRole(role_name)
         print("role name repeat")
         return
     end
-    role = __G__RoleMgrTable.DBCreateRole(role_name)
-    return role
+    return __G__RoleMgrTable.DBCreateRole(role_name)
 end
 
 function __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
-    role = RoleClass.LoadRole(role_id, role_name, int_table, obj_table)
+    local role = RoleClass.LoadRole(role_id, role_name, int_table, obj_table)
     logic_role_data.RoleDataIDTable[role_id] = role
     logic_role_data.RoleDataNameTable[role_name] = role
     return role
@@ -56,11 +55,11 @@ function __G__RoleMgrTable.load_role()
     local cnt = 0
     for i, v in ipairs(t) do
         cnt = cnt + 1
-        role_id = v[1]
-        role_name = v[2]
-        int_table = s.unSerialize(v[3])
-        obj_table = s.unSerialize(v[4])
-        role = __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
+        local role_id = v[1]
+        local role_name = v[2]
+        local int_table = s.unSerialize(v[3])
+        local obj_table = s.unSerialize(v[4])
+        __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
     end
     print("load role end... cnt:", cnt)
 end

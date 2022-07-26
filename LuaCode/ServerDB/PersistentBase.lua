@@ -10,7 +10,7 @@ __G__PersistentBaseTable = __G__PersistentBaseTable or {}
 
 
 function __G__PersistentBaseTable:new(name)
-    o = o or {
+    local o = {
         TableName = name or "",
         DataTable = {},
         Version = 0

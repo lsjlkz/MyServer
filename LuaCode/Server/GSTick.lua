@@ -81,10 +81,10 @@ function __G__GSTickTable.call_per_second()
         return
     end
     for i, v in pairs(__G__GSTickTable._TickSecTable[cur_sec]) do
-        tick_id = v[1]
-        owner = v[3]
-        func = v[4]
-        reg_param = v[5]
+        local tick_id = v[1]
+        local owner = v[3]
+        local func = v[4]
+        local reg_param = v[5]
         func(owner, reg_param)
         __G__GSTickTable._TickIDTable[tick_id] = nil
     end

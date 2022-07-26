@@ -11,7 +11,7 @@ Role = Role or {}
 local role_enum = require("Common/Game/Enum/EnumRoleInt")
 
 function Role:new(id, name)
-    local o = o or {
+    local o = {
         RoleID = id or 0,
         RoleName = name or "",
         IntTable = {},
@@ -40,14 +40,14 @@ end
 __G__RoleTable = __G__RoleTable or {}
 
 function __G__RoleTable.CreateRole(id, name)
-    role = Role:new(id, name)
+    local role = Role:new(id, name)
     role:SetInt(role_enum.RoleUpdateVersion, 1)
     role:SetInt(role_enum.RoleLevel, 1)
     return role
 end
 
 function __G__RoleTable.LoadRole(id, name, int_table, obj_table)
-    role = Role:new(id, name)
+    local role = Role:new(id, name)
     role.IntTable = int_table
     role.ObjTable = obj_table
     return role

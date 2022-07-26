@@ -19,6 +19,9 @@ public:
 	int GetGameServerID(){return GameServerID;};
 	int Init(char* argv[]);
 
+//    TODO
+//    int Connect(char* ip, int port, )
+
 
 	void Loop();
 	void Time();

@@ -6,11 +6,27 @@
 
 __G__GateWayTable = __G__GateWayTable or {}
 local cDefineTable = require("Common/CDefine")
+local f = require("Common/Module")
+local cGameServer = require("cGameServer")
+local gs_tick = require("Server/GSTick")
+local gs_event = require("Server/GSEvent")
 
-function __G__GateWayTable.init()
-    print("GateWay Start...")
-    local cGameServer = require("cGameServer")
+local function test_close()
+    cGameServer.SetServerStop()
+end
+
+local function load_gateway_module()
+    f.load_all_module("Common")
+    f.load_all_module("Server")
+    f.load_all_module("ServerDB")
+    f.load_all_module("GateWay")
+    gs_event.trigger_event(gs_event.AfterLoadAllScripts)
+    gs_tick.reg_tick(nil, 3, test_close)
+end
+
+function __G__GateWayTable.Init()
     cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 10086)
+    load_gateway_module()
 end
 
 return __G__GateWayTable

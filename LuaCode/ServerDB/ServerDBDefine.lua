@@ -32,7 +32,7 @@
 
 __G__ServerDBDefineTable = __G__ServerDBDefineTable or {}
 
-__G__ServerDBDefineTable.Host = "localhost"
+__G__ServerDBDefineTable.Host = "192.168.28.24"
 __G__ServerDBDefineTable.User = "admin"
 __G__ServerDBDefineTable.Password = "admin"
 __G__ServerDBDefineTable.Port = 3306
