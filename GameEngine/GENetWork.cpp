@@ -12,12 +12,14 @@ GENetWork::GENetWork(int MaxConnect, int Thread) {
 int GENetWork::ListenPort(int Port) {
 	// 监听端口
 	std::cout << "ListenPort" << Port << std::endl;
-    if(this->accpetor == NULL){
-        try{
-//            TODO
-//            this->accpetor = new tdBoostAcceptor
-        }
-    }
+//    if(this->accpetor == NULL){
+//        try{
+////            TODO
+////            this->accpetor = new tdBoostAcceptor
+//        }
+//		catch{
+//		}
+//    }
 	return 0;
 }
 

@@ -9,7 +9,6 @@
 #include <boost/asio.hpp>
 #include <boost/thread.hpp>
 
-
 // 网络层
 class GENetWork{
 public:
