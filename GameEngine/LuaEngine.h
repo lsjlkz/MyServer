@@ -7,9 +7,7 @@
 #define MYSERVER_LUAENGINE_H
 
 #include "Head.h"
-//#include "luasql.h"
-//#include "ls_mysql.h"
-#include "GENetPack.h"
+#include "GENet/GENetPack.h"
 
 class LuaEngine:public SingleTon<LuaEngine>{
 private:
@@ -25,12 +23,12 @@ public:
 	bool Init();
 	bool Del();
 
-	int LoadFile(const char* filepath);
-	int DoFile(const char* filepath);
+	GE::Int32 LoadFile(const char* filepath);
+	GE::Int32 DoFile(const char* filepath);
 
 
 	// 执行一段lua code
-	int executeString(const char* codes);
+	GE::Int32 executeString(const char* codes);
 
 };
 

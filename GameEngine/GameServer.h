@@ -9,18 +9,18 @@
 #include <thread>
 #include "SingleTon.h"
 #include "GEDateTime.h"
-#include "GENetWork.h"
+#include "GENet/GENetWork.h"
 #include "LuaEvent.h"
 
 class GameServer: public SingleTon<GameServer>{
 public:
-	int CreateNetwork(int MaxConnect, int Thread, int Port);
-	void SetGameServerID(int id);
-	int GetGameServerID(){return GameServerID;};
-	int Init(char* argv[]);
+	GE::Int32 CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port);
+	void SetGameServerID(GE::Int32 id);
+	GE::Int32 GetGameServerID(){return GameServerID;};
+	GE::Int32 Init(char* argv[]);
 
 //    TODO
-//    int Connect(char* ip, int port, )
+//    GE::Int32 Connect(char* ip, GE::Int32 port, )
 
 
 	void Loop();
@@ -29,15 +29,14 @@ public:
 	void SetStop();
 
 private:
-	GENetWork* geNetWork;
-	int GameServerID = 0;
+	GENetWork* m_pNetWork;
+	GE::Int32 GameServerID = 0;
 
-	int lastUpdateSecond = 0;
-	int lastUpdateMinute = 0;
-	int lastUpdateHour = 0;
-	int lastUpdateDay = 0;
+	GE::Int32 lastUpdateSecond = 0;
+	GE::Int32 lastUpdateMinute = 0;
+	GE::Int32 lastUpdateHour = 0;
+	GE::Int32 lastUpdateDay = 0;
 
-	bool isRun = true;
 
 };
 

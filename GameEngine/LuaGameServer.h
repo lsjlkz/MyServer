@@ -7,31 +7,33 @@
 
 #include "LuaEngine.h"
 #include "GameServer.h"
-#include "GENetPack.h"
+#include "GENet/GENetPack.h"
+#include "GEProcess.h"
 
 static void RegLuaModule();
 
 class LuaGameServer{
 private:
-	std::unordered_map<int, int> map;
+	std::unordered_map<GE::Int32, GE::Int32> map;
 public:
-	static int Init();
-	static int Close();
+	static GE::Int32 Init();
 
-	static int GetGameServerID(lua_State* L);
-	static int CreateNetwork(lua_State* L);
-//	static int CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
-	static int PackMsg(lua_State* L);
-	static int ReceiveMsg(char* bufHead);
-	static int DebugReceiveMsg(lua_State* L);
-	static int Year(lua_State* L);
-	static int Month(lua_State* L);
-	static int Day(lua_State* L);
-	static int Hour(lua_State* L);
-	static int Minute(lua_State* L);
-	static int Second(lua_State* L);
-	static int Seconds(lua_State* L);
-	static int SetServerStop(lua_State* L);
+	static GE::Int32 GetGameServerID(lua_State* L);
+	static GE::Int32 CreateNetwork(lua_State* L);
+	static GE::Int32 SetConnectParam(lua_State* L);
+//	static GE::Int32 CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
+	static GE::Int32 PackMsg(lua_State* L);
+	static GE::Int32 ReceiveMsg(char* bufHead);
+	static GE::Int32 DebugReceiveMsg(lua_State* L);
+	static GE::Int32 Year(lua_State* L);
+	static GE::Int32 Month(lua_State* L);
+	static GE::Int32 Day(lua_State* L);
+	static GE::Int32 Hour(lua_State* L);
+	static GE::Int32 Minute(lua_State* L);
+	static GE::Int32 Second(lua_State* L);
+	static GE::Int32 Seconds(lua_State* L);
+	static GE::Int32 SetServerStop(lua_State* L);
+	static GE::Int32 LuaObjToString(lua_State* L);
 };
 
 
@@ -48,11 +50,13 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"Second", LuaGameServer::Second},
 		{"Seconds", LuaGameServer::Seconds},
 		{"SetServerStop", LuaGameServer::SetServerStop},
+		{"LuaObjToString", LuaGameServer::LuaObjToString},
+		{"SetConnectParam", LuaGameServer::SetConnectParam},
 		{NULL, NULL}
 };
 
 
-LUA_API int (luaopen_luagameserver_libs)(lua_State* L);
+LUA_API GE::Int32 (luaopen_luagameserver_libs)(lua_State* L);
 
 
 static luaL_Reg lua_reg_libs[] = {

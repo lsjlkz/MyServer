@@ -15,6 +15,10 @@ extern "C"{
 #include "Lua/lauxlib.h"
 }
 
+#include "boost/thread.hpp"
+#include <boost/asio.hpp>
 #include "SingleTon.h"
+#include "GEDefine.h"
+
 
 #endif //MYSERVER_HEAD_H

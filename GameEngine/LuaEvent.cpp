@@ -4,9 +4,9 @@
 
 #include "LuaEvent.h"
 
-int LuaEvent::CCallLuaPerSecond() {
+GE::Int32 LuaEvent::CCallLuaPerSecond() {
 	lua_State *L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
 	if(ret){
 		return ret;
 	}
@@ -21,9 +21,9 @@ int LuaEvent::CCallLuaPerSecond() {
 	return 0;
 }
 
-int LuaEvent::CCallLuaPerMinute() {
+GE::Int32 LuaEvent::CCallLuaPerMinute() {
 	lua_State *L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
 	if(ret){
 		return ret;
 	}
@@ -38,9 +38,9 @@ int LuaEvent::CCallLuaPerMinute() {
 	return 0;
 }
 
-int LuaEvent::CCallLuaPerHour() {
+GE::Int32 LuaEvent::CCallLuaPerHour() {
 	lua_State *L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
 	if(ret){
 		return ret;
 	}
@@ -55,9 +55,9 @@ int LuaEvent::CCallLuaPerHour() {
 	return 0;
 }
 
-int LuaEvent::CCallLuaPerDay() {
+GE::Int32 LuaEvent::CCallLuaPerDay() {
 	lua_State *L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSDateTime.lua");
 	if(ret){
 		return ret;
 	}

@@ -5,11 +5,12 @@
 #ifndef MYSERVER_GESYSTEMTIME_H
 #define MYSERVER_GESYSTEMTIME_H
 
+#include "Head.h"
 #include "SingleTon.h"
 
 class GESystemTime:public SingleTon<GESystemTime> {
 public:
-	static unsigned long long GetSystemMSeconds();
+	static GE::Uint64 GetSystemMSeconds();
 };
 
 

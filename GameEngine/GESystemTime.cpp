@@ -4,7 +4,7 @@
 
 #include "GESystemTime.h"
 
-unsigned long long GESystemTime::GetSystemMSeconds() {
+GE::Uint64 GESystemTime::GetSystemMSeconds() {
 	std::time_t result = std::time(NULL);
 	return 1000 * result;
 }

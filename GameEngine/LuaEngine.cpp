@@ -26,7 +26,7 @@ bool LuaEngine::Init() {
 	return true;
 }
 
-int LuaEngine::executeString(const char *codes) {
+GE::Int32 LuaEngine::executeString(const char *codes) {
 	if(L == nullptr){
 		std::cout << "lua engine not init" << std::endl;
 		return 0;
@@ -36,15 +36,15 @@ int LuaEngine::executeString(const char *codes) {
 }
 
 
-int LuaEngine::LoadFile(const char *filepath) {
-	int ret = luaL_loadfile(L, filepath);
+GE::Int32 LuaEngine::LoadFile(const char *filepath) {
+	GE::Int32 ret = luaL_loadfile(L, filepath);
 	if(ret){
 		std::cout << "load lua file error:(" << filepath << ")" << std::endl;
 	}
 	return ret;
 }
 
-int LuaEngine::DoFile(const char *filepath) {
+GE::Int32 LuaEngine::DoFile(const char *filepath) {
 	if(luaL_dofile(L, filepath)){
 		std::cout << lua_tostring(L, -1) << std::endl;;
 	}

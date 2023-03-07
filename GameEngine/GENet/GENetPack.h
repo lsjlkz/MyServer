@@ -38,27 +38,27 @@ class PackMessage:public SingleTon<PackMessage>{
 public:
 	BufPool*		bigMsgPool;
 	BufQueue*		bigMsgQueue;		// 打包的流队列
-	int				msgSize;
+	GE::Int32				msgSize;
 	char*			curBufHead;			// 当前打包的缓冲区的头
-	int 			curBufOffset;		// 当前打包的缓冲区偏移
-	int				curBufEmpty;		// 当前打包的缓冲区剩余空间
-	int				curStackDeep;		// 栈深度，防止递归自身
+	GE::Int32 			curBufOffset;		// 当前打包的缓冲区偏移
+	GE::Int32				curBufEmpty;		// 当前打包的缓冲区剩余空间
+	GE::Int32				curStackDeep;		// 栈深度，防止递归自身
 public:
 	PackMessage();
 	~PackMessage();
 
 	void			ClearCache();
 
-	bool 			PackMsgType(int msgType);
+	bool 			PackMsgType(GE::Int32 msgType);
 
-	bool			PackType(int t);
+	bool			PackType(GE::Int32 t);
 
-	bool 			PackCharInt(int c);
+	bool 			PackCharInt(GE::Int32 c);
 	bool 			PackChar(char c);
 
-	bool			PackInt(int i);
-	int&			PackIntRef();
-	bool			PackIntObj(int i);
+	bool			PackInt(GE::Int32 i);
+	GE::Int32&		PackIntRef();
+	bool			PackIntObj(GE::Int32 i);
 
 	bool			PackLong(long l);
 	bool			PackLongObj(long l);
@@ -66,14 +66,14 @@ public:
 	bool			PackBool(bool b);
 	bool			PackBoolObj(bool b);
 
-	bool 			PackString(const char* s, int size);
-	bool 			PackStringObj(const char *s, int size);
+	bool 			PackString(const char* s, GE::Int32 size);
+	bool 			PackStringObj(const char *s, GE::Int32 size);
 
 	bool 			PackLuaObj(lua_State* L);
-	void 			PackLuaHelp(lua_State* L, int index);
+	void 			PackLuaHelp(lua_State* L, GE::Int32 index);
 
-	int				PackSize() const{return msgSize;}
-	void 			PackByte(const void* pHead, int size);
+	GE::Int32		PackSize() const{return msgSize;}
+	void 			PackByte(const void* pHead, GE::Int32 size);
 	BufQueue*		BigMsgQueue() const{return bigMsgQueue;}
 	void			NewBuf();			// 新建一个缓冲区
 	char*			MsgIter();
@@ -84,25 +84,25 @@ public:
 class UnpackMessage{
 public:
 	UnpackMessage(void* pHead);
-	UnpackMessage(void* pHead, int nSize);
+	UnpackMessage(void* pHead, GE::Int32 nSize);
 public:
-	bool 			UnpackType(int&flag);
-	bool 			UnpackMsgType(int& msgType);
-	bool			UnpackInt(int& i);
+	bool 			UnpackType(GE::Int32&flag);
+	bool 			UnpackMsgType(GE::Int32& msgType);
+	bool			UnpackInt(GE::Int32& i);
 	bool			UnpackLong(long& l);
 	bool			UnpackBool(bool& b);
-	bool 			UnpackString(char* s, int size);
+	bool 			UnpackString(char* s, GE::Int32 size);
 	bool 			UnpackLuaObj(lua_State* L);
 	bool 			UnpackLuaObjHelp(lua_State* L);
 
-	void 			SetSize(int size){msgSize = size;leftSize = msgSize - curBufOffset;}
-	int				MsgSize(){return msgSize;}
+	void 			SetSize(GE::Int32 size){msgSize = size;leftSize = msgSize - curBufOffset;}
+	GE::Int32		MsgSize(){return msgSize;}
 
 private:
-	int 			curBufOffset;		// 当前打包的缓冲区偏移
+	GE::Int32 		curBufOffset;		// 当前打包的缓冲区偏移
 	char*			curBufHead;			// 缓冲区的头
-	int				msgSize;			// 消息大小
-	int				leftSize;			// 剩余大小
+	GE::Int32		msgSize;			// 消息大小
+	GE::Int32		leftSize;			// 剩余大小
 	bool 			isOK;				// 是否有报错
 
 };

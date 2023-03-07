@@ -4,18 +4,18 @@
 
 #include "GameServer.h"
 
-int GameServer::CreateNetwork(int MaxConnect, int Thread, int Port) {
-	this->geNetWork = new GENetWork(MaxConnect, Thread);
-	this->geNetWork->ListenPort(Port);
+GE::Int32 GameServer::CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port) {
+	this->m_pNetWork = new GENetWork(MaxConnect, Thread);
+	this->m_pNetWork->Listen_MT(Port);
 	return 0;
 }
 
-void GameServer::SetGameServerID(int id) {
+void GameServer::SetGameServerID(GE::Int32 id) {
 	this->GameServerID = id;
 }
 
-int GameServer::Init(char* argv[]) {
-	int id;
+GE::Int32 GameServer::Init(char* argv[]) {
+	GE::Int32 id;
 	sscanf_s(argv[1], "%d", &id);
 	SetGameServerID(id);
 	return 0;
@@ -27,7 +27,8 @@ void GameServer::Loop() {
 	this->lastUpdateMinute = GEDateTime::Instance()->Minute();
 	this->lastUpdateHour = GEDateTime::Instance()->Hour();
 	this->lastUpdateDay = GEDateTime::Instance()->Day();
-	while(this->isRun && this->geNetWork->isRun()){
+	this->m_pNetWork->Start_MT();
+	while(this->m_pNetWork->isRun()){
 		this->Time();
 		this->Cycle();
 	}
@@ -63,5 +64,6 @@ void GameServer::Cycle() {
 }
 
 void GameServer::SetStop() {
-	this->isRun = false;
+
+	this->m_pNetWork->Stop_MT();
 }

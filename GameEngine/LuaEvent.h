@@ -11,10 +11,10 @@
 class LuaEvent: public SingleTon<LuaEvent>{
 
 public:
-	int CCallLuaPerSecond();
-	int CCallLuaPerMinute();
-	int CCallLuaPerHour();
-	int CCallLuaPerDay();
+	GE::Int32 CCallLuaPerSecond();
+	GE::Int32 CCallLuaPerMinute();
+	GE::Int32 CCallLuaPerHour();
+	GE::Int32 CCallLuaPerDay();
 };
 
 

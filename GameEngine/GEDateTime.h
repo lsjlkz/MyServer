@@ -6,6 +6,7 @@
 #define MYSERVER_GEDATETIME_H
 
 #include "GESystemTime.h"
+#include "Head.h"
 
 class GEDateTime:public SingleTon<GEDateTime> {
 public:
@@ -15,24 +16,24 @@ public:
 	void CacheDateTime();
 	void UpdateDateTime();
 
-	long Year();
-	long Month();
-	long Day();
-	long Hour();
-	long Minute();
-	long Second();
-	long UnixTime();
+	GE::Int32 Year();
+	GE::Int32 Month();
+	GE::Int32 Day();
+	GE::Int32 Hour();
+	GE::Int32 Minute();
+	GE::Int64 Second();
+	GE::Int64 UnixTime();
 
 private:
-	int tm_year;
-	int tm_month;
-	int tm_day;
-	int tm_hour;
-	int tm_minute;
-	int tm_second;
-	int tm_weekDay;
-	int tm_yearDay;
-	long tm_unixTime;
+	GE::Int32 tm_year;
+	GE::Int32 tm_month;
+	GE::Int32 tm_day;
+	GE::Int32 tm_hour;
+	GE::Int32 tm_minute;
+	GE::Int64 tm_second;
+	GE::Int32 tm_weekDay;
+	GE::Int32 tm_yearDay;
+	GE::Int64 tm_unixTime;
 };
 
 

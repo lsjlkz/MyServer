@@ -21,13 +21,15 @@ local function load_logic_module()
     f.load_all_module("ServerDB")
     f.load_all_module("Logic")
     gs_event.trigger_event(gs_event.AfterLoadAllScripts)
-    gs_tick.reg_tick(nil, 3, test_close)
+    local gsinit = require("Server/GSInit")
+    gs_tick.reg_tick(nil, 300, gsinit.close)
 
 end
 
 function __G__LogicTable.Init()
-    cGameServer.CreateNetwork(100, cDefineTable.LogicID, 10010)
     load_logic_module()
+    cGameServer.SetConnectParam(100, 100, 100, 100, 100, 100)
+    cGameServer.CreateNetwork(100, cDefineTable.LogicID, 10010)
 end
 
 return __G__LogicTable

@@ -4,30 +4,50 @@
 
 #include "LuaGameServer.h"
 
-int LuaGameServer::CreateNetwork(lua_State* L) {
+GE::Int32 LuaGameServer::CreateNetwork(lua_State* L) {
 	luaL_checktype(L, 1, LUA_TNUMBER);
 	luaL_checktype(L, 2, LUA_TNUMBER);
 	luaL_checktype(L, 3, LUA_TNUMBER);
-	int maxCount = (int) lua_tointeger(L, 1);
-	int thread = (int) lua_tointeger(L, 2);
-	int port = (int) lua_tointeger(L, 3);
+	GE::Int32 maxCount = (GE::Int32) lua_tointeger(L, 1);
+	GE::Int32 thread = (GE::Int32) lua_tointeger(L, 2);
+	GE::Int32 port = (GE::Int32) lua_tointeger(L, 3);
 	lua_settop(L, 0);
-	int ret = GameServer::Instance()->CreateNetwork(maxCount, thread, port);
+	GE::Int32 ret = GameServer::Instance()->CreateNetwork(maxCount, thread, port);
 	lua_pushnumber(L, ret);
 	return 1;
 }
 
-int LuaGameServer::GetGameServerID(lua_State* L) {
+GE::Int32 LuaGameServer::SetConnectParam(lua_State *L) {
+	luaL_checktype(L, 1, LUA_TNUMBER);
+	luaL_checktype(L, 2, LUA_TNUMBER);
+	luaL_checktype(L, 3, LUA_TNUMBER);
+	luaL_checktype(L, 4, LUA_TNUMBER);
+	luaL_checktype(L, 5, LUA_TNUMBER);
+	luaL_checktype(L, 6, LUA_TNUMBER);
+	GEDefine::ConnectParam CP;
+	CP.uSendBlockSize = (GE::Int32) lua_tointeger(L, 1);
+	CP.uSendBlockNum = (GE::Int32) lua_tointeger(L, 2);
+	CP.uRecvBlockSize = (GE::Int32) lua_tointeger(L, 3);
+	CP.uRecvBlockNum = (GE::Int32) lua_tointeger(L, 4);
+	CP.uWaitWhoTime = (GE::Int32) lua_tointeger(L, 5);
+	CP.uWaitRecvTime = (GE::Int32) lua_tointeger(L, 6);
+	GEProcess::Instance()->DefualConnectParam = CP;
+	lua_settop(L, 0);
+	return 1;
+}
+
+
+GE::Int32 LuaGameServer::GetGameServerID(lua_State* L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GameServer::Instance()->GetGameServerID());
 	return 1;
 }
 
-//int LuaGameServer::CallLuaFunc(lua_State* L) {
+//GE::Int32 LuaGameServer::CallLuaFunc(lua_State* L) {
 //	luaL_checktype(L, 1, LUA_TNUMBER);
-//	int funcID = lua_tointeger(L, 1);
+//	GE::Int32 funcID = lua_tointeger(L, 1);
 //	const char* p = lua_tostring(L, 2);
-//	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/Function.lua");
+//	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/Function.lua");
 //	if(ret){
 //		return ret;
 //	}
@@ -45,21 +65,21 @@ int LuaGameServer::GetGameServerID(lua_State* L) {
 //	return 0;
 //}
 
-int LuaGameServer::PackMsg(lua_State* L){
+GE::Int32 LuaGameServer::PackMsg(lua_State* L){
 	PackMessage::Instance()->ClearCache();
 	return PackMessage::Instance()->PackLuaObj(L);
 }
 
-int LuaGameServer::DebugReceiveMsg(lua_State* L) {
+GE::Int32 LuaGameServer::DebugReceiveMsg(lua_State* L) {
 	PackMessage::Instance()->ClearCache();
 	PackMessage::Instance()->PackLuaObj(L);
 	ReceiveMsg(PackMessage::Instance()->curBufHead);
 	return 1;
 }
 
-int LuaGameServer::ReceiveMsg(char *bufHead) {
+GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	lua_State* L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/GSMessage.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/GSMessage.lua");
 	if(ret){
 		return ret;
 	}
@@ -68,11 +88,11 @@ int LuaGameServer::ReceiveMsg(char *bufHead) {
 	// 获取函数分发函数
 	lua_pushstring(L, "TriggerServerDistribute");
 	lua_gettable(L, -2);
-	int msg_size = 0;
+	GE::Int32 msg_size = 0;
 	UnpackMessage um = UnpackMessage(PackMessage::Instance()->curBufHead);
 	um.UnpackInt(msg_size);
 	um.SetSize(msg_size);
-	int msg_type = 0;
+	GE::Int32 msg_type = 0;
 	um.UnpackMsgType(msg_type);
 	lua_pushinteger(L, msg_type);
 	um.UnpackLuaObj(L);
@@ -84,17 +104,19 @@ int LuaGameServer::ReceiveMsg(char *bufHead) {
 	return 0;
 }
 
-int LuaGameServer::Init() {
+GE::Int32 LuaGameServer::Init() {
 	RegLuaModule();
 	lua_State* L = LuaEngine::Instance()->GetLuaState();
 	// luaserver初始化
-	int ret = LuaEngine::Instance()->DoFile("../LuaCode/Server/GSInit.lua");
+	GE::Int32 ret = LuaEngine::Instance()->DoFile("../LuaCode/Server/GSInit.lua");
 	if(ret){
 		return ret;
 	}
 	// 获取元表
 	lua_getglobal(L, "__G__GSInitTable");
+	// 把函数名压栈
 	lua_pushstring(L, "main");
+	// 这里是-2，因为-1是刚刚压栈的字符串main
 	lua_gettable(L, -2);
 	ret = lua_pcall(L, 0, 0, 0);
 	if(ret){
@@ -104,72 +126,58 @@ int LuaGameServer::Init() {
 	return 0;
 }
 
-int LuaGameServer::Year(lua_State *L) {
+GE::Int32 LuaGameServer::Year(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Year());
 	return 1;
 }
 
-int LuaGameServer::Month(lua_State *L) {
+GE::Int32 LuaGameServer::Month(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Month());
 	return 1;
 }
 
-int LuaGameServer::Day(lua_State *L) {
+GE::Int32 LuaGameServer::Day(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Day());
 	return 1;
 }
 
-int LuaGameServer::Hour(lua_State *L) {
+GE::Int32 LuaGameServer::Hour(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Hour());
 	return 1;
 }
 
-int LuaGameServer::Minute(lua_State *L) {
+GE::Int32 LuaGameServer::Minute(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Minute());
 	return 1;
 }
 
-int LuaGameServer::Second(lua_State *L) {
+GE::Int32 LuaGameServer::Second(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Second());
 	return 1;
 }
 
-int LuaGameServer::Seconds(lua_State *L) {
+GE::Int32 LuaGameServer::Seconds(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->UnixTime());
 	return 1;
 }
 
-int LuaGameServer::SetServerStop(lua_State *L) {
+GE::Int32 LuaGameServer::SetServerStop(lua_State *L) {
 	GameServer::Instance()->SetStop();
 	return 1;
 }
 
-int LuaGameServer::Close() {
-	lua_State* L = LuaEngine::Instance()->GetLuaState();
-	int ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSInit.lua");
-	if(ret){
-		return ret;
-	}
-	// 获取元表
-	lua_getglobal(L, "__G__GSInitTable");
-	lua_pushstring(L, "close");
-	lua_gettable(L, -2);
-	ret = lua_pcall(L, 0, 0, 0);
-	if(ret){
-		std::cout << "lua call err:" << lua_tostring(L, -1) << std::endl;
-		return ret;
-	}
-	return 1;
+GE::Int32 LuaGameServer::LuaObjToString(lua_State *L) {
+	PackMessage::Instance()->ClearCache();
+	return PackMessage::Instance()->PackLuaObj(L);
 }
-
-int luaopen_luagameserver_libs(lua_State *L) {
+LUA_API GE::Int32 luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");
 	lua_pushvalue(L, -1);
 	lua_setfield(L, -2, "__index");

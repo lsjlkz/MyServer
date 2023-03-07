@@ -16,5 +16,35 @@ include_directories(GameEngine CommonBase)
 link_directories(GameEngine CommonBase)
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+#set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
-add_executable(MyServer main.cpp CommonBase/Vector2.cpp CommonBase/Vector2.h GameEngine/SingleTon.h GameEngine/LuaEngine.cpp GameEngine/LuaEngine.h GameEngine/LuaGameServer.cpp GameEngine/LuaGameServer.h GameEngine/GameServer.cpp GameEngine/GameServer.h GameEngine/GENetWork.cpp GameEngine/GENetWork.h GameEngine/GSDefine.h GameEngine/GENetPack.cpp GameEngine/GENetPack.h GameEngine/GEDefine.cpp GameEngine/GEDefine.h GameEngine/Head.h Test/Test.cpp Test/Test.h CommonBase/CommomHelp.cpp CommonBase/CommomHelp.h GameEngine/GEDateTime.cpp GameEngine/GEDateTime.h GameEngine/GESystemTime.cpp GameEngine/GESystemTime.h GameEngine/LuaEvent.cpp GameEngine/LuaEvent.h)
+add_executable(MyServer main.cpp
+        CommonBase/Vector2.cpp
+        CommonBase/Vector2.h
+        GameEngine/SingleTon.h
+        GameEngine/LuaEngine.cpp
+        GameEngine/LuaEngine.h
+        GameEngine/LuaGameServer.cpp
+        GameEngine/LuaGameServer.h
+        GameEngine/GameServer.cpp
+        GameEngine/GameServer.h
+        GameEngine/GENet/GENetWork.cpp
+        GameEngine/GENet/GENetWork.h
+        GameEngine/GSDefine.h
+        GameEngine/GENet/GENetPack.cpp
+        GameEngine/GENet/GENetPack.h
+        GameEngine/GEDefine.h
+        GameEngine/Head.h
+        Test/Test.cpp
+        Test/Test.h
+        CommonBase/CommomHelp.cpp
+        CommonBase/CommomHelp.h
+        GameEngine/GEDateTime.cpp
+        GameEngine/GEDateTime.h
+        GameEngine/GESystemTime.cpp
+        GameEngine/GESystemTime.h
+        GameEngine/LuaEvent.cpp
+        GameEngine/LuaEvent.h
+        GameEngine/GENet/GENetConnect.cpp GameEngine/GENet/GENetConnect.h GameEngine/GENet/GENetConnectMgr.cpp GameEngine/GENet/GENetConnectMgr.h GameEngine/GEProcess.cpp GameEngine/GEProcess.h)
+
+option(WIN "WIN" ON)

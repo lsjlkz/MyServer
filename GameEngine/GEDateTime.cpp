@@ -33,30 +33,30 @@ void GEDateTime::UpdateDateTime() {
 	}
 }
 
-long GEDateTime::Year() {
+GE::Int32 GEDateTime::Year() {
 	return this->tm_year;
 }
 
-long GEDateTime::Month() {
+GE::Int32 GEDateTime::Month() {
 	return this->tm_month;
 }
 
-long GEDateTime::Day() {
+GE::Int32 GEDateTime::Day() {
 	return this->tm_day;
 }
 
-long GEDateTime::Hour() {
+GE::Int32 GEDateTime::Hour() {
 	return this->tm_hour;
 }
 
-long GEDateTime::Minute() {
+GE::Int32 GEDateTime::Minute() {
 	return this->tm_minute;
 }
 
-long GEDateTime::Second() {
+GE::Int64 GEDateTime::Second() {
 	return this->tm_second;
 }
 
-long GEDateTime::UnixTime() {
+GE::Int64 GEDateTime::UnixTime() {
 	return this->tm_unixTime;
 }

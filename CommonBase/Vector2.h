@@ -6,8 +6,8 @@
 #define MYSERVER_VECTOR2_H
 #include "LuaEngine.h"
 
-int lua_get_vector(lua_State* L);
-int lua_create_vector(lua_State* L);
+GE::Int32 lua_get_vector(lua_State* L);
+GE::Int32 lua_create_vector(lua_State* L);
 
 static const luaL_Reg lua_reg_vector_create_funcs[] = {
 		{"Create", lua_create_vector},
@@ -19,33 +19,33 @@ static const luaL_Reg lua_reg_vector_funcs[] = {
 		{NULL, NULL},
 };
 
-int luaopen_vector_libs(lua_State* L);
+GE::Int32 luaopen_vector_libs(lua_State* L);
 
 class Vector2 {
 private:
-    int _x=0;
-    int _y=0;
+    GE::Int32 _x=0;
+    GE::Int32 _y=0;
 
 public:
-    Vector2(int x, int y):_x(x), _y(y){};
+    Vector2(GE::Int32 x, GE::Int32 y):_x(x), _y(y){};
     Vector2(Vector2 const &xy);
     Vector2();
 
-    void IncX(int x){
+    void IncX(GE::Int32 x){
         _x += x;
     }
-    void IncY(int y){
+    void IncY(GE::Int32 y){
         _y += y;
     }
-    void IncXY(int x, int y){
+    void IncXY(GE::Int32 x, GE::Int32 y){
         _x += x;
         _y += y;
     }
 
-    int GetX(){
+    GE::Int32 GetX(){
         return _x;
     }
-    int GetY(){
+    GE::Int32 GetY(){
         return _y;
     }
 };
