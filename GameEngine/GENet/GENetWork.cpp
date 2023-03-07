@@ -80,5 +80,8 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 	std::string data = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
 	boost::asio::async_write(s_pConnect->Socket(), boost::asio::buffer(data), write_handle);
 
+	// 重新创建一个connect
+	this->AsyncAccept_NT();
+
 }
 
