@@ -18,6 +18,9 @@
 #define GE_WIN_ASSERT(exp)
 #endif
 
+#define GE_SAFE_DELETE_POINT(head) if((head)){delete (head); (head) = NULL;};
+
+
 
 namespace GE{
 
