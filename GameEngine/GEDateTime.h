@@ -8,7 +8,7 @@
 #include "GESystemTime.h"
 #include "Head.h"
 
-class GEDateTime:public SingleTon<GEDateTime> {
+class GEDateTime:public GESingleton<GEDateTime> {
 public:
 	GEDateTime();
 

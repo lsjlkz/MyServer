@@ -23,7 +23,7 @@ add_compile_definitions(WIN)
 add_executable(MyServer main.cpp
         CommonBase/Vector2.cpp
         CommonBase/Vector2.h
-        GameEngine/SingleTon.h
+        GameEngine/GESingleton.h
         GameEngine/LuaEngine.cpp
         GameEngine/LuaEngine.h
         GameEngine/LuaGameServer.cpp

@@ -6,9 +6,9 @@
 #define MYSERVER_GESYSTEMTIME_H
 
 #include "Head.h"
-#include "SingleTon.h"
+#include "GESingleton.h"
 
-class GESystemTime:public SingleTon<GESystemTime> {
+class GESystemTime:public GESingleton<GESystemTime> {
 public:
 	static GE::Uint64 GetSystemMSeconds();
 };

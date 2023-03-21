@@ -9,7 +9,7 @@
 #include "Head.h"
 #include "GENet/GENetPack.h"
 
-class LuaEngine:public SingleTon<LuaEngine>{
+class LuaEngine:public GESingleton<LuaEngine>{
 private:
 	// lua_State是主线程、栈、和数据结构
 	// 用于函数调用与和c通信

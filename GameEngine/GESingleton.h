@@ -3,8 +3,8 @@
 //
 
 #pragma once
-#ifndef MYSERVER_SINGLETON_H
-#define MYSERVER_SINGLETON_H
+#ifndef MYSERVER_GESINGLETON_H
+#define MYSERVER_GESINGLETON_H
 
 #include <vector>
 #include <unordered_map>
@@ -13,13 +13,13 @@
 
 
 template<typename T>
-class SingleTon {
+class GESingleton {
 public:
     static T* m_Instance;
 
 protected:
-    SingleTon(){}
-    virtual ~SingleTon(){}
+    GESingleton(){}
+    virtual ~GESingleton(){}
 
 public:
 
@@ -43,7 +43,7 @@ public:
 };
 
 template<typename T>
-T* SingleTon<T>::m_Instance = nullptr;
+T* GESingleton<T>::m_Instance = nullptr;
 
 
-#endif //MYSERVER_SINGLETON_H
+#endif //MYSERVER_GESINGLETON_H

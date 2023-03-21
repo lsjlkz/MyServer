@@ -6,9 +6,9 @@
 #define MYSERVER_LUAEVENT_H
 
 #include "LuaEngine.h"
-#include "SingleTon.h"
+#include "GESingleton.h"
 
-class LuaEvent: public SingleTon<LuaEvent>{
+class LuaEvent: public GESingleton<LuaEvent>{
 
 public:
 	GE::Int32 CCallLuaPerSecond();

@@ -31,18 +31,9 @@ typedef std::list<char*>			BufQueue;
 
 
 // 这个模块即将会很庞大，貌似
-class PackMessage:public SingleTon<PackMessage>{
+class PackMessage:public GESingleton<PackMessage>{
 	GE_DISALLOW_COPY_AND_ASSIGN(PackMessage);
 
-public:
-	bool					m_bIsOk;			// 是否有错误
-	BufPool*				bigMsgPool;
-	BufQueue*				bigMsgQueue;		// 打包的流队列
-	GE::Uint32				m_uSize;
-	char*					curBufHead;			// 当前打包的缓冲区的头
-	GE::Uint32 				curBufOffset;		// 当前打包的缓冲区偏移
-	GE::Uint32				curBufEmpty;		// 当前打包的缓冲区剩余空间
-	GE::Uint32				curStackDeep;		// 栈深度，防止递归自身
 public:
 	PackMessage();
 	~PackMessage();
@@ -77,8 +68,18 @@ public:
 	BufQueue*		BigMsgQueue() const{return bigMsgQueue;}
 	void			NewBuf();			// 新建一个缓冲区
 	char*			MsgIter();
+	char*			HeadPtr(){return this->curBufHead;}
 
 
+private:
+	bool					m_bIsOk;			// 是否有错误
+	BufPool*				bigMsgPool;
+	BufQueue*				bigMsgQueue;		// 打包的流队列
+	GE::Uint32				m_uSize;
+	char*					curBufHead;			// 当前打包的缓冲区的头
+	GE::Uint32 				curBufOffset;		// 当前打包的缓冲区偏移
+	GE::Uint32				curBufEmpty;		// 当前打包的缓冲区剩余空间
+	GE::Uint32				curStackDeep;		// 栈深度，防止递归自身
 };
 
 class UnpackMessage{

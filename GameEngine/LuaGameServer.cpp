@@ -73,7 +73,7 @@ GE::Int32 LuaGameServer::PackMsg(lua_State* L){
 GE::Int32 LuaGameServer::DebugReceiveMsg(lua_State* L) {
 	PackMessage::Instance()->ClearCache();
 	PackMessage::Instance()->PackLuaObj(L);
-	ReceiveMsg(PackMessage::Instance()->curBufHead);
+	ReceiveMsg(PackMessage::Instance()->HeadPtr());
 	return 1;
 }
 
@@ -89,7 +89,7 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	lua_pushstring(L, "TriggerServerDistribute");
 	lua_gettable(L, -2);
 	GE::Int32 msg_size = 0;
-	UnpackMessage um(PackMessage::Instance()->curBufHead);
+	UnpackMessage um(PackMessage::Instance()->HeadPtr());
 	um.UnpackInt(msg_size);
 	um.SetSize(msg_size);
 	GE::Int32 msg_type = 0;

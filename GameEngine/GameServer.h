@@ -7,12 +7,12 @@
 
 #include <chrono>
 #include <thread>
-#include "SingleTon.h"
+#include "GESingleton.h"
 #include "GEDateTime.h"
 #include "GENet/GENetWork.h"
 #include "LuaEvent.h"
 
-class GameServer: public SingleTon<GameServer>{
+class GameServer: public GESingleton<GameServer>{
 public:
 	GE::Int32 CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port);
 	void SetGameServerID(GE::Int32 id);

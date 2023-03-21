@@ -7,10 +7,10 @@
 #define MYSERVER_GEPROCESS_H
 
 #include "Head.h"
-#include "SingleTon.h"
+#include "GESingleton.h"
 #include "GEDefine.h"
 
-class GEProcess: public SingleTon<GEProcess>{
+class GEProcess: public GESingleton<GEProcess>{
 public:
 	GEDefine::ConnectParam			DefualConnectParam;
 };
