@@ -18,6 +18,8 @@ link_directories(GameEngine CommonBase)
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
+add_compile_definitions(WIN)
+
 add_executable(MyServer main.cpp
         CommonBase/Vector2.cpp
         CommonBase/Vector2.h
@@ -52,6 +54,6 @@ add_executable(MyServer main.cpp
         GameEngine/GENet/GENetSendBuf.cpp
         GameEngine/GENet/GENetSendBuf.h
         GameEngine/GENet/GENetBuf.cpp
-        GameEngine/GENet/GENetBuf.h)
+        GameEngine/GENet/GENetBuf.h GameEngine/GENet/GENetMessage.cpp GameEngine/GENet/GENetMessage.h)
 
 option(WIN "WIN" ON)

@@ -5,8 +5,10 @@
 #ifndef MYSERVER_GEDEFINE_H
 #define MYSERVER_GEDEFINE_H
 
-#define WIN
+#include "boost/static_assert.hpp"
 
+
+#define GE_STATIC_ASSERT BOOST_STATIC_ASSERT
 
 #ifdef WIN
 #define WIN_ASSERT
@@ -17,6 +19,10 @@
 #else
 #define GE_WIN_ASSERT(exp)
 #endif
+
+#define GE_DISALLOW_COPY_AND_ASSIGN(className) \
+className(const className&) = delete;          \
+void operator=(const className&) = delete;\
 
 #define GE_SAFE_DELETE_POINT(head) if((head)){delete (head); (head) = NULL;};
 
