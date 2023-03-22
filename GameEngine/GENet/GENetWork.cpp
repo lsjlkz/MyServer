@@ -4,17 +4,17 @@
 
 #include "GENetWork.h"
 
-GENetWork::GENetWork(GE::Int32 MaxConnect, GE::Int32 Thread) {
+GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxConnect) {
 	// TODO 网络层研究一下
 	for(GE::Int32 i = 0; i < Thread; ++i){
 		this->m_pNetWorkThreads.push_back(NULL);
 	}
-	std::cout << "GENetWork" << MaxConnect << ";" << Thread << std::endl;
+	std::cout << "GENetWork" << uMaxConnect << ";" << Thread << std::endl;
 }
 
 GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
 	// 监听端口
-    if(this->m_pAcceptor == NULL){
+    if(this->m_pAcceptor == nullptr){
         try{
 #ifdef WIN
 			// 这里开启一个
@@ -48,8 +48,6 @@ void GENetWork::Stop_MT(){
 	this->m_bIsRun = false;
 	this->m_bIsStop = true;
 
-
-
 }
 
 GENetWork::tdBoostIOServer& GENetWork::IOS() {
@@ -76,11 +74,31 @@ void write_handle(const boost::system::error_code &ec, std::size_t bytes_transfe
 }
 
 void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const boost::system::error_code &error) {
+	// 客户端请求连接
+	this->m_ConnectMutex.lock();
+	if(error){
+		s_pConnect->Shutdown(enNetConnect_ConnectFull);
+	}else{
+		if(this->m_ConnectMgr.FreeCnt() >= 1){
+			// 可以连接
+			GE::Uint32 uSessionID;
+			if(this->m_ConnectMgr.AddConnect(s_pConnect, uSessionID)){
+				s_pConnect->Shutdown(enNetConnect_ConnectFull);
+				s_pConnect->Start();
+			}else{
+				this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
+			}
+		}else{
+			// 满了
+			s_pConnect->Shutdown(enNetConnect_ConnectFull);
+			this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
+		}
+	}
+	// TODO 删掉这个响应
 	std::cout << "HandleAccept_NT" << std::endl;
 	std::string data = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
 	boost::asio::async_write(s_pConnect->Socket(), boost::asio::buffer(data), write_handle);
-
-	// 重新创建一个connect
+	this->m_ConnectMutex.unlock();
 	this->AsyncAccept_NT();
 
 }

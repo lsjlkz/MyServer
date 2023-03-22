@@ -21,11 +21,11 @@ local function load_gateway_module()
     f.load_all_module("ServerDB")
     f.load_all_module("GateWay")
     gs_event.trigger_event(gs_event.AfterLoadAllScripts)
-    gs_tick.reg_tick(nil, 3, test_close)
+    gs_tick.reg_tick(nil, 300, test_close)
 end
 
 function __G__GateWayTable.Init()
-    cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 10086)
+    cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 2101)
     load_gateway_module()
 end
 

@@ -14,8 +14,10 @@
 #define WIN_ASSERT
 #endif
 
+#define GE_ASSERT(exp) if (!(exp)){ std::abort(); }
+
 #ifdef WIN_ASSERT
-#define GE_WIN_ASSERT(exp) if (!(exp)){ std::abort(); }
+#define GE_WIN_ASSERT(exp) GE_ASSERT(exp)
 #else
 #define GE_WIN_ASSERT(exp)
 #endif

@@ -24,8 +24,8 @@ void GEDateTime::CacheDateTime() {
 }
 
 void GEDateTime::UpdateDateTime() {
-	unsigned long long mseconds = GESystemTime::GetSystemMSeconds();
-	long now_time = mseconds / 1000;
+	GE::Uint64 mseconds = GESystemTime::GetSystemMSeconds();
+	GE::Uint64 now_time = mseconds / 1000;
 	if(this->tm_unixTime != now_time){
 		// 过了一秒
 		this->tm_unixTime = now_time;

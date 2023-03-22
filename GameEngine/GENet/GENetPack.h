@@ -6,7 +6,7 @@
 #define MYSERVER_GENETPACK_H
 
 #include <vector>
-#include <list>
+#include <queue>
 #include "GENetMessage.h"
 
 #define IntFlag					-98
@@ -19,15 +19,14 @@
 
 #define MAX_STACK_DEEP			30			// 最大递归层数
 
-// 网络消息的基本长度
-#define MSG_BASE_SIZE	4
 
 #define ASSERT_LUA_TOP(L, top, i)	\
 	if (top + i != lua_gettop(L)) { std::abort(); };
 
-typedef std::list<char*>			BufPool;
-typedef std::list<char*>			BufQueue;
 
+
+typedef std::vector<char*>			BufPool;
+typedef std::queue<char*>			BufQueue;
 
 
 // 这个模块即将会很庞大，貌似
@@ -60,26 +59,29 @@ public:
 	bool 			PackString(const char* s, GE::Uint32 size);
 	bool 			PackStringObj(const char *s, GE::Uint32 size);
 
-	bool 			PackLuaObj(lua_State* L);
+	bool			PackMsg(MsgBase* pMsg);								// 打包一个msg
+
+	bool 			PackLuaObj(lua_State* L);							// 打包一个lua的对象
 	void 			PackLuaHelp(lua_State* L, GE::Int32 index);
+
+	void			Align();											// 4字节对齐
 
 	GE::Uint32		PackSize() const{return m_uSize;}
 	void 			PackByte(const void* pHead, GE::Int32 size);
-	BufQueue*		BigMsgQueue() const{return bigMsgQueue;}
+	BufQueue*		BigMsgQueue() const{return m_pBigMsgQueue;}
 	void			NewBuf();			// 新建一个缓冲区
-	char*			MsgIter();
-	char*			HeadPtr(){return this->curBufHead;}
+	char*			HeadPtr(){return this->m_pCurBufHead;}
 
 
 private:
 	bool					m_bIsOk;			// 是否有错误
-	BufPool*				bigMsgPool;
-	BufQueue*				bigMsgQueue;		// 打包的流队列
+	BufPool*				m_pBigMsgPool;
+	BufQueue*				m_pBigMsgQueue;		// 打包的流队列
 	GE::Uint32				m_uSize;
-	char*					curBufHead;			// 当前打包的缓冲区的头
-	GE::Uint32 				curBufOffset;		// 当前打包的缓冲区偏移
-	GE::Uint32				curBufEmpty;		// 当前打包的缓冲区剩余空间
-	GE::Uint32				curStackDeep;		// 栈深度，防止递归自身
+	char*					m_pCurBufHead;			// 当前打包的缓冲区的头
+	GE::Uint32 				m_uCurBufOffset;		// 当前打包的缓冲区偏移
+	GE::Uint32				m_uCurBufEmpty;		// 当前打包的缓冲区剩余空间
+	GE::Uint32				m_uCurStackDeep;		// 栈深度，防止递归自身
 };
 
 class UnpackMessage{

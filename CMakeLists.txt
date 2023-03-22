@@ -2,18 +2,18 @@ cmake_minimum_required(VERSION 3.20)
 project(MyServer)
 
 set(CMAKE_CXX_STANDARD 11)
-
+add_compile_options(/wd4819)
 
 set(LINK_DIR ${PROJECT_SOURCE_DIR}/Third/CLib)
-link_directories(${LINK_DIR})
-
 set(INC_DIR ${PROJECT_SOURCE_DIR}/Third/Include)
 set(BOOST_INC_DIR D:/boost_1_73_0)
+
+link_directories(${LINK_DIR})
+link_directories(GameEngine CommonBase)
+
 include_directories(${INC_DIR})
 include_directories(${BOOST_INC_DIR})
-
 include_directories(GameEngine CommonBase)
-link_directories(GameEngine CommonBase)
 
 set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
 #set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")

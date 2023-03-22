@@ -6,34 +6,41 @@
 
 
 PackMessage::PackMessage() {
-	bigMsgPool = new BufPool();
-	bigMsgQueue = new BufQueue();
+	m_pBigMsgPool = new BufPool();
+	m_pBigMsgQueue = new BufQueue();
 	this->m_uSize = 0;
 	this->NewBuf();
 }
 
 PackMessage::~PackMessage() {
-	bigMsgPool->clear();
-	bigMsgQueue->clear();
+	// 清空池和队列
+	while(!m_pBigMsgPool->empty()){
+		char* head = m_pBigMsgPool->back();
+		m_pBigMsgPool->pop_back();
+		delete head;
+	}
+	delete m_pBigMsgPool;
+	while(!m_pBigMsgQueue->empty()){
+		char* head = m_pBigMsgQueue->front();
+		m_pBigMsgQueue->pop();
+		delete head;
+	}
+	delete m_pBigMsgQueue;
 }
 
 void PackMessage::NewBuf() {
-	if(bigMsgPool->empty()){
-		curBufHead = new char[MSG_MAX_SIZE];
+	// 新建一个缓冲区
+	if(m_pBigMsgPool->empty()){
+		m_pCurBufHead = new char[MSG_MAX_SIZE];
 	}else{
-		curBufHead = bigMsgPool->back();
-		bigMsgPool->pop_back();
+		// 如果池有的话，就直接拿池的
+		this->m_pCurBufHead = m_pBigMsgPool->back();
+		m_pBigMsgPool->pop_back();
 	}
-	this->bigMsgQueue->push_back(curBufHead);
-	this->curBufOffset = 0;
-	this->curBufEmpty = MSG_MAX_SIZE;
-}
-
-char* PackMessage::MsgIter(){
-	for(auto & it : *bigMsgQueue){
-		return it;
-	}
-	return nullptr;
+	// 放到队列中
+	this->m_pBigMsgQueue->push(this->m_pCurBufHead);
+	this->m_uCurBufOffset = 0;
+	this->m_uCurBufEmpty = MSG_MAX_SIZE;
 }
 
 bool PackMessage::PackType(GE::Int32 t) {
@@ -88,36 +95,36 @@ bool PackMessage::PackStringObj(const char *s, GE::Uint32 size) {
 
 
 void PackMessage::PackByte(const void *pHead, GE::Int32 size) {
-	if(this->curBufEmpty == 0){
+	if(this->m_uCurBufEmpty == 0){
 		// 无空间了，重新申请一个
 		this->NewBuf();
 	}
-	if(size <= this->curBufEmpty){
+	if(size <= this->m_uCurBufEmpty){
 		// 还够用，不用重新申请
-		memcpy(this->curBufHead + this->curBufOffset, pHead, size);
-		this->curBufOffset += size;
+		memcpy(this->m_pCurBufHead + this->m_uCurBufOffset, pHead, size);
+		this->m_uCurBufOffset += size;
 		this->m_uSize += size;
-		this->curBufEmpty -= size;
+		this->m_uCurBufEmpty -= size;
 		return;
 	}
 	char* curP = (char *) pHead;
 	// 不够用了，重新申请一个
 	while(size > MSG_MAX_SIZE){
 		// 放入空余的位置
-		memcpy(this->curBufHead, curP, this->curBufEmpty);
-		curP += this->curBufEmpty;
-		this->m_uSize += this->curBufEmpty;
-		size -= this->curBufEmpty;
+		memcpy(this->m_pCurBufHead, curP, this->m_uCurBufEmpty);
+		curP += this->m_uCurBufEmpty;
+		this->m_uSize += this->m_uCurBufEmpty;
+		size -= this->m_uCurBufEmpty;
 		this->NewBuf();
 	}
-	memcpy(this->curBufHead, pHead, size);
-	this->curBufOffset += size;
+	memcpy(this->m_pCurBufHead, pHead, size);
+	this->m_uCurBufOffset += size;
 	this->m_uSize += size;
-	this->curBufEmpty -= size;
+	this->m_uCurBufEmpty -= size;
 }
 
 bool PackMessage::PackLuaObj(lua_State *L) {
-	if(this->bigMsgQueue == nullptr){
+	if(this->m_pBigMsgQueue == nullptr){
 		return false;
 	}
 	GE::Int32 top = lua_gettop(L);
@@ -126,7 +133,7 @@ bool PackMessage::PackLuaObj(lua_State *L) {
 		return false;
 	}
 	GE::Uint32& size = this->PackIntRef();
-	this->curStackDeep = 0;
+	this->m_uCurStackDeep = 0;
 	GE::Int32 msg_type = (GE::Int32) lua_tointeger(L, -2);
 	this->PackMsgType(msg_type);
 	this->PackLuaHelp(L, -1);
@@ -136,7 +143,7 @@ bool PackMessage::PackLuaObj(lua_State *L) {
 }
 
 void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
-	this->curStackDeep++;		// 增加递归深度
+	this->m_uCurStackDeep++;		// 增加递归深度
 	GE::Int32 top = lua_gettop(L);
 	GE::Int32 lt = lua_type(L, index);
 	if(lt == LUA_TNIL){
@@ -183,27 +190,39 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 		std::cout << "not support lua object" << std::endl;
 	}
 	ASSERT_LUA_TOP(L, top, 0);
-	--(this->curStackDeep);
+	--(this->m_uCurStackDeep);
 }
 
 GE::Uint32 &PackMessage::PackIntRef() {
-	GE::Uint32*r = (GE::Uint32*)(this->curBufHead + this->curBufOffset);
+	GE::Uint32*r = (GE::Uint32*)(this->m_pCurBufHead + this->m_uCurBufOffset);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Uint32));
 	return *r;
 }
 
 void PackMessage::ClearCache() {
-	while(!this->bigMsgQueue->empty()){
-		bigMsgPool->push_back(this->bigMsgQueue->back());
-		this->bigMsgQueue->pop_back();
+	// 清理旧的，然后回池
+	while(!this->m_pBigMsgQueue->empty()){
+		m_pBigMsgPool->push_back(this->m_pBigMsgQueue->back());
+		this->m_pBigMsgQueue->pop();
 	}
-	this->curBufHead = nullptr;
-	this->curBufEmpty = 0;
+	// 拿个新的
+	this->NewBuf();
 }
 
+void PackMessage::Align() {
+	if(!this->m_uSize % MSG_BASE_SIZE){
+		return;
+	}
+	this->m_uSize += (MSG_BASE_SIZE - this->m_uSize % MSG_BASE_SIZE);
+}
+
+
 bool PackMessage::PackMsgType(GE::Int32 msgType) {
-	this->PackInt(msgType);
+	return this->PackInt(msgType);
+}
+
+bool PackMessage::PackMsg(MsgBase *pMsg) {
 	return false;
 }
 

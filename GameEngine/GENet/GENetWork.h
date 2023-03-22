@@ -8,6 +8,7 @@
 
 #include "Head.h"
 #include "GENetConnect.h"
+#include "GENetConnectMgr.h"
 
 // 网络层
 class GENetWork{
@@ -38,6 +39,9 @@ public:
 	bool isRun(){return m_bIsRun;}
 
 private:
+
+	GENetConnectMgr		m_ConnectMgr;
+	boost::mutex		m_ConnectMutex;				// 防止多线程同时修改Mgr
 
 	bool 				m_bIsRun;
 	bool				m_bIsStop;
