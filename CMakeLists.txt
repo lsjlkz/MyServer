@@ -6,7 +6,7 @@ add_compile_options(/wd4819)
 
 set(LINK_DIR ${PROJECT_SOURCE_DIR}/Third/CLib)
 set(INC_DIR ${PROJECT_SOURCE_DIR}/Third/Include)
-set(BOOST_INC_DIR D:/boost_1_73_0)
+set(BOOST_INC_DIR C:/boost_1_73_0)
 
 link_directories(${LINK_DIR})
 link_directories(GameEngine CommonBase)

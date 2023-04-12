@@ -30,15 +30,15 @@ public:
 
 	void			ForceShutdownIllegalConnect_us();			// 处理一下非法连接
 
-	GE::Uint32 		ConnectCnt(){return m_uConnectCnt;};
-	GE::Uint32 		FreeCnt(){return m_uMaxSize - m_uConnectCnt;};
+	GE::Uint32 		ConnectCnt(){return m_pHolder.size();};		// 连接的数量
+	GE::Uint32 		FreeCnt(){return m_UIDQueue.size();};		// 空余的数量
 
 private:
 	HolderMap 		m_pHolder;
 	ConnectPtr*		m_pConnectArr;
 	MutexPtr*		m_pConnectMutexArr;
 
-	UIDQueue		m_UIDQueue;
+	UIDQueue		m_UIDQueue;									// uid的队列
 
 	GE::Uint32		m_uMaxSize;
 	GE::Uint32 		m_uConnectCnt;

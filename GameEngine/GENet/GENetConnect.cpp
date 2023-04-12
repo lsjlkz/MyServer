@@ -32,13 +32,50 @@ void GENetConnect::WriteBytes(const void * pHead, GE::Int16 uSize) {
 
 void GENetConnect::AsyncSendBlock() {
 	// TODO 有消息要发送的话，就这里发送
+	if (this->IsShutdown()){
+		return;
+	}
+}
+
+void GENetConnect::AsyncRecvHead() {
+	// 尝试接受客户端的消息
+	if (this->IsShutdown()){
+		return;
+	}
+}
+
+void GENetConnect::AsyncRecvBody() {
+	// 尝试接受客户端的消息
+	if (this->IsShutdown()){
+		return;
+	}
+}
+
+void GENetConnect::HandleReadMsgHead() {
+	if (this->IsShutdown()){
+		return;
+	}
+
+}
+
+void GENetConnect::HandleReadMsgBody() {
+	// 尝试接受客户端的消息
+	if (this->IsShutdown()){
+		return;
+	}
+	m_RecvCache.Reset();
+	// TODO
+//	boost::asio::async_read(m_BoostSocket,
+//							boost::asio::buffer(m_RecvCache.HeadPtr(), sizeof(MsgBase))
+//							)
+
 }
 
 void GENetConnect::Start() {
 	this->m_uConnectSeconds = GEDateTime::Instance()->UnixTime();
 	std::cout << this->m_uSessionId << "连接成功:" << this->m_uConnectSeconds<< std::endl;
 	this->KeepAlive();
-	this->AsyncSendBlock();
+	this->AsyncRecvHead();
 }
 
 void GENetConnect::KeepAlive() {

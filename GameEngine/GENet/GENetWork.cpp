@@ -60,6 +60,7 @@ void GENetWork::BoostAsioRun(){
 }
 
 void GENetWork::AsyncAccept_NT(){
+	// 这里会new一个等待连接
 	if(NULL == this->m_pAcceptor){
 		return;
 	}
@@ -83,9 +84,11 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 			// 可以连接
 			GE::Uint32 uSessionID;
 			if(this->m_ConnectMgr.AddConnect(s_pConnect, uSessionID)){
-				s_pConnect->Shutdown(enNetConnect_ConnectFull);
 				s_pConnect->Start();
 			}else{
+				// 先关闭连接
+				s_pConnect->Shutdown(enNetConnect_ConnectFull);
+				// 然后再尝试清理
 				this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 			}
 		}else{

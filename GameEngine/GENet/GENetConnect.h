@@ -7,7 +7,7 @@
 #define MYSERVER_GENETCONNECT_H
 
 #include "GEProcess.h"
-#include "Head.h"
+#include "GENetSendBuf.h"
 
 class GENetWork;
 
@@ -39,10 +39,16 @@ public:
 	void 				SendBytes(const void* pHead, GE::Int16 uSize);
 	void 				WriteBytes(const void* pHead, GE::Int16 uSize);
 	void				AsyncSendBlock();						// 异步发送消息
+	void				AsyncRecvHead();						// 异步接受消息头
+	void				AsyncRecvBody();						// 异步接受消息体
+	void				HandleReadMsgHead();					// 接收消息头的句柄
+	void 				HandleReadMsgBody();					// 接收消息体的句柄
 	void				KeepAlive();							// 保持长连接
 
 	void				Start();
 	void 				Shutdown(NetConnectState state);
+
+	bool				IsShutdown(){return m_State != enNetConnect_Work;}// 是否关闭了连接
 
 	BoostSocket&		Socket();
 	void				SessionID(GE::Uint32 uId){this->m_uSessionId = uId;}
@@ -54,6 +60,12 @@ private:
 
 	GE::Uint32			m_uSessionId;
 	GE::Uint32			m_uConnectSeconds;						// 连接时间
+	NetConnectState		m_State;
+
+	GENetBuf			m_RecvCache;							// 当前的接收
+	GENetSendBuf		m_SendBuf;
+//	GENetRecvBuf		m_RecvBuf;
+
 };
 
 

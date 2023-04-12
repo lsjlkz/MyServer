@@ -46,7 +46,7 @@ bool GENetConnectMgr::HasConnect(GE::Uint32 uid) {
 
 bool GENetConnectMgr::AddConnect(GENetConnect::ConnectSharePtr &spConnect, GE::Uint32 &uid) {
 	// 添加一个连接
-	if(this->m_UIDQueue.empty()){
+	if(0 == this->FreeCnt()){
 		// 空了
 		return false;
 	}
