@@ -124,7 +124,7 @@ void PackMessage::PackByte(const void *pHead, GE::Int32 size) {
 }
 
 bool PackMessage::PackLuaObj(lua_State *L) {
-	if(this->m_pBigMsgQueue == nullptr){
+	if(GE_IS_POINT_NULL(this->m_pBigMsgQueue)){
 		return false;
 	}
 	GE::Int32 top = lua_gettop(L);
@@ -211,7 +211,7 @@ void PackMessage::ClearCache() {
 }
 
 void PackMessage::Align() {
-	if(!this->m_uSize % MSG_BASE_SIZE){
+	if(!(this->m_uSize % MSG_BASE_SIZE)){
 		return;
 	}
 	this->m_uSize += (MSG_BASE_SIZE - this->m_uSize % MSG_BASE_SIZE);

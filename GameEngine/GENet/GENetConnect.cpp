@@ -5,9 +5,16 @@
 #include "GENetConnect.h"
 #include "GENetWork.h"
 #include "GEDateTime.h"
+#include "GENetMessage.h"
 
 
-GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):m_pNetWork(pNetWork),m_BoostSocket(pNetWork->IOS()) {
+GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
+	m_pNetWork(pNetWork),
+	m_BoostSocket(pNetWork->IOS()),
+	m_RecvBuf(CP.uRecvBlockSize, CP.uRecvBlockNum),
+	m_SendBuf(CP.uSendBlockSize, CP.uSendBlockNum),
+	m_RecvCache(CP.uRecvBlockSize)
+{
 }
 
 GENetConnect::~GENetConnect() {

@@ -14,7 +14,7 @@ GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxC
 
 GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
 	// 监听端口
-    if(this->m_pAcceptor == nullptr){
+	if(GE_IS_POINT_NULL(this->m_pAcceptor)){
         try{
 #ifdef WIN
 			// 这里开启一个

@@ -1,22 +1,25 @@
-// 发送的头
-// Created by lsjlkz on 2023/3/20.
+// 接收缓冲区
+// Created by lsjlkz on 2023/4/13.
 //
-#ifndef MYSERVER_GENETSENDBUF_H
-#define MYSERVER_GENETSENDBUF_H
+
+#ifndef MYSERVER_GENETRECVBUF_H
+#define MYSERVER_GENETRECVBUF_H
 
 #include "GENetBuf.h"
+#include "GENetMessage.h"
 
-class GENetSendBuf {
+class GENetRecvBuf {
 
 public:
-	GENetSendBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum);
-	~GENetSendBuf(void);
+	GENetRecvBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum);
+	~GENetRecvBuf(void);
+
 
 public:
 	void				UsePool(GE::Uint16 uSize);							// 消息量很大的时候使用对象池
-	bool				WriteBytes(const void* pHead, GE::Uint16 uSize);	// 数据写入缓冲区
-	bool				HoldBlock(void** pHead, GE::Uint16& uSize);			// Hold住一块，然后可以发送
-	bool				ReleaseBlock();										// 上次Hold住的发送完毕，释放掉，返回是否还有数据
+	bool				WriteBytes(MsgBase* pMsg);							// 数据写入缓冲区
+	bool				ReadMsgFromReadBuf(MsgBase** pMsg);					// 从缓冲区中读东西到pMsg中
+	bool				MoveToNextReadBuf();								// 读下一个buf
 	bool				IsEmpty();
 	GE::Uint16 			GetNewCnt(){return m_uNewCnt;}
 	GE::Uint16 			GetDelCnt(){return m_uDelCnt;}
@@ -45,16 +48,13 @@ private:
 	// 使用指针可以更方便地管理缓冲块之间的关系，因为指针可以直接指向缓冲块的内存地址，而且指针的操作相对来说更加高效。
 	// 缓冲块队列则是用于管理一组正在被使用的缓冲块，因此需要支持插入和删除缓冲块，并且需要支持遍历和访问缓冲块。
 	// 使用对象可以更好地封装缓冲块的数据和操作，因为对象可以包含缓冲块的状态和行为，并且可以通过对象的方法来管理缓冲块的生命周期和状态。
-
 	tdBufVec*			m_pBufPool;
 	tdBufQueue*			m_pBufQueue;
 
-	bool 				m_bIsHoldBlock;					// 是否已经Hold住了一个缓冲区，Hold住代表要被发送了
 	GE::Uint16 			m_uBlockNum;					// 允许的最大的缓冲块的数量
 	GE::Uint16 			m_uNewCnt;
 	GE::Uint16 			m_uDelCnt;
-
 };
 
 
-#endif //MYSERVER_GENETSENDBUF_H
+#endif //MYSERVER_GENETRECVBUF_H

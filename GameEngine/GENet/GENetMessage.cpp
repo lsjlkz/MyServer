@@ -5,7 +5,7 @@
 #include "GENetMessage.h"
 
 void MsgBase::Align() {
-	if(!this->m_uSize % MSG_BASE_SIZE){
+	if(this->m_uSize % MSG_BASE_SIZE == 0){
 		return;
 	}
 	this->m_uSize += (MSG_BASE_SIZE - this->m_uSize % MSG_BASE_SIZE);

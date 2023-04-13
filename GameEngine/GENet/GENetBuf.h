@@ -5,7 +5,12 @@
 #ifndef MYSERVER_GENETBUF_H
 #define MYSERVER_GENETBUF_H
 
+#include "queue"
 #include "Head.h"
+class GENetBuf;
+
+typedef std::queue<GENetBuf*> tdBufQueue;
+typedef std::vector<GENetBuf*> tdBufVec;
 
 class GENetBuf {
 public:

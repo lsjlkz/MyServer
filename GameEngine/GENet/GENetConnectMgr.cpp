@@ -52,7 +52,7 @@ bool GENetConnectMgr::AddConnect(GENetConnect::ConnectSharePtr &spConnect, GE::U
 	}
 	uid = this->m_UIDQueue.front();
 	this->m_UIDQueue.pop();
-	GE_ASSERT(this->m_pConnectArr[uid] == nullptr);
+	GE_ASSERT(GE_IS_POINT_NULL(this->m_pConnectArr[uid]));
 	this->m_pHolder.insert(std::make_pair(uid, spConnect));
 	this->m_pConnectArr[uid] = spConnect.get();
 	spConnect->SessionID(uid);
@@ -61,7 +61,7 @@ bool GENetConnectMgr::AddConnect(GENetConnect::ConnectSharePtr &spConnect, GE::U
 
 bool GENetConnectMgr::DelConnect(GE::Uint32 uid) {
 	// 删除一个连接
-	GE_ASSERT(this->m_pConnectArr[uid] != nullptr);
+	GE_ASSERT(GE_IS_POINT_NOT_NULL(this->m_pConnectArr[uid]));
 	this->m_pConnectMutexArr[uid]->lock();
 	this->m_pConnectArr[uid]->Shutdown(enNetConnect_LocalClose);
 	this->m_pConnectArr[uid] = nullptr;

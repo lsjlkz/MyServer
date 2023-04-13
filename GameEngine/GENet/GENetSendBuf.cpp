@@ -11,32 +11,36 @@ GENetSendBuf::GENetSendBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum) :
 	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
 	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
 	this->m_pBufPool = nullptr;
+	this->m_pBufQueue = new tdBufQueue();
 }
 
 GENetSendBuf::~GENetSendBuf(void) {
-	GE_SAFE_DELETE_POINT(this->m_pReadBuf);
-	GE_SAFE_DELETE_POINT(this->m_pWriteBuf);
-	if (this->m_pBufPool != nullptr) {
+	if(GE_IS_POINT_NOT_NULL(this->m_pBufPool)){
 		while (!this->m_pBufPool->empty()) {
 			delete this->m_pBufPool->back();
 			this->m_pBufPool->pop_back();
 		}
 	}
-	while (!this->m_pBufQueue.empty()) {
-		delete this->m_pBufQueue.front();
-		this->m_pBufQueue.pop();
+	if(GE_IS_POINT_NOT_NULL(this->m_pBufQueue)){
+		while (!this->m_pBufQueue->empty()) {
+			delete this->m_pBufQueue->front();
+			this->m_pBufQueue->pop();
+		}
 	}
+	GE_SAFE_DELETE_POINT(this->m_pReadBuf);
+	GE_SAFE_DELETE_POINT(this->m_pWriteBuf);
+	GE_SAFE_DELETE_POINT(this->m_pBufPool)
 }
 
 GE::Uint16 GENetSendBuf::GetPoolCnt() {
-	if (this->m_pBufPool == nullptr) {
+	if(GE_IS_POINT_NULL(this->m_pBufPool)){
 		return 0;
 	}
 	return static_cast<GE::Uint16>(this->m_pBufPool->size());
 }
 
 bool GENetSendBuf::IsEmpty() {
-	if (!this->m_pBufQueue.empty()) {
+	if (!this->m_pBufQueue->empty()) {
 		return false;
 	}
 	if (!this->m_pReadBuf->CanReadSize()) {
@@ -50,7 +54,7 @@ bool GENetSendBuf::IsEmpty() {
 
 GENetBuf *GENetSendBuf::NewNetBuf(GE::Uint16 uSize) {
 	++this->m_uNewCnt;
-	if (this->m_pBufPool == nullptr) {
+	if(GE_IS_POINT_NULL(this->m_pBufPool)){
 		return new GENetBuf(uSize);
 	}
 	if (this->m_pBufPool->empty()) {
@@ -63,7 +67,7 @@ GENetBuf *GENetSendBuf::NewNetBuf(GE::Uint16 uSize) {
 }
 
 void GENetSendBuf::DelNetBuf(GENetBuf *pBuff) {
-	if (this->m_pBufPool == nullptr) {
+	if(GE_IS_POINT_NULL(this->m_pBufPool)){
 		// 池是空指针，那就不回池了
 		GE_SAFE_DELETE_POINT(pBuff)
 		return;
@@ -81,7 +85,7 @@ void GENetSendBuf::UsePool(GE::Uint16 uSize) {
 	if (uSize == 0) {
 		return;
 	}
-	if (this->m_pBufPool != nullptr) {
+	if(GE_IS_POINT_NOT_NULL(this->m_pBufPool)){
 		std::cout << "use pool repeat" << std::endl;
 		return;
 	}
@@ -90,28 +94,9 @@ void GENetSendBuf::UsePool(GE::Uint16 uSize) {
 }
 
 bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
-//	if (this->m_pWriteBuf->CanWriteSize() < uSize) {
-//		// 不够长度了
-//		GE::Uint16 canWriteSize = this->m_pWriteBuf->CanWriteSize();
-//		// 写入部分
-//		this->m_pWriteBuf->WriteBytes_us(pHead, canWriteSize);
-//		// 剩下的
-//		uSize -= canWriteSize;
-//		// 插入到队列中
-//		this->m_pBufQueue.emplace(this->m_pWriteBuf);
-//		// 拿到一个新的
-//		this->m_pWriteBuf = this->NewNetBuf(this->m_pWriteBuf->MaxSize());
-//		// 继续写入剩下的
-//		pHead = (const char *) pHead + canWriteSize;
-//		// 再次递归写入
-//		return this->WriteBytes(pHead, uSize);
-//	} else {
-//		// 够长度
-//		this->m_pWriteBuf->WriteBytes_us(pHead, uSize);
-//		this->m_pWriteBuf->MoveReadFence_us(uSize);
-//		return true;
-//	}
-	// 递归改成循环
+	// 这个是写入到缓冲区内
+	// GENetConnect会Hold住一块缓冲区，然后直接发送出去
+	// 这样子就可以实现缓冲区写入和发送的逻辑分离，可以多线程操作
 	while(this->m_pWriteBuf->CanWriteSize() < uSize){
 		// 不够长度了
 		GE::Uint16 canWriteSize = this->m_pWriteBuf->CanWriteSize();
@@ -120,7 +105,7 @@ bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
 		// 剩下的
 		uSize -= canWriteSize;
 		// 插入到队列中
-		this->m_pBufQueue.emplace(this->m_pWriteBuf);
+		this->m_pBufQueue->emplace(this->m_pWriteBuf);
 		// 拿到一个新的
 		this->m_pWriteBuf = this->NewNetBuf(this->m_pWriteBuf->MaxSize());
 		// 继续写入剩下的
@@ -138,12 +123,12 @@ bool GENetSendBuf::HoldBlock(void **pHead, GE::Uint16 &uSize) {
 	if (this->m_bIsHoldBlock) {
 		return false;
 	}
-	if (!this->m_pBufQueue.empty()) {
+	if (!this->m_pBufQueue->empty()) {
 		// 队列不为空，继续读队列
 		// 先把当前的读buf回池
 		this->DelNetBuf(this->m_pReadBuf);
-		this->m_pReadBuf = this->m_pBufQueue.front();
-		this->m_pBufQueue.pop();
+		this->m_pReadBuf = this->m_pBufQueue->front();
+		this->m_pBufQueue->pop();
 	} else {
 		// 队列为空，读写的buf
 		if (!this->m_pWriteBuf->CanReadSize()) {
@@ -163,7 +148,7 @@ bool GENetSendBuf::ReleaseBlock() {
 	this->m_pWriteBuf->Reset();
 
 	// 还有队列，那就不能release
-	if (!this->m_pBufQueue.empty()) {
+	if (!this->m_pBufQueue->empty()) {
 		return false;
 	}
 	// 还有待发送的数据，那也不能release

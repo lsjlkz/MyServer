@@ -2,11 +2,11 @@ cmake_minimum_required(VERSION 3.20)
 project(MyServer)
 
 set(CMAKE_CXX_STANDARD 11)
-add_compile_options(/wd4819)
-
 set(LINK_DIR ${PROJECT_SOURCE_DIR}/Third/CLib)
 set(INC_DIR ${PROJECT_SOURCE_DIR}/Third/Include)
 set(BOOST_INC_DIR C:/boost_1_73_0)
+set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
+#set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
 
 link_directories(${LINK_DIR})
 link_directories(GameEngine CommonBase)
@@ -15,14 +15,16 @@ include_directories(${INC_DIR})
 include_directories(${BOOST_INC_DIR})
 include_directories(GameEngine CommonBase)
 
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
-#set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+add_compile_definitions(WIN)            # 宏定义WIN
 
-add_compile_definitions(WIN)
+add_compile_options(/wd4819)            # 关闭编译器对于代码中“非ANSI字符”的警告
+add_compile_options(-O2)                # 编译优化
+
+add_definitions(-D_WIN32_WINNT=0x0601)  # 最低操作系统
+add_definitions(-DJTHREADS=4)           # 多线程编译
+
 
 add_executable(MyServer main.cpp
-        CommonBase/Vector2.cpp
-        CommonBase/Vector2.h
         GameEngine/GESingleton.h
         GameEngine/LuaEngine.cpp
         GameEngine/LuaEngine.h
@@ -54,6 +56,5 @@ add_executable(MyServer main.cpp
         GameEngine/GENet/GENetSendBuf.cpp
         GameEngine/GENet/GENetSendBuf.h
         GameEngine/GENet/GENetBuf.cpp
-        GameEngine/GENet/GENetBuf.h GameEngine/GENet/GENetMessage.cpp GameEngine/GENet/GENetMessage.h)
+        GameEngine/GENet/GENetBuf.h GameEngine/GENet/GENetMessage.cpp GameEngine/GENet/GENetMessage.h GameEngine/GENet/GENetRecvBuf.cpp GameEngine/GENet/GENetRecvBuf.h)
 
-option(WIN "WIN" ON)

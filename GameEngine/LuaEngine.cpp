@@ -6,7 +6,7 @@
 #include "LuaEngine.h"
 
 bool LuaEngine::Del() {
-	if(L == nullptr){
+	if(GE_IS_POINT_NULL(L)){
 		std::cout << "close lua_state repeat" << std::endl;
 		return false;
 	}
@@ -16,7 +16,7 @@ bool LuaEngine::Del() {
 }
 
 bool LuaEngine::Init() {
-	if(L != nullptr){
+	if(GE_IS_POINT_NOT_NULL(L)){
 		std::cout << "new lua_state repeat" << std::endl;
 		return false;
 	}
@@ -27,7 +27,7 @@ bool LuaEngine::Init() {
 }
 
 GE::Int32 LuaEngine::executeString(const char *codes) {
-	if(L == nullptr){
+	if(GE_IS_POINT_NULL(L)){
 		std::cout << "lua engine not init" << std::endl;
 		return 0;
 	}

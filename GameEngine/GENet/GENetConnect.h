@@ -8,6 +8,7 @@
 
 #include "GEProcess.h"
 #include "GENetSendBuf.h"
+#include "GENetRecvBuf.h"
 
 class GENetWork;
 
@@ -64,7 +65,7 @@ private:
 
 	GENetBuf			m_RecvCache;							// 当前的接收
 	GENetSendBuf		m_SendBuf;
-//	GENetRecvBuf		m_RecvBuf;
+	GENetRecvBuf		m_RecvBuf;
 
 };
 
