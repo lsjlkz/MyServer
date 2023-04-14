@@ -13,7 +13,7 @@ GEDateTime::GEDateTime() {
 void GEDateTime::CacheDateTime() {
 	time_t _tt = static_cast<time_t>(this->tm_unixTime);
 	tm* _tm = localtime(&_tt);
-	this->tm_year = _tm->tm_year;
+	this->tm_year = _tm->tm_year + 1900;
 	this->tm_month = _tm->tm_mon + 1;
 	this->tm_day = _tm->tm_mday;
 	this->tm_hour = _tm->tm_hour;
@@ -59,4 +59,12 @@ GE::Int64 GEDateTime::Second() {
 
 GE::Int64 GEDateTime::UnixTime() {
 	return this->tm_unixTime;
+}
+
+const std::string GEDateTime::GetDateTimeString() {
+	std::stringstream ss;
+	ss << GEDateTime::Instance()->Year() << "-" << GEDateTime::Instance()->Month() << "-" <<
+		  GEDateTime::Instance()->Day() << " " << GEDateTime::Instance()->Hour() << ":" <<
+		  GEDateTime::Instance()->Minute() << ":" << GEDateTime::Instance()->Second();
+	return ss.str();
 }

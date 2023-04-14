@@ -10,6 +10,7 @@ __G__GSInitTable = __G__GSInitTable or {}
 
 package.path = package.path .. ";../LuaCode/?.lua;"
 local cDefineTable = require("Common/CDefine")
+require("Server/ServerPrint")
 
 function __G__GSInitTable.world()
     --初始化游戏世界

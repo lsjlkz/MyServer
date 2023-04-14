@@ -23,6 +23,7 @@ public:
 	GE::Int32 Minute();
 	GE::Int64 Second();
 	GE::Int64 UnixTime();
+	const std::string GetDateTimeString();
 
 private:
 	GE::Int32 tm_year;

@@ -43,6 +43,13 @@ GE::Int32 LuaGameServer::SetFSCoutName(lua_State* L){
 	GELog::Instance()->SetLogName(s);
 	return 1;
 }
+GE::Int32 LuaGameServer::LuaPrint(lua_State* L){
+	luaL_checktype(L, -1, LUA_TSTRING);
+	size_t size = 0;
+	const char* s = lua_tolstring(L, -1, &size);
+	GELog::Instance()->Log(s);
+	return 1;
+}
 
 GE::Int32 LuaGameServer::GetGameServerID(lua_State* L) {
 	lua_settop(L, 0);

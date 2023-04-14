@@ -6,10 +6,6 @@
 
 __G__PrintTable = __G__PrintTable or {}
 
-function __G__PrintTable.printC(param)
-    print(param)
-end
-
 
 -- 用于友好的打印lua对象
 function __G__PrintTable.pprint ( t )

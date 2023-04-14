@@ -25,8 +25,8 @@ local function load_gateway_module()
 end
 
 function __G__GateWayTable.Init()
-    cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 2101)
     cGameServer.SetFSCoutName("GateWay")
+    cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 2101)
     load_gateway_module()
 end
 
