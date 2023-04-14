@@ -5,8 +5,9 @@
 #ifndef MYSERVER_GENETRECVBUF_H
 #define MYSERVER_GENETRECVBUF_H
 
-#include "GENetBuf.h"
+
 #include "GENetMessage.h"
+#include "GENetBuf.h"
 
 class GENetRecvBuf {
 

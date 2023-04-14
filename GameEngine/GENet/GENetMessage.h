@@ -5,7 +5,7 @@
 #ifndef MYSERVER_GENETMESSAGE_H
 #define MYSERVER_GENETMESSAGE_H
 
-#include "Head.h"
+#include "GEDefine.h"
 
 // 网络消息最大长度
 #define MSG_MAX_SIZE	MAX_UINT16

@@ -3,6 +3,7 @@
 //
 
 #include "GENetPack.h"
+#include "GELog.h"
 
 
 PackMessage::PackMessage() {

@@ -5,22 +5,21 @@
 #ifndef MYSERVER_GELOG_H
 #define MYSERVER_GELOG_H
 
-#include <boost/thread/mutex.hpp>
+#include "boost/filesystem.hpp"
+#include "boost/thread/mutex.hpp"
+
 #include "GEDefine.h"
 #include "GESingleton.h"
-#include "fstream"
-#include "iostream"
-#include "boost/filesystem.hpp"
+
+
 namespace FS = boost::filesystem;
 
 
 class GELog: public GESingleton<GELog>{
 public:
-	typedef boost::mutex			Mutex;
 	typedef std::stringstream 		sstream;
 
-
-
+public:
 	GELog();
 
 	void SetLogName(const char* name);
@@ -41,7 +40,7 @@ public:
 	void WriteStream(std::string s);
 
 private:
-	Mutex CoutMutex;
+	boost::mutex CoutMutex;
 
 	FS::ofstream os;
 };

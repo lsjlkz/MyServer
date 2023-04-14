@@ -7,8 +7,6 @@
 
 #include "LuaEngine.h"
 #include "GameServer.h"
-#include "GENet/GENetPack.h"
-#include "GEProcess.h"
 
 static void RegLuaModule();
 

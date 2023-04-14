@@ -6,7 +6,9 @@
 #ifndef MYSERVER_GENETWORK_H
 #define MYSERVER_GENETWORK_H
 
-#include "Head.h"
+#include <boost/asio/ip/tcp.hpp>
+#include <boost/asio/io_service.hpp>
+#include <boost/thread.hpp>
 #include "GENetConnect.h"
 #include "GENetConnectMgr.h"
 

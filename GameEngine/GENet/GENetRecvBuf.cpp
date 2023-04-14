@@ -3,6 +3,7 @@
 //
 
 #include "GENetRecvBuf.h"
+#include "GELog.h"
 
 GENetRecvBuf::GENetRecvBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum) :
 		m_uBlockNum(uBlockNum),

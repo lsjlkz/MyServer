@@ -2,6 +2,7 @@
 // Created by lsjlkz on 2022/7/22.
 //
 
+#include <ctime>
 #include "GESystemTime.h"
 
 GE::Uint64 GESystemTime::GetSystemMSeconds() {

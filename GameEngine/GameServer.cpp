@@ -3,6 +3,7 @@
 //
 
 #include "GameServer.h"
+#include "GEDateTime.h"
 
 GE::Int32 GameServer::CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port) {
 	this->m_pNetWork = new GENetWork(MaxConnect, Thread);

@@ -6,7 +6,7 @@
 #define MYSERVER_GEDEFINE_H
 
 #include "boost/static_assert.hpp"
-
+#include <cstdlib>
 
 #define GE_STATIC_ASSERT BOOST_STATIC_ASSERT
 

@@ -2,7 +2,11 @@
 // Created by lsjlkz on 2022/6/2.
 //
 
+#include <boost/asio/placeholders.hpp>
+#include <boost/asio/write.hpp>
 #include "GENetWork.h"
+#include "GELog.h"
+#include "GEProcess.h"
 
 GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxConnect) {
 	// TODO 网络层研究一下

@@ -6,6 +6,9 @@
 #define MYSERVER_GENETCONNECTMGR_H
 
 #include <queue>
+#include <boost/thread/mutex.hpp>
+#include "unordered_map"
+
 #include "GENetConnect.h"
 
 class GENetConnectMgr {

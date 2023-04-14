@@ -6,6 +6,7 @@
 #include "GENetWork.h"
 #include "GEDateTime.h"
 #include "GENetMessage.h"
+#include "GELog.h"
 
 
 GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):

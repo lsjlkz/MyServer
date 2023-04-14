@@ -6,7 +6,8 @@
 #define MYSERVER_GENETBUF_H
 
 #include "queue"
-#include "Head.h"
+#include "GEDefine.h"
+
 class GENetBuf;
 
 typedef std::queue<GENetBuf*> tdBufQueue;

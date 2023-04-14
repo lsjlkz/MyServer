@@ -3,6 +3,7 @@
 //
 
 #include "GENetSendBuf.h"
+#include "GELog.h"
 
 GENetSendBuf::GENetSendBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum) :
 		m_uBlockNum(uBlockNum),

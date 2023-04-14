@@ -4,6 +4,7 @@
 
 #include "GELog.h"
 #include "GEDateTime.h"
+#include "iostream"
 
 GELog::GELog() {
 	// 设置输出控制台的编码
@@ -16,6 +17,9 @@ GELog::GELog() {
 void GELog::SetLogName(const char *name) {
 	std::string ss = "../Log/" + std::string(name) + ".log";
 	FS::path filePath(ss);
+	if(os.is_open()){
+		os.close();
+	}
 	os.open(filePath, std::ios::app);
 }
 
@@ -62,29 +66,23 @@ void GELog::Log(const char *msg, GE::Uint64 value) {
 void GELog::WriteStream(sstream &ss) {
 	if (os.is_open()) {
 		CoutMutex.lock();
-		// TODO 时间
 		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
 		CoutMutex.unlock();
-		os.close();
 	}
 }
 
 void GELog::WriteStream(const char * s) {
 	if (os.is_open()) {
 		CoutMutex.lock();
-		// TODO 时间
 		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
 		CoutMutex.unlock();
-		os.close();
 	}
 }
 
 void GELog::WriteStream(std::string s) {
 	if (os.is_open()) {
 		CoutMutex.lock();
-		// TODO 时间
 		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
 		CoutMutex.unlock();
-		os.close();
 	}
 }

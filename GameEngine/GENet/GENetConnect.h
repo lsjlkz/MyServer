@@ -6,7 +6,9 @@
 #ifndef MYSERVER_GENETCONNECT_H
 #define MYSERVER_GENETCONNECT_H
 
-#include "GEProcess.h"
+#include <boost/asio/ip/tcp.hpp>
+#include "boost/shared_ptr.hpp"
+#include <boost/enable_shared_from_this.hpp>
 #include "GENetSendBuf.h"
 #include "GENetRecvBuf.h"
 

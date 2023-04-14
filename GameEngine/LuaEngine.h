@@ -6,9 +6,13 @@
 #ifndef MYSERVER_LUAENGINE_H
 #define MYSERVER_LUAENGINE_H
 
-#include "Head.h"
-#include "GENet/GENetPack.h"
+
 #include <unordered_set>
+
+
+#include "GESingleton.h"
+#include "GEDefine.h"
+#include "LuaInclude.h"
 
 class LuaEngine:public GESingleton<LuaEngine>{
 private:

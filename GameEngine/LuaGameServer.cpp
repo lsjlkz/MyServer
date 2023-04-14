@@ -3,6 +3,10 @@
 //
 
 #include "LuaGameServer.h"
+#include "GEProcess.h"
+#include "GELog.h"
+#include "GENet/GENetPack.h"
+#include "GEDateTime.h"
 
 GE::Int32 LuaGameServer::CreateNetwork(lua_State* L) {
 	luaL_checktype(L, 1, LUA_TNUMBER);

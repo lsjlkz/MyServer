@@ -5,8 +5,9 @@
 #ifndef MYSERVER_GEDATETIME_H
 #define MYSERVER_GEDATETIME_H
 
-#include "GESystemTime.h"
-#include "Head.h"
+#include "GEDefine.h"
+#include "GESingleton.h"
+#include "string"
 
 class GEDateTime:public GESingleton<GEDateTime> {
 public:

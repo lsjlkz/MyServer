@@ -38,7 +38,6 @@ add_executable(MyServer main.cpp
         GameEngine/GENet/GENetPack.cpp
         GameEngine/GENet/GENetPack.h
         GameEngine/GEDefine.h
-        GameEngine/Head.h
         CommonBase/CommomHelp.cpp
         CommonBase/CommomHelp.h
         GameEngine/GEDateTime.cpp
@@ -56,5 +55,5 @@ add_executable(MyServer main.cpp
         GameEngine/GENet/GENetSendBuf.cpp
         GameEngine/GENet/GENetSendBuf.h
         GameEngine/GENet/GENetBuf.cpp
-        GameEngine/GENet/GENetBuf.h GameEngine/GENet/GENetMessage.cpp GameEngine/GENet/GENetMessage.h GameEngine/GENet/GENetRecvBuf.cpp GameEngine/GENet/GENetRecvBuf.h GameEngine/GELog.cpp GameEngine/GELog.h)
+        GameEngine/GENet/GENetBuf.h GameEngine/GENet/GENetMessage.cpp GameEngine/GENet/GENetMessage.h GameEngine/GENet/GENetRecvBuf.cpp GameEngine/GENet/GENetRecvBuf.h GameEngine/GELog.cpp GameEngine/GELog.h GameEngine/LuaInclude.h)
 

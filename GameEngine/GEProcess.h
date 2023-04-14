@@ -6,7 +6,6 @@
 #ifndef MYSERVER_GEPROCESS_H
 #define MYSERVER_GEPROCESS_H
 
-#include "Head.h"
 #include "GESingleton.h"
 #include "GEDefine.h"
 

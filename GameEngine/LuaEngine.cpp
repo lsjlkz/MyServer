@@ -4,6 +4,7 @@
 
 
 #include "LuaEngine.h"
+#include "GELog.h"
 
 bool LuaEngine::Del() {
 	if(GE_IS_POINT_NULL(MainL)){

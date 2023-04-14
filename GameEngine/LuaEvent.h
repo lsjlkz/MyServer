@@ -5,7 +5,7 @@
 #ifndef MYSERVER_LUAEVENT_H
 #define MYSERVER_LUAEVENT_H
 
-#include "LuaEngine.h"
+#include "GEDefine.h"
 #include "GESingleton.h"
 
 class LuaEvent: public GESingleton<LuaEvent>{

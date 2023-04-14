@@ -6,10 +6,6 @@
 #ifndef MYSERVER_GESINGLETON_H
 #define MYSERVER_GESINGLETON_H
 
-#include <vector>
-#include <unordered_map>
-#include <map>
-
 
 template<typename T>
 class GESingleton {

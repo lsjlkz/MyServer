@@ -3,6 +3,8 @@
 //
 
 #include "LuaEvent.h"
+#include "GELog.h"
+#include "LuaEngine.h"
 
 GE::Int32 LuaEvent::CCallLuaPerSecond() {
 	lua_State *L = LuaEngine::Instance()->GetMainLuaState();
