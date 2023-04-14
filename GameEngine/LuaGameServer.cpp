@@ -36,6 +36,13 @@ GE::Int32 LuaGameServer::SetConnectParam(lua_State *L) {
 	return 1;
 }
 
+GE::Int32 LuaGameServer::SetFSCoutName(lua_State* L){
+	luaL_checktype(L, -1, LUA_TSTRING);
+	size_t size = 0;
+	const char* s = lua_tolstring(L, -1, &size);
+	GELog::Instance()->SetLogName(s);
+	return 1;
+}
 
 GE::Int32 LuaGameServer::GetGameServerID(lua_State* L) {
 	lua_settop(L, 0);
@@ -60,7 +67,7 @@ GE::Int32 LuaGameServer::GetGameServerID(lua_State* L) {
 //	lua_pushstring(L, p);
 //	ret = lua_pcall(L, 2, 0, 0);
 //	if(ret){
-//		std::cout << "lua call err" << std::endl;
+//		GELog::Instance()->Log("lua call err");
 //	}
 //	return 0;
 //}
@@ -78,7 +85,7 @@ GE::Int32 LuaGameServer::DebugReceiveMsg(lua_State* L) {
 }
 
 GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
-	lua_State* L = LuaEngine::Instance()->GetLuaState();
+	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/GSMessage.lua");
 	if(ret){
 		return ret;
@@ -98,7 +105,7 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	um.UnpackLuaObj(L);
 	ret = lua_pcall(L, 2, 0, 0);
 	if(ret){
-		std::cout << "lua call err" << lua_tostring(L, -1)  << std::endl;
+		GELog::Instance()->Log("ReceiveMsg lua call err");
 		return ret;
 	}
 	return 0;
@@ -106,7 +113,7 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 
 GE::Int32 LuaGameServer::Init() {
 	RegLuaModule();
-	lua_State* L = LuaEngine::Instance()->GetLuaState();
+	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	// luaserver初始化
 	GE::Int32 ret = LuaEngine::Instance()->DoFile("../LuaCode/Server/GSInit.lua");
 	if(ret){
@@ -120,7 +127,7 @@ GE::Int32 LuaGameServer::Init() {
 	lua_gettable(L, -2);
 	ret = lua_pcall(L, 0, 0, 0);
 	if(ret){
-		std::cout << "lua call err:" << lua_tostring(L, -1) << std::endl;
+		GELog::Instance()->Log("Init lua call err");
 		return ret;
 	}
 	return 0;

@@ -27,6 +27,7 @@ end
 
 function __G__WorldTable.Init()
     cGameServer.CreateNetwork(100, cDefineTable.WorldID, 10000)
+    cGameServer.SetFSCoutName("World")
     load_world_module()
 end
 

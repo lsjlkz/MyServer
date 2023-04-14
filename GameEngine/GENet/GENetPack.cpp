@@ -129,7 +129,7 @@ bool PackMessage::PackLuaObj(lua_State *L) {
 	}
 	GE::Int32 top = lua_gettop(L);
 	if(top <= 0){
-		std::cout << "lua object empty" << std::endl;
+		GELog::Instance()->Log("lua object empty");
 		return false;
 	}
 	GE::Uint32& size = this->PackIntRef();
@@ -187,7 +187,7 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 		tableSize = size;
 	}else{
 
-		std::cout << "not support lua object" << std::endl;
+		GELog::Instance()->Log("not support lua object");
 	}
 	ASSERT_LUA_TOP(L, top, 0);
 	--(this->m_uCurStackDeep);

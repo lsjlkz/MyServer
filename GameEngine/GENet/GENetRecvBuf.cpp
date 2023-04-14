@@ -88,7 +88,7 @@ void GENetRecvBuf::UsePool(GE::Uint16 uSize) {
 		return;
 	}
 	if(GE_IS_POINT_NOT_NULL(this->m_pBufPool)){
-		std::cout << "use pool repeat" << std::endl;
+		GELog::Instance()->Log("use pool repeat");
 		return;
 	}
 	this->m_pBufPool = new tdBufVec();
@@ -101,7 +101,11 @@ bool GENetRecvBuf::WriteBytes(MsgBase* pMsg) {
 	// 写进缓冲区之后呢
 	// GENetWork会循环调用MoveNextMsg，获取到当前缓冲区中的消息（如果有的话）
 	// 这样子就实现了缓冲区写入和读取的分离，可以多线程处理
-
+	if(this->m_pWriteBuf->MaxSize() < pMsg->Size()){
+		// 太大了
+		GELog::Instance()->Log("recv buf write to long");
+		return false;
+	}
 
 	return false;
 }

@@ -21,6 +21,7 @@ public:
 	static GE::Int32 GetGameServerID(lua_State* L);
 	static GE::Int32 CreateNetwork(lua_State* L);
 	static GE::Int32 SetConnectParam(lua_State* L);
+	static GE::Int32 SetFSCoutName(lua_State* L);
 //	static GE::Int32 CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
 	static GE::Int32 PackMsg(lua_State* L);
 	static GE::Int32 ReceiveMsg(char* bufHead);
@@ -39,6 +40,7 @@ public:
 
 static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"CreateNetwork", LuaGameServer::CreateNetwork},
+		{"SetFSCoutName", LuaGameServer::SetFSCoutName},
 		{"GetGameServerID", LuaGameServer::GetGameServerID},
 		{"PackMsg", LuaGameServer::PackMsg},
 		{"DebugReceiveMsg", LuaGameServer::DebugReceiveMsg},
@@ -65,7 +67,7 @@ static luaL_Reg lua_reg_libs[] = {
 };
 
 static void RegLuaModule(){
-	lua_State* L = LuaEngine::Instance()->GetLuaState();
+	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	const luaL_Reg* lua_reg = lua_reg_libs;
 	// 注册lua库
 	for(;lua_reg->func; ++lua_reg){

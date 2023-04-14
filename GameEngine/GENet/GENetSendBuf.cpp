@@ -86,7 +86,7 @@ void GENetSendBuf::UsePool(GE::Uint16 uSize) {
 		return;
 	}
 	if(GE_IS_POINT_NOT_NULL(this->m_pBufPool)){
-		std::cout << "use pool repeat" << std::endl;
+		GELog::Instance()->Log("use pool repeat");
 		return;
 	}
 	this->m_pBufPool = new tdBufVec();

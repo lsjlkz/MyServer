@@ -80,7 +80,7 @@ void GENetConnect::HandleReadMsgBody() {
 
 void GENetConnect::Start() {
 	this->m_uConnectSeconds = GEDateTime::Instance()->UnixTime();
-	std::cout << this->m_uSessionId << "连接成功:" << this->m_uConnectSeconds<< std::endl;
+	GELog::Instance()->Log("连接成功", this->m_uSessionId);
 	this->KeepAlive();
 	this->AsyncRecvHead();
 }

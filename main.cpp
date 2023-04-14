@@ -1,4 +1,3 @@
-#include <iostream>
 
 #include "Head.h"
 #include "LuaGameServer.h"

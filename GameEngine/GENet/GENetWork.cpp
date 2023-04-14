@@ -9,7 +9,6 @@ GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxC
 	for(GE::Int32 i = 0; i < Thread; ++i){
 		this->m_pNetWorkThreads.push_back(NULL);
 	}
-	std::cout << "GENetWork" << uMaxConnect << ";" << Thread << std::endl;
 }
 
 GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
@@ -28,8 +27,8 @@ GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
         }
 		catch (std::exception &e)
 		{
-			std::cout << e.what() << std::endl;
-			std::cout << "listen port error " << uListenPort << std::endl;
+			GELog::Instance()->Log(e.what());
+			GELog::Instance()->Log("listen port error", uListenPort);
 			return 0;
 		}
 		return 1;
@@ -55,7 +54,7 @@ GENetWork::tdBoostIOServer& GENetWork::IOS() {
 }
 
 void GENetWork::BoostAsioRun(){
-	std::cout << "BoostAsioRun" << std::endl;
+	GELog::Instance()->Log("BoostAsioRun");
 	this->m_ioServer.run();
 }
 
@@ -71,7 +70,7 @@ void GENetWork::AsyncAccept_NT(){
 
 void write_handle(const boost::system::error_code &ec, std::size_t bytes_transferred)
 {
-	std::cout << "write_handle" << std::endl;
+	GELog::Instance()->Log("write_handle");
 }
 
 void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const boost::system::error_code &error) {
@@ -97,8 +96,8 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 			this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 		}
 	}
+	GELog::Instance()->Log("HandleAccept_NT");
 	// TODO 删掉这个响应
-	std::cout << "HandleAccept_NT" << std::endl;
 	std::string data = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
 	boost::asio::async_write(s_pConnect->Socket(), boost::asio::buffer(data), write_handle);
 	this->m_ConnectMutex.unlock();
