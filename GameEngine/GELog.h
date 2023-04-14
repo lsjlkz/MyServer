@@ -37,6 +37,8 @@ public:
 	void Log(const char *msg, GE::Uint64 value);
 
 	void WriteStream(sstream &ss);
+	void WriteStream(const char* s);
+	void WriteStream(std::string s);
 
 private:
 	Mutex CoutMutex;

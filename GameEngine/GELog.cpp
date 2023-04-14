@@ -21,44 +21,42 @@ void GELog::SetLogName(const char *name) {
 
 void GELog::Log(const char *msg) {
 	// TODO
-	sstream s;
-	s << msg;
-	WriteStream(s);
+	WriteStream(msg);
 }
 
 void GELog::Log(const char *msg, const char *msg2) {
 	// TODO
 	sstream s;
 	s << msg << "\t" << msg2;
-	WriteStream(s);
+	WriteStream(s.str());
 }
 
 void GELog::Log(const char *msg, GE::Int32 value) {
 	// TODO
 	sstream s;
 	s << msg << "\t" << value;
-	WriteStream(s);
+	WriteStream(s.str());
 }
 
 void GELog::Log(const char *msg, GE::Uint32 value) {
 	// TODO
 	sstream s;
 	s << msg << "\t" << value;
-	WriteStream(s);
+	WriteStream(s.str());
 }
 
 void GELog::Log(const char *msg, GE::Int64 value) {
 	// TODO
 	sstream s;
 	s << msg << "\t" << value;
-	WriteStream(s);
+	WriteStream(s.str());
 }
 
 void GELog::Log(const char *msg, GE::Uint64 value) {
 	// TODO
 	sstream s;
 	s << msg << "\t" << value;
-	WriteStream(s);
+	WriteStream(s.str());
 }
 
 void GELog::WriteStream(sstream &ss) {
@@ -66,6 +64,26 @@ void GELog::WriteStream(sstream &ss) {
 		CoutMutex.lock();
 		// TODO 时间
 		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
+		CoutMutex.unlock();
+		os.close();
+	}
+}
+
+void GELog::WriteStream(const char * s) {
+	if (os.is_open()) {
+		CoutMutex.lock();
+		// TODO 时间
+		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
+		CoutMutex.unlock();
+		os.close();
+	}
+}
+
+void GELog::WriteStream(std::string s) {
+	if (os.is_open()) {
+		CoutMutex.lock();
+		// TODO 时间
+		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
 		CoutMutex.unlock();
 		os.close();
 	}
