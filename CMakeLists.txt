@@ -18,7 +18,7 @@ include_directories(GameEngine CommonBase)
 add_compile_definitions(WIN)            # 宏定义WIN
 
 add_compile_options(/wd4819)            # 关闭编译器对于代码中“非ANSI字符”的警告
-add_compile_options(-O2)                # 编译优化
+#add_compile_options(-O2)                # release编译优化
 
 add_definitions(-D_WIN32_WINNT=0x0601)  # 最低操作系统
 add_definitions(-DJTHREADS=4)           # 多线程编译

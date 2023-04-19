@@ -5,6 +5,17 @@
 #include "GameServer.h"
 #include "GEDateTime.h"
 
+
+GameServer::GameServer():m_pNetWork(nullptr),
+						 GameServerID(0),
+						 lastUpdateSecond(0),
+						 lastUpdateMinute(0),
+						 lastUpdateHour(0),
+						 lastUpdateDay(0)
+{
+
+}
+
 GE::Int32 GameServer::CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port) {
 	this->m_pNetWork = new GENetWork(MaxConnect, Thread);
 	this->m_pNetWork->Listen_MT(Port);
@@ -17,8 +28,8 @@ void GameServer::SetGameServerID(GE::Int32 id) {
 
 GE::Int32 GameServer::Init(char* argv[]) {
 	GE::Int32 id;
-	sscanf_s(argv[1], "%d", &id);
-	SetGameServerID(id);
+	//sscanf_s(argv[1], "%d", &id);
+	SetGameServerID(2);
 	return 0;
 }
 

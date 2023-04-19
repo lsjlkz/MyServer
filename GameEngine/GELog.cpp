@@ -9,7 +9,8 @@
 
 #define FOUT(fos, s) fos<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
 
-GELog::GELog() {
+GELog::GELog():m_uLogDays(0)
+{
 	// 先创建一个Log文件夹
 	FS::create_directories("../Log/");
 }

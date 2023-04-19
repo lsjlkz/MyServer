@@ -8,10 +8,10 @@
 GENetSendBuf::GENetSendBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum) :
 		m_uBlockNum(uBlockNum),
 		m_bIsHoldBlock(false),
-		m_uNewCnt(0) {
+		m_uNewCnt(0),
+		m_pBufPool(nullptr){
 	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
 	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
-	this->m_pBufPool = nullptr;
 	this->m_pBufQueue = new tdBufQueue();
 }
 

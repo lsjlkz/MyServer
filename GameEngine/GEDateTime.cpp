@@ -7,7 +7,7 @@
 #include "GEDateTime.h"
 #include "GESystemTime.h"
 
-GEDateTime::GEDateTime() {
+GEDateTime::GEDateTime():tm_unixTime(0) {
 	// 初始化默认时间
 	tzset();
 	this->UpdateDateTime();

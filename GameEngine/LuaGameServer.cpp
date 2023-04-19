@@ -122,8 +122,14 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	return 0;
 }
 
+#include "iostream"
 GE::Int32 LuaGameServer::Init() {
 	RegLuaModule();
+	LuaGameServer::DoInitGSInit();
+	return 1;
+}
+
+GE::Int32 LuaGameServer::DoInitGSInit() {
 	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	// luaserver初始化
 	GE::Int32 ret = LuaEngine::Instance()->DoFile("../LuaCode/Server/GSInit.lua");
@@ -201,6 +207,7 @@ GE::Int32 LuaGameServer::LuaObjToString(lua_State *L) {
 	PackMessage::Instance()->ClearCache();
 	return PackMessage::Instance()->PackLuaObj(L);
 }
+
 LUA_API GE::Int32 luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");
 	lua_pushvalue(L, -1);

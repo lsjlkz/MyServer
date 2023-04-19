@@ -15,17 +15,10 @@
 #include "LuaInclude.h"
 
 class LuaEngine:public GESingleton<LuaEngine>{
-private:
-	// lua_State是主线程、栈、和数据结构
-	// 用于函数调用与和c通信
-	lua_State *MainL;
-	// 全局状态机，管理全局数据
-	// static global_State *G;
-	std::unordered_set<std::string> HasLoadFile;
 public:
-	lua_State* GetMainLuaState(){
-		return MainL;
-	}
+	LuaEngine();
+
+	lua_State* GetMainLuaState(){ return m_pMainLuaState;}
 	bool Init();
 	bool Del();
 
@@ -35,6 +28,15 @@ public:
 
 	// 执行一段lua code
 	GE::Int32 executeString(const char* codes);
+
+
+private:
+	// lua_State是主线程、栈、和数据结构
+	// 用于函数调用与和c通信
+	lua_State *m_pMainLuaState;
+	// 全局状态机，管理全局数据
+	// static global_State *G;
+	std::unordered_set<std::string> HasLoadFile;
 
 };
 

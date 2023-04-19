@@ -8,7 +8,7 @@
 #include "GELog.h"
 #include "GEProcess.h"
 
-GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxConnect) {
+GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxConnect),m_pAcceptor(nullptr) {
 	// TODO 网络层研究一下
 	for(GE::Int32 i = 0; i < Thread; ++i){
 		this->m_pNetWorkThreads.push_back(NULL);
@@ -21,7 +21,7 @@ GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
         try{
 #ifdef WIN
 			// 这里开启一个
-            this->m_pAcceptor = new tdBoostAcceptor(m_ioServer, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
+			this->m_pAcceptor = new tdBoostAcceptor(m_ioServer, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
 													false);
 #elif LINUX
 			this->m_pAcceptor = new tdBoostAcceptor(m_ioServer, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
@@ -58,18 +58,19 @@ GENetWork::tdBoostIOServer& GENetWork::IOS() {
 }
 
 void GENetWork::BoostAsioRun(){
-	GELog::Instance()->Log("BoostAsioRun");
 	this->m_ioServer.run();
 }
 
 void GENetWork::AsyncAccept_NT(){
 	// 这里会new一个等待连接
-	if(NULL == this->m_pAcceptor){
+	if(GE_IS_POINT_NULL(this->m_pAcceptor)){
 		return;
 	}
+
 	GENetConnect::ConnectSharePtr spConnect = GENetConnect::ConnectSharePtr(new GENetConnect(this, GEProcess::Instance()->DefualConnectParam));
 	this->m_pAcceptor->async_accept(spConnect->Socket(),
 									boost::bind(&GENetWork::HandleAccept_NT, this, spConnect, boost::asio::placeholders::error));
+
 }
 
 void write_handle(const boost::system::error_code &ec, std::size_t bytes_transferred)
@@ -100,7 +101,6 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 			this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 		}
 	}
-	GELog::Instance()->Log("HandleAccept_NT");
 	// TODO 删掉这个响应
 	std::string data = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
 	boost::asio::async_write(s_pConnect->Socket(), boost::asio::buffer(data), write_handle);

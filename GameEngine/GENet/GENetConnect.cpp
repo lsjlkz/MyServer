@@ -2,10 +2,12 @@
 // Created by lsjlkz on 2023/3/1.
 //
 
+#include <boost/asio/placeholders.hpp>
+#include <boost/asio.hpp>
+#include "boost/bind.hpp"
 #include "GENetConnect.h"
 #include "GENetWork.h"
 #include "GEDateTime.h"
-#include "GENetMessage.h"
 #include "GELog.h"
 
 
@@ -19,7 +21,7 @@ GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
 }
 
 GENetConnect::~GENetConnect() {
-	this->m_pNetWork=NULL;
+	GE_SAFE_DELETE_POINT(this->m_pNetWork);
 }
 
 GENetConnect::BoostSocket& GENetConnect::Socket() {
@@ -50,6 +52,24 @@ void GENetConnect::AsyncRecvHead() {
 	if (this->IsShutdown()){
 		return;
 	}
+	// TODO
+	GELog::Instance()->Log("AsyncRecvHead", this->m_uSessionId);
+	m_RecvCache.Reset();
+	boost::asio::async_read(m_BoostSocket,
+							boost::asio::buffer(m_RecvCache.HeadPtr(), sizeof(MsgBase)),
+							// 第一个是回调，第二个是回调的对象，也就是this
+							// 第三个是ec，第四个是传输字节的长度
+							boost::bind(&GENetConnect::HandleReadMsgHead, shared_from_this(),
+							boost::asio::placeholders::error,
+							boost::asio::placeholders::bytes_transferred));
+
+//	boost::asio::async_read(m_BoostSocket,
+//							boost::asio::buffer(m_RecvCache.HeadPtr(), sizeof(MsgBase)),
+//			// 第一个是回调，第二个是回调的对象，也就是this
+//			// 第三个是ec，第四个是传输字节的长度
+//							boost::bind(&GENetConnect::HandleReadMsgHead, shared_from_this(),
+//										boost::asio::placeholders::error,
+//										boost::asio::placeholders::bytes_transferred));
 }
 
 void GENetConnect::AsyncRecvBody() {
@@ -57,25 +77,39 @@ void GENetConnect::AsyncRecvBody() {
 	if (this->IsShutdown()){
 		return;
 	}
+	GELog::Instance()->Log("AsyncRecvBody", this->m_uSessionId);
+	boost::asio::async_read(m_BoostSocket,
+							boost::asio::buffer(m_RecvCache.WriteFence_us(), 4),
+			// 第一个是回调，第二个是回调的对象，也就是this
+			// 第三个是ec，第四个是传输字节的长度
+							boost::bind(&GENetConnect::HandleReadMsgBody, shared_from_this(),
+										boost::asio::placeholders::error,
+										boost::asio::placeholders::bytes_transferred));
+//	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
+//	boost::asio::async_read(m_BoostSocket,
+//							boost::asio::buffer(m_RecvCache.WriteFence_us(), pMsg->Size() - sizeof(MsgBase)),
+//			// 第一个是回调，第二个是回调的对象，也就是this
+//			// 第三个是ec，第四个是传输字节的长度
+//							boost::bind(&GENetConnect::HandleReadMsgBody, shared_from_this(),
+//										boost::asio::placeholders::error,
+//										boost::asio::placeholders::bytes_transferred));
 }
 
-void GENetConnect::HandleReadMsgHead() {
+void GENetConnect::HandleReadMsgHead(const boost::system::error_code &ec, size_t uTransferredBytes) {
 	if (this->IsShutdown()){
 		return;
 	}
-
+	GELog::Instance()->Log("HandleReadMsgHead", this->m_uSessionId);
+	this->AsyncRecvBody();
 }
 
-void GENetConnect::HandleReadMsgBody() {
+void GENetConnect::HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes) {
 	// 尝试接受客户端的消息
 	if (this->IsShutdown()){
 		return;
 	}
-	m_RecvCache.Reset();
-	// TODO
-//	boost::asio::async_read(m_BoostSocket,
-//							boost::asio::buffer(m_RecvCache.HeadPtr(), sizeof(MsgBase))
-//							)
+	GELog::Instance()->Log("HandleReadMsgBody", this->m_uSessionId);
+	this->AsyncRecvHead();
 
 }
 

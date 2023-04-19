@@ -44,8 +44,8 @@ public:
 	void				AsyncSendBlock();						// 异步发送消息
 	void				AsyncRecvHead();						// 异步接受消息头
 	void				AsyncRecvBody();						// 异步接受消息体
-	void				HandleReadMsgHead();					// 接收消息头的句柄
-	void 				HandleReadMsgBody();					// 接收消息体的句柄
+	void				HandleReadMsgHead(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息头的句柄
+	void 				HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息体的句柄
 	void				KeepAlive();							// 保持长连接
 
 	void				Start();

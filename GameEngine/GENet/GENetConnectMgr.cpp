@@ -4,9 +4,10 @@
 
 #include "GENetConnectMgr.h"
 
-GENetConnectMgr::GENetConnectMgr(GE::Uint32 uMaxConnect) {
-	this->m_uMaxSize = uMaxConnect;
-	this->m_uConnectCnt = 0;
+GENetConnectMgr::GENetConnectMgr(GE::Uint32 uMaxConnect):
+		m_uMaxSize(uMaxConnect),
+		m_uConnectCnt(0)
+{
 	// new一个数组，作为连接管理器使用
 	this->m_pConnectArr = new ConnectPtr[uMaxConnect];
 	this->m_pConnectMutexArr = new MutexPtr[uMaxConnect];

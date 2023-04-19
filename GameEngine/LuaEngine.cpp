@@ -7,22 +7,22 @@
 #include "GELog.h"
 
 bool LuaEngine::Del() {
-	if(GE_IS_POINT_NULL(MainL)){
+	if(GE_IS_POINT_NULL(m_pMainLuaState)){
 		GELog::Instance()->Log("close lua_state repeat");
 		return false;
 	}
-	lua_close(MainL);
-	MainL = nullptr;
+	lua_close(m_pMainLuaState);
+	m_pMainLuaState = nullptr;
 	return true;
 }
 
 bool LuaEngine::Init() {
-	if(GE_IS_POINT_NOT_NULL(MainL)){
+	if(GE_IS_POINT_NOT_NULL(m_pMainLuaState)){
 		GELog::Instance()->Log("new lua_state repeat");
 		return false;
 	}
-	MainL = luaL_newstate();
-	luaL_openlibs(MainL);
+	m_pMainLuaState = luaL_newstate();
+	luaL_openlibs(m_pMainLuaState);
 	executeString("LuaEngine Init Successfully");
 	return true;
 }
@@ -67,5 +67,9 @@ GE::Int32 LuaEngine::DoFile(const char *filepath) {
 		GELog::Instance()->Log("load lua file error:", filepath);
 	}
 	return ret;
+}
+
+LuaEngine::LuaEngine():m_pMainLuaState(nullptr){
+
 }
 

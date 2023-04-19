@@ -15,6 +15,7 @@ private:
 	std::unordered_map<GE::Int32, GE::Int32> map;
 public:
 	static GE::Int32 Init();
+	static GE::Int32 DoInitGSInit();
 
 	static GE::Int32 GetGameServerID(lua_State* L);
 	static GE::Int32 CreateNetwork(lua_State* L);

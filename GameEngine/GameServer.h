@@ -13,6 +13,7 @@
 
 class GameServer: public GESingleton<GameServer>{
 public:
+	GameServer();
 	GE::Int32 CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::Int32 Port);
 	void SetGameServerID(GE::Int32 id);
 	GE::Int32 GetGameServerID(){return GameServerID;};
@@ -29,12 +30,12 @@ public:
 
 private:
 	GENetWork* m_pNetWork;
-	GE::Int32 GameServerID = 0;
+	GE::Int32 GameServerID;
 
-	GE::Int32 lastUpdateSecond = 0;
-	GE::Int32 lastUpdateMinute = 0;
-	GE::Int32 lastUpdateHour = 0;
-	GE::Int32 lastUpdateDay = 0;
+	GE::Int32 lastUpdateSecond;
+	GE::Int32 lastUpdateMinute;
+	GE::Int32 lastUpdateHour;
+	GE::Int32 lastUpdateDay;
 
 
 };
