@@ -27,6 +27,7 @@ className(const className&) = delete;          \
 void operator=(const className&) = delete;\
 
 #define GE_SAFE_DELETE_POINT(head) if((head)){delete (head); (head) = nullptr;}
+#define GE_SAFE_DELETE_ARRAY_POINT(head) if((head)){delete[] (head); (head) = nullptr;}
 
 #define GE_IS_POINT_NULL(head) ((head)==nullptr)
 

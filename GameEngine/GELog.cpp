@@ -4,23 +4,14 @@
 
 #include "GELog.h"
 #include "GEDateTime.h"
-#include "iostream"
+#include "GEProcess.h"
+
+
+#define FOUT(fos, s) fos<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
 
 GELog::GELog() {
-	// 设置输出控制台的编码
-	// SetConsoleCP(CP_UTF8);
 	// 先创建一个Log文件夹
 	FS::create_directories("../Log/");
-	SetLogName("Server");
-}
-
-void GELog::SetLogName(const char *name) {
-	std::string ss = "../Log/" + std::string(name) + ".log";
-	FS::path filePath(ss);
-	if(os.is_open()){
-		os.close();
-	}
-	os.open(filePath, std::ios::app);
 }
 
 void GELog::Log(const char *msg) {
@@ -64,25 +55,51 @@ void GELog::Log(const char *msg, GE::Uint64 value) {
 }
 
 void GELog::WriteStream(sstream &ss) {
-	if (os.is_open()) {
-		CoutMutex.lock();
-		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
-		CoutMutex.unlock();
+	MakeSureLogDays();
+	if (m_fileOS.is_open()) {
+		m_fileMutex.lock();
+//		m_fileOS << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
+		FOUT(m_fileOS, ss.str());
+		m_fileMutex.unlock();
 	}
 }
 
+
 void GELog::WriteStream(const char * s) {
-	if (os.is_open()) {
-		CoutMutex.lock();
-		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
-		CoutMutex.unlock();
+	MakeSureLogDays();
+	if (m_fileOS.is_open()) {
+		m_fileMutex.lock();
+		FOUT(m_fileOS, s);
+		m_fileMutex.unlock();
 	}
 }
 
 void GELog::WriteStream(std::string s) {
-	if (os.is_open()) {
-		CoutMutex.lock();
-		os << GEDateTime::Instance()->GetDateTimeString() << "\t" << s << std::endl;
-		CoutMutex.unlock();
+	MakeSureLogDays();
+	if (m_fileOS.is_open()) {
+		m_fileMutex.lock();
+		FOUT(m_fileOS, s);
+		m_fileOS.flush();
+		m_fileMutex.unlock();
 	}
+}
+
+void GELog::MakeSureLogDays() {
+	// 确保当前的fos是当天的
+	if(GEDateTime::Instance()->Days() != m_uLogDays){
+		m_uLogDays = GEDateTime::Instance()->Day();
+		NewLogFile();
+	}
+}
+
+void GELog::NewLogFile() {
+	std::stringstream ss;
+	ss << "../Log/" << GEProcess::Instance()->GetProcessName() << "_" << GEDateTime::Instance()->GetDateString() << ".log";
+	FS::path filePath(ss.str());
+	m_fileMutex.lock();
+	if(m_fileOS.is_open()){
+		m_fileOS.close();
+	}
+	m_fileOS.open(filePath, std::ios::app);
+	m_fileMutex.unlock();
 }

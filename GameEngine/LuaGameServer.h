@@ -19,19 +19,20 @@ public:
 	static GE::Int32 GetGameServerID(lua_State* L);
 	static GE::Int32 CreateNetwork(lua_State* L);
 	static GE::Int32 SetConnectParam(lua_State* L);
-	static GE::Int32 SetFSCoutName(lua_State* L);
+	static GE::Int32 SetProcessName(lua_State* L);
 	static GE::Int32 LuaPrint(lua_State* L);
 //	static GE::Int32 CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
 	static GE::Int32 PackMsg(lua_State* L);
 	static GE::Int32 ReceiveMsg(char* bufHead);
 	static GE::Int32 DebugReceiveMsg(lua_State* L);
+	static GE::Int32 Days(lua_State* L);
+	static GE::Int32 Seconds(lua_State* L);
 	static GE::Int32 Year(lua_State* L);
 	static GE::Int32 Month(lua_State* L);
 	static GE::Int32 Day(lua_State* L);
 	static GE::Int32 Hour(lua_State* L);
 	static GE::Int32 Minute(lua_State* L);
 	static GE::Int32 Second(lua_State* L);
-	static GE::Int32 Seconds(lua_State* L);
 	static GE::Int32 SetServerStop(lua_State* L);
 	static GE::Int32 LuaObjToString(lua_State* L);
 };
@@ -39,18 +40,19 @@ public:
 
 static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"CreateNetwork", LuaGameServer::CreateNetwork},
-		{"SetFSCoutName", LuaGameServer::SetFSCoutName},
+		{"SetProcessName", LuaGameServer::SetProcessName},
 		{"LuaPrint", LuaGameServer::LuaPrint},
 		{"GetGameServerID", LuaGameServer::GetGameServerID},
 		{"PackMsg", LuaGameServer::PackMsg},
 		{"DebugReceiveMsg", LuaGameServer::DebugReceiveMsg},
+		{"Days", LuaGameServer::Days},
+		{"Seconds", LuaGameServer::Seconds},
 		{"Year", LuaGameServer::Year},
 		{"Month", LuaGameServer::Month},
 		{"Day", LuaGameServer::Day},
 		{"Hour", LuaGameServer::Hour},
 		{"Minute", LuaGameServer::Minute},
 		{"Second", LuaGameServer::Second},
-		{"Seconds", LuaGameServer::Seconds},
 		{"SetServerStop", LuaGameServer::SetServerStop},
 		{"LuaObjToString", LuaGameServer::LuaObjToString},
 		{"SetConnectParam", LuaGameServer::SetConnectParam},

@@ -40,11 +40,11 @@ GE::Int32 LuaGameServer::SetConnectParam(lua_State *L) {
 	return 1;
 }
 
-GE::Int32 LuaGameServer::SetFSCoutName(lua_State* L){
+GE::Int32 LuaGameServer::SetProcessName(lua_State* L){
 	luaL_checktype(L, -1, LUA_TSTRING);
 	size_t size = 0;
 	const char* s = lua_tolstring(L, -1, &size);
-	GELog::Instance()->SetLogName(s);
+	GEProcess::Instance()->SetProcessName(s, size);
 	return 1;
 }
 GE::Int32 LuaGameServer::LuaPrint(lua_State* L){
@@ -144,6 +144,18 @@ GE::Int32 LuaGameServer::Init() {
 	return 0;
 }
 
+GE::Int32 LuaGameServer::Days(lua_State *L) {
+	lua_settop(L, 0);
+	lua_pushinteger(L, GEDateTime::Instance()->Days());
+	return 1;
+}
+
+GE::Int32 LuaGameServer::Seconds(lua_State *L) {
+	lua_settop(L, 0);
+	lua_pushinteger(L, GEDateTime::Instance()->Seconds());
+	return 1;
+}
+
 GE::Int32 LuaGameServer::Year(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Year());
@@ -177,12 +189,6 @@ GE::Int32 LuaGameServer::Minute(lua_State *L) {
 GE::Int32 LuaGameServer::Second(lua_State *L) {
 	lua_settop(L, 0);
 	lua_pushinteger(L, GEDateTime::Instance()->Second());
-	return 1;
-}
-
-GE::Int32 LuaGameServer::Seconds(lua_State *L) {
-	lua_settop(L, 0);
-	lua_pushinteger(L, GEDateTime::Instance()->UnixTime());
 	return 1;
 }
 

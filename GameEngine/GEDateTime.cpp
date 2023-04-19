@@ -36,6 +36,15 @@ void GEDateTime::UpdateDateTime() {
 	}
 }
 
+GE::Int32 GEDateTime::Days() {
+	return UnixTime() / 86400;
+}
+
+GE::Int64 GEDateTime::Seconds() {
+	return UnixTime();
+}
+
+
 GE::Int32 GEDateTime::Year() {
 	return this->tm_year;
 }
@@ -56,7 +65,7 @@ GE::Int32 GEDateTime::Minute() {
 	return this->tm_minute;
 }
 
-GE::Int64 GEDateTime::Second() {
+GE::Int32 GEDateTime::Second() {
 	return this->tm_second;
 }
 
@@ -69,5 +78,12 @@ const std::string GEDateTime::GetDateTimeString() {
 	ss << GEDateTime::Instance()->Year() << "-" << GEDateTime::Instance()->Month() << "-" <<
 		  GEDateTime::Instance()->Day() << " " << GEDateTime::Instance()->Hour() << ":" <<
 		  GEDateTime::Instance()->Minute() << ":" << GEDateTime::Instance()->Second();
+	return ss.str();
+}
+
+const std::string GEDateTime::GetDateString() {
+	std::stringstream ss;
+	ss << GEDateTime::Instance()->Year() << "-" << GEDateTime::Instance()->Month() << "-" <<
+	   GEDateTime::Instance()->Day();
 	return ss.str();
 }

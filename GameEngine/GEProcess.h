@@ -11,7 +11,18 @@
 
 class GEProcess: public GESingleton<GEProcess>{
 public:
+	GEProcess();
+
 	GEDefine::ConnectParam			DefualConnectParam;
+
+	void SetProcessName(const char *processName, GE::Uint16 size);
+
+	const char* GetProcessName(){return m_sProcessName;}
+
+
+private:
+	char*						m_sProcessName;
+
 };
 
 

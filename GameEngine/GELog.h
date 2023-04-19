@@ -22,8 +22,6 @@ public:
 public:
 	GELog();
 
-	void SetLogName(const char* name);
-
 	void Log(const char* msg);
 
 	void Log(const char* msg, const char* msg2);
@@ -35,14 +33,20 @@ public:
 	void Log(const char *msg, GE::Int64 value);
 	void Log(const char *msg, GE::Uint64 value);
 
+	void MakeSureLogDays();
+
+	void NewLogFile();
+
 	void WriteStream(sstream &ss);
 	void WriteStream(const char* s);
 	void WriteStream(std::string s);
 
 private:
-	boost::mutex CoutMutex;
+	boost::mutex m_fileMutex;
 
-	FS::ofstream os;
+	FS::ofstream m_fileOS;
+
+	GE::Uint32 m_uLogDays;
 };
 
 

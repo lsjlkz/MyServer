@@ -17,14 +17,17 @@ public:
 	void CacheDateTime();
 	void UpdateDateTime();
 
+	GE::Int32 Days();
+	GE::Int64 Seconds();
 	GE::Int32 Year();
 	GE::Int32 Month();
 	GE::Int32 Day();
 	GE::Int32 Hour();
 	GE::Int32 Minute();
-	GE::Int64 Second();
+	GE::Int32 Second();
 	GE::Int64 UnixTime();
 	const std::string GetDateTimeString();
+	const std::string GetDateString();
 
 private:
 	GE::Int32 tm_year;
@@ -36,6 +39,8 @@ private:
 	GE::Int32 tm_weekDay;
 	GE::Int32 tm_yearDay;
 	GE::Int64 tm_unixTime;
+
+	// TODO 时区
 };
 
 
