@@ -28,7 +28,7 @@ void GameServer::SetGameServerID(GE::Int32 id) {
 
 GE::Int32 GameServer::Init(char* argv[]) {
 	GE::Int32 id;
-	//sscanf_s(argv[1], "%d", &id);
+	sscanf_s(argv[1], "%d", &id);
 	SetGameServerID(2);
 	return 0;
 }
