@@ -5,8 +5,10 @@ set(CMAKE_CXX_STANDARD 11)
 set(LINK_DIR ${PROJECT_SOURCE_DIR}/Third/CLib)
 set(INC_DIR ${PROJECT_SOURCE_DIR}/Third/Include)
 set(BOOST_INC_DIR C:/boost_1_73_0)
-set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Release>:Release>")
-#set(CMAKE_MSVC_RUNTIME_LIBRARY "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /MT")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} /MT")
+
 
 link_directories(${LINK_DIR})
 link_directories(GameEngine CommonBase)
