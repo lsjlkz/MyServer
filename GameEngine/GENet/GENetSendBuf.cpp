@@ -99,6 +99,10 @@ bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
 	// GENetConnect会Hold住一块缓冲区，然后直接发送出去
 	// 这样子就可以实现缓冲区写入和发送的逻辑分离，可以多线程操作
 	while(this->m_pWriteBuf->CanWriteSize() < uSize){
+		if(this->m_pBufQueue->size() > this->m_uBlockNum){
+			// 已经超了
+			return false;
+		}
 		// 不够长度了
 		GE::Uint16 canWriteSize = this->m_pWriteBuf->CanWriteSize();
 		// 写入部分
@@ -124,6 +128,7 @@ bool GENetSendBuf::HoldBlock(void **pHead, GE::Uint16 &uSize) {
 	if (this->m_bIsHoldBlock) {
 		return false;
 	}
+	// 这里的this->m_pReadBuf已经在上一次读过了的
 	if (!this->m_pBufQueue->empty()) {
 		// 队列不为空，继续读队列
 		// 先把当前的读buf回池
@@ -144,17 +149,9 @@ bool GENetSendBuf::HoldBlock(void **pHead, GE::Uint16 &uSize) {
 	return true;
 }
 
-bool GENetSendBuf::ReleaseBlock() {
+void GENetSendBuf::ReleaseBlock() {
 	GE_WIN_ASSERT(this->m_bIsHoldBlock == true);
 	this->m_pWriteBuf->Reset();
+	this->m_bIsHoldBlock = false;
 
-	// 还有队列，那就不能release
-	if (!this->m_pBufQueue->empty()) {
-		return false;
-	}
-	// 还有待发送的数据，那也不能release
-	if (this->m_pReadBuf->CanReadSize()) {
-		return false;
-	}
-	return true;
 }

@@ -109,3 +109,33 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 
 }
 
+bool GENetWork::HasConnect(GE::Uint32 uSessionId) {
+	return this->m_ConnectMgr.HasConnect(uSessionId);
+}
+
+void GENetWork::SendBytes_MT(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) {
+	if(!this->HasConnect(uSessionID)){
+		// 没有这个连接
+		return;
+	}
+	GENetConnect* pConnect = this->m_ConnectMgr.FindConnect(uSessionID);
+
+	GE_WIN_ASSERT(GE_IS_POINT_NOT_NULL(pConnect));
+
+	pConnect->SendBytes(pHead, uSize);
+
+}
+
+void GENetWork::SendBytes(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) {
+	if(!this->HasConnect(uSessionID)){
+		// 没有这个连接
+		return;
+	}
+	GENetConnect* pConnect = this->m_ConnectMgr.FindConnect(uSessionID);
+	GE_WIN_ASSERT(GE_IS_POINT_NOT_NULL(pConnect));
+
+	this->m_ConnectMutex.lock();
+	pConnect->SendBytes(pHead, uSize);
+	this->m_ConnectMutex.unlock();
+}
+

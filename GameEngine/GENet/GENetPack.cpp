@@ -65,6 +65,12 @@ bool PackMessage::PackInt(GE::Int32 i) {
 	return true;
 }
 
+bool PackMessage::PackU16(GE::Uint16 i) {
+	this->PackType(IntFlag);
+	this->PackByte(&i, sizeof(GE::Uint16));
+	return true;
+}
+
 bool PackMessage::PackIntObj(GE::Int32 i) {
 	this->PackType(IntFlag);
 	this->PackInt(i);
@@ -133,9 +139,9 @@ bool PackMessage::PackLuaObj(lua_State *L) {
 		GELog::Instance()->Log("lua object empty");
 		return false;
 	}
-	GE::Uint32& size = this->PackIntRef();
+	GE::Uint16& size = this->PackU16Ref();
 	this->m_uCurStackDeep = 0;
-	GE::Int32 msg_type = (GE::Int32) lua_tointeger(L, -2);
+	GE::Int16 msg_type = (GE::Int16) lua_tointeger(L, -2);
 	this->PackMsgType(msg_type);
 	this->PackLuaHelp(L, -1);
 	// size是引用，这里改变size
@@ -168,7 +174,7 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 		this->PackStringObj(s, static_cast<GE::Uint32>(size));
 	}else if(lt == LUA_TTABLE){
 		this->PackType(TableFlag);
-		GE::Uint32& tableSize = this->PackIntRef();
+		GE::Uint32& tableSize = this->PackU32Ref();
 		GE::Uint32 size = 0;
 		// 也就是把-1这些索引转为正值的索引，如长度为n，索引-2应为倒数第二个，也就是转为n-1
 		GE::Int32 table_index = lua_absindex(L, index);
@@ -194,10 +200,30 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 	--(this->m_uCurStackDeep);
 }
 
-GE::Uint32 &PackMessage::PackIntRef() {
+GE::Uint8 &PackMessage::PackU8Ref(){
+	GE::Uint8*r = (GE::Uint8*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	// 把长度打包进去，最后再改
+	this->PackByte(r, sizeof(GE::Uint8));
+	return *r;
+}
+
+GE::Uint16 &PackMessage::PackU16Ref(){
+	GE::Uint16 *r = (GE::Uint16*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	// 把长度打包进去，最后再改
+	this->PackByte(r, sizeof(GE::Uint16));
+	return *r;
+}
+GE::Uint32 &PackMessage::PackU32Ref() {
 	GE::Uint32*r = (GE::Uint32*)(this->m_pCurBufHead + this->m_uCurBufOffset);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Uint32));
+	return *r;
+}
+
+GE::Int32 &PackMessage::PackIntRef() {
+	GE::Int32*r = (GE::Int32*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	// 把长度打包进去，最后再改
+	this->PackByte(r, sizeof(GE::Int32));
 	return *r;
 }
 
@@ -219,8 +245,8 @@ void PackMessage::Align() {
 }
 
 
-bool PackMessage::PackMsgType(GE::Int32 msgType) {
-	return this->PackInt(msgType);
+bool PackMessage::PackMsgType(GE::Uint16 msgType) {
+	return this->PackU16(msgType);
 }
 
 bool PackMessage::PackMsg(MsgBase *pMsg) {
@@ -228,8 +254,8 @@ bool PackMessage::PackMsg(MsgBase *pMsg) {
 }
 
 
-bool UnpackMessage::UnpackMsgType(GE::Int32 &msgType) {
-	return this->UnpackInt(msgType);
+bool UnpackMessage::UnpackMsgType(GE::Uint16 &msgType) {
+	return this->UnpackU16(msgType);
 }
 
 bool UnpackMessage::UnpackType(GE::Int32 &flag) {
@@ -240,6 +266,28 @@ bool UnpackMessage::UnpackType(GE::Int32 &flag) {
 	flag = static_cast<char>(*(curBufHead));
 	curBufHead += sizeof(char);
 	m_nSurplusSize -= sizeof(char);
+	return true;
+}
+
+bool UnpackMessage::UnpackU16(GE::Uint16 &u16) {
+	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint16)){
+		this->m_bIsOK = false;
+		return false;
+	}
+	u16 = static_cast<GE::Uint16>(*((GE::Uint16*)curBufHead));
+	curBufHead += sizeof(GE::Uint16);
+	m_nSurplusSize -= sizeof(GE::Uint16);
+	return true;
+}
+
+bool UnpackMessage::UnpackU8(GE::Uint8 &u8) {
+	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint8)){
+		this->m_bIsOK = false;
+		return false;
+	}
+	u8 = static_cast<GE::Uint8>(*((GE::Uint8*)curBufHead));
+	curBufHead += sizeof(GE::Uint8);
+	m_nSurplusSize -= sizeof(GE::Uint8);
 	return true;
 }
 

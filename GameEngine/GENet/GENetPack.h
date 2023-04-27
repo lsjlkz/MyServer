@@ -41,7 +41,7 @@ public:
 
 	void			ClearCache();
 
-	bool 			PackMsgType(GE::Int32 msgType);
+	bool 			PackMsgType(GE::Uint16 msgType);
 
 	bool			PackType(GE::Int32 t);
 
@@ -49,7 +49,11 @@ public:
 	bool 			PackChar(char c);
 
 	bool			PackInt(GE::Int32 i);
-	GE::Uint32&		PackIntRef();
+	GE::Uint16& 	PackU16Ref();
+	GE::Uint8& 		PackU8Ref();
+	GE::Uint32&		PackU32Ref();
+	GE::Int32&		PackIntRef();
+	bool 			PackU16(GE::Uint16 i);
 	bool			PackIntObj(GE::Int32 i);
 
 	bool			PackLong(GE::Int64 l);
@@ -74,6 +78,8 @@ public:
 	void			NewBuf();			// 新建一个缓冲区
 	char*			HeadPtr(){return this->m_pCurBufHead;}
 
+	MsgBase*		Msg(){return reinterpret_cast<MsgBase*>(this->HeadPtr());}
+
 
 private:
 	bool					m_bIsOk;			// 是否有错误
@@ -93,7 +99,9 @@ public:
 	UnpackMessage(void* pHead, GE::Int32 nSize);
 public:
 	bool 			UnpackType(GE::Int32&flag);
-	bool 			UnpackMsgType(GE::Int32& msgType);
+	bool 			UnpackMsgType(GE::Uint16& msgType);
+	bool 			UnpackU8(GE::Uint8& u8);
+	bool 			UnpackU16(GE::Uint16& u16);
 	bool			UnpackInt(GE::Int32& i);
 	bool			UnpackLong(GE::Int64& l);
 	bool			UnpackBool(bool& b);

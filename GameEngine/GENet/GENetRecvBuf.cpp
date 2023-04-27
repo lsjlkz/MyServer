@@ -102,19 +102,57 @@ bool GENetRecvBuf::WriteBytes(MsgBase* pMsg) {
 	// 写进缓冲区之后呢
 	// GENetWork会循环调用MoveNextMsg，获取到当前缓冲区中的消息（如果有的话）
 	// 这样子就实现了缓冲区写入和读取的分离，可以多线程处理
+
+	// 保证是4的倍数
+	GE_WIN_ASSERT(pMsg->Size() % MSG_BASE_SIZE == 0)
 	if(this->m_pWriteBuf->MaxSize() < pMsg->Size()){
 		// 太大了
 		GELog::Instance()->Log("recv buf write to long");
 		return false;
 	}
-
-	return false;
+	if(this->m_pWriteBuf->CanWriteSize() < pMsg->Size()){
+		if(this->m_pBufQueue->size() > this->m_uBlockNum){
+			// 已经超过容量了
+			return false;
+		}
+		// 剩下的部分就不要了，直接放进去队列里面
+		this->m_pBufQueue->push(this->m_pWriteBuf);
+		// 这里用了旧的MaxSize
+		this->m_pWriteBuf = this->NewNetBuf(this->m_pWriteBuf->MaxSize());
+		// 到这里就创建了一个新的缓冲区了
+		// 又因为上面判断了MaxSize 肯定大于Msg的Size
+		// 所以下面肯定能够写入
+	}
+	this->m_pWriteBuf->WriteBytes_us(pMsg, pMsg->Size());
+	this->m_pWriteBuf->MoveWriteFence_us(pMsg->Size());
+	return true;
 }
 
 bool GENetRecvBuf::ReadMsgFromReadBuf(MsgBase **pMsg) {
-	return false;
+	// 这个方法将缓冲区内的buf写入到pMsg中
+
+	// 没有可以读的了
+	GE_WIN_ASSERT(this->m_pReadBuf->CanReadSize() == 0)
+	// 直接转换就好了
+	*pMsg = static_cast<MsgBase*>(this->m_pReadBuf->ReadFence_us());
+	this->m_pReadBuf->MoveReadFence_us((*pMsg)->Size());
+	return true;
 }
 
 bool GENetRecvBuf::MoveToNextReadBuf() {
-	return false;
+	if(this->m_pBufQueue->empty()){
+		// 队列空了，拿不出来了
+		if (!this->m_pWriteBuf->CanReadSize()) {
+			return true;
+		}
+		// 直接交换读写缓冲区
+		std::swap(this->m_pWriteBuf, this->m_pReadBuf);
+		this->m_pWriteBuf->Reset();
+		return true;
+	}
+	// 先把旧的回池了先
+	this->DelNetBuf(this->m_pReadBuf);
+	this->m_pReadBuf = this->m_pBufQueue->front();
+	this->m_pBufQueue->pop();
+	return true;
 }

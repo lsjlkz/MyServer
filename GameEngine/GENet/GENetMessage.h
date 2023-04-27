@@ -44,7 +44,8 @@ union tdMsgRedirect{
 
 GE_STATIC_ASSERT(sizeof(tdMsgRedirect)==4);
 
-
+// C++中的属性在内存中的位置是按照声明的顺序分配的
+// 序列化之后只要强制声明为同一个对象对象，就可以获取到原来的属性
 // 消息体
 class MsgBase{
 public:

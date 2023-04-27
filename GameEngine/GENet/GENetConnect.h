@@ -9,6 +9,7 @@
 #include <boost/asio/ip/tcp.hpp>
 #include "boost/shared_ptr.hpp"
 #include <boost/enable_shared_from_this.hpp>
+#include "boost/thread/mutex.hpp"
 #include "GENetSendBuf.h"
 #include "GENetRecvBuf.h"
 
@@ -46,6 +47,7 @@ public:
 	void				AsyncRecvBody();						// 异步接受消息体
 	void				HandleReadMsgHead(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息头的句柄
 	void 				HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息体的句柄
+	void 				HandleWriteMsg(const boost::system::error_code &ec, size_t uTransferredBytes);
 	void				KeepAlive();							// 保持长连接
 
 	void				Start();
@@ -55,6 +57,7 @@ public:
 
 	BoostSocket&		Socket();
 	void				SessionID(GE::Uint32 uId){this->m_uSessionId = uId;}
+	GE::Uint32			SessionID(){return this->m_uSessionId;}
 
 private:
 	GENetWork*			m_pNetWork;
@@ -68,6 +71,10 @@ private:
 	GENetBuf			m_RecvCache;							// 当前的接收
 	GENetSendBuf		m_SendBuf;
 	GENetRecvBuf		m_RecvBuf;
+
+	// 读写的锁
+	boost::mutex		m_SendBufMutex;
+	boost::mutex		m_RecvBufMutex;
 
 };
 

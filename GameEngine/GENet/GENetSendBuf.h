@@ -16,7 +16,7 @@ public:
 	void				UsePool(GE::Uint16 uSize);							// 消息量很大的时候使用对象池
 	bool				WriteBytes(const void* pHead, GE::Uint16 uSize);	// 数据写入缓冲区
 	bool				HoldBlock(void** pHead, GE::Uint16& uSize);			// Hold住一块，然后可以发送
-	bool				ReleaseBlock();										// 上次Hold住的发送完毕，释放掉，返回是否还有数据
+	void				ReleaseBlock();										// 上次Hold住的发送完毕，释放掉，返回是否还有数据
 	bool				IsEmpty();
 	GE::Uint16 			GetNewCnt(){return m_uNewCnt;}
 	GE::Uint16 			GetDelCnt(){return m_uDelCnt;}

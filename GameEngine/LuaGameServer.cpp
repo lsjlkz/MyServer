@@ -106,11 +106,11 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	// 获取函数分发函数
 	lua_pushstring(L, "TriggerServerDistribute");
 	lua_gettable(L, -2);
-	GE::Int32 msg_size = 0;
+	GE::Uint16 msg_size = 0;
 	UnpackMessage um(PackMessage::Instance()->HeadPtr());
-	um.UnpackInt(msg_size);
+	um.UnpackU16(msg_size);
 	um.SetSize(msg_size);
-	GE::Int32 msg_type = 0;
+	GE::Uint16 msg_type = 0;
 	um.UnpackMsgType(msg_type);
 	lua_pushinteger(L, msg_type);
 	um.UnpackLuaObj(L);
@@ -207,6 +207,18 @@ GE::Int32 LuaGameServer::LuaObjToString(lua_State *L) {
 	PackMessage::Instance()->ClearCache();
 	return PackMessage::Instance()->PackLuaObj(L);
 }
+
+GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
+
+	GE::Uint32 sessionId = lua_tointeger(L, -3);
+	PackMessage::Instance()->ClearCache();
+	PackMessage::Instance()->PackLuaObj(L);
+
+	GameServer::Instance()->SendMsg(sessionId, PackMessage::Instance()->Msg());
+
+	return 1;
+}
+
 
 LUA_API GE::Int32 luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");

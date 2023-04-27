@@ -79,3 +79,7 @@ void GameServer::SetStop() {
 
 	this->m_pNetWork->Stop_MT();
 }
+
+void GameServer::SendMsg(GE::Uint32 uSessionId, MsgBase *pMsg) {
+	this->m_pNetWork->SendBytes_MT(uSessionId, pMsg, pMsg->Size());
+}
