@@ -3,6 +3,7 @@
 //
 
 #include "GENetConnectMgr.h"
+#include "GELog.h"
 
 GENetConnectMgr::GENetConnectMgr(GE::Uint32 uMaxConnect):
 		m_uMaxSize(uMaxConnect),
@@ -15,7 +16,7 @@ GENetConnectMgr::GENetConnectMgr(GE::Uint32 uMaxConnect):
 		this->m_pConnectArr[uid] = nullptr;
 		// 锁
 		this->m_pConnectMutexArr[uid] = new Mutex();
-		this->m_UIDQueue.push(uid);
+		this->m_freeUIDQueue.push(uid);
 	}
 }
 
@@ -26,8 +27,8 @@ GENetConnectMgr::~GENetConnectMgr() {
 	}
 	GE_SAFE_DELETE_POINT(this->m_pConnectArr);
 	GE_SAFE_DELETE_POINT(this->m_pConnectMutexArr);
-	while(!this->m_UIDQueue.empty()){
-		this->m_UIDQueue.pop();
+	while(!this->m_freeUIDQueue.empty()){
+		this->m_freeUIDQueue.pop();
 	}
 }
 
@@ -51,8 +52,8 @@ bool GENetConnectMgr::AddConnect(GENetConnect::ConnectSharePtr &spConnect, GE::U
 		// 空了
 		return false;
 	}
-	uid = this->m_UIDQueue.front();
-	this->m_UIDQueue.pop();
+	uid = this->m_freeUIDQueue.front();
+	this->m_freeUIDQueue.pop();
 	GE_ASSERT(GE_IS_POINT_NULL(this->m_pConnectArr[uid]));
 	this->m_pHolder.insert(std::make_pair(uid, spConnect));
 	this->m_pConnectArr[uid] = spConnect.get();
@@ -69,10 +70,21 @@ bool GENetConnectMgr::DelConnect(GE::Uint32 uid) {
 	this->m_pHolder.erase(uid);
 	this->m_pConnectMutexArr[uid]->unlock();
 	// uid回池
-	this->m_UIDQueue.push(uid);
+	this->m_freeUIDQueue.push(uid);
 	return true;
 }
 
 void GENetConnectMgr::ForceShutdownIllegalConnect_us() {
 	// TODO 处理非法连接
+//	GELog::Instance()->Log("ForceShutdownIllegalConnect_us");
+//	for (auto& [uid, sharePtr] : this->m_pHolder) {
+//		GENetConnect *pConnect = sharePtr.get();
+//		GELog::Instance()->Log("IsLongTimeNoRecv", pConnect->IsLongTimeNoRecv());
+////		if(pConnect->IsLongTimeNoRecv()){
+////			DelConnect(uid);
+////		}
+//		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", (GE::Uint32)uid);
+//		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", pConnect->SessionID());
+//	}
+
 }

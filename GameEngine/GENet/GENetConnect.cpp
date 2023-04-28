@@ -16,8 +16,8 @@ GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
 	m_RecvBuf(CP.uRecvBlockSize, CP.uRecvBlockNum),
 	m_SendBuf(CP.uSendBlockSize, CP.uSendBlockNum),
 	m_RecvCache(CP.uRecvBlockSize),
-	m_State(enNetConnect_Work)
-{
+	m_State(enNetConnect_Work),
+	m_uWaitSeconds(DefaultWaitTime){
 }
 
 GENetConnect::~GENetConnect() {
@@ -122,6 +122,7 @@ void GENetConnect::HandleReadMsgHead(const boost::system::error_code &ec, size_t
 		return;
 	}
 	GELog::Instance()->Log("HandleReadMsgHead", this->m_uSessionId);
+	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
 	this->AsyncRecvBody();
 }
 
@@ -136,6 +137,7 @@ void GENetConnect::HandleReadMsgBody(const boost::system::error_code &ec, size_t
 		return;
 	}
 	GELog::Instance()->Log("HandleReadMsgBody", this->m_uSessionId);
+	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
 	this->AsyncRecvHead();
 }
 
@@ -159,6 +161,7 @@ void GENetConnect::HandleWriteMsg(const boost::system::error_code &ec, size_t uT
 
 void GENetConnect::Start() {
 	this->m_uConnectSeconds = GEDateTime::Instance()->UnixTime();
+	this->m_uLastestRecvSeconds = GEDateTime::Instance()->UnixTime();
 	GELog::Instance()->Log("connect successfully", this->m_uSessionId);
 	this->KeepAlive();
 	this->AsyncRecvHead();
@@ -170,23 +173,28 @@ void GENetConnect::KeepAlive() {
 	this->m_BoostSocket.set_option(option);
 }
 
+bool GENetConnect::IsLongTimeNoRecv(){
+	return (this->m_uLastestRecvSeconds + this->m_uWaitSeconds) < GEDateTime::Instance()->Seconds();
+}
+
 void GENetConnect::Shutdown(NetConnectState state) {
-	// 关闭一条数据的连接，并不是关闭socket，只是通知对方这条消息被关闭了
+	// 关闭socket
 	if(this->IsShutdown()){
 		// 重复关闭
 		return;
 	}
 	try{
+		this->Socket().shutdown(boost::asio::ip::tcp::socket::shutdown_both);
 #ifdef WIN
 		this->Socket().close();
 #elif LINUX
 		this->Socket().cancel();
 #endif
+		this->m_State = state;
 	}
 	catch(std::exception& e){
 		GELog::Instance()->Log(e.what());
 	}
-	this->m_State = state;
 }
 
 

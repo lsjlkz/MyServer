@@ -28,6 +28,9 @@ enum NetConnectState
 	enNetConnect_ForceClose,
 };
 
+
+#define DefaultWaitTime 60		// 默认1分钟
+
 class GENetConnect:public boost::enable_shared_from_this<GENetConnect> {
 public:
 	typedef boost::asio::ip::tcp::socket 				BoostSocket;
@@ -49,6 +52,7 @@ public:
 	void 				HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息体的句柄
 	void 				HandleWriteMsg(const boost::system::error_code &ec, size_t uTransferredBytes);
 	void				KeepAlive();							// 保持长连接
+	bool 				IsLongTimeNoRecv();						// 太长时间没接收到消息了
 
 	void				Start();
 	void 				Shutdown(NetConnectState state);
@@ -59,6 +63,7 @@ public:
 	BoostSocket&		Socket();
 	void				SessionID(GE::Uint32 uId){this->m_uSessionId = uId;}
 	GE::Uint32			SessionID(){return this->m_uSessionId;}
+	void 				SetWaitTime(GE::Uint32 waitTime){this->m_uWaitSeconds = waitTime;}
 
 private:
 	GENetWork*			m_pNetWork;
@@ -67,6 +72,8 @@ private:
 
 	GE::Uint32			m_uSessionId;
 	GE::Uint32			m_uConnectSeconds;						// 连接时间
+	GE::Uint32			m_uLastestRecvSeconds;					// 最后一次收到消息的时间
+	GE::Uint32 			m_uWaitSeconds;							// 等待时间
 	NetConnectState		m_State;
 
 	GENetBuf			m_RecvCache;							// 当前的接收

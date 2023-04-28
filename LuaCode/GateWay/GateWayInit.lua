@@ -38,7 +38,7 @@ end
 
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
-    cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 10086)
+    cGameServer.CreateNetwork(2, cDefineTable.GateWayID, 10086)
     gs_tick.reg_tick(nil, 5, test_send)
     load_gateway_module()
 end
