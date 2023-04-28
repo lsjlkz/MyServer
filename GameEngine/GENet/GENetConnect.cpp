@@ -56,7 +56,6 @@ void GENetConnect::WriteBytes(const void * pHead, GE::Int16 uSize) {
 	this->AsyncSendBlock();
 }
 
-#include "iostream"
 void GENetConnect::AsyncSendBlock() {
 	// 有消息要发送的话，就这里发送
 	if (this->IsShutdown()){
@@ -72,18 +71,6 @@ void GENetConnect::AsyncSendBlock() {
 		// 没有消息
 		return;
 	}
-
-
-#ifdef WINDEBUG
-	std::cout << "AsyncSendBlock" << uSize << std::endl;
-	GE::Int8 * p = (GE::Int8*)pHead;
-	for(int i = 0; i < uSize / sizeof(GE::Int8); i++){
-		std::cout << static_cast<GE::Int32 >( *(p + i)) << "\t";
-	}
-	std::cout << std::endl;
-#endif
-
-
 
 	boost::asio::async_write(this->m_BoostSocket,
 							 boost::asio::buffer(pHead, uSize),
