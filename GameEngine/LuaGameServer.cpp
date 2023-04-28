@@ -92,9 +92,9 @@ GE::Int32 LuaGameServer::DebugPrintMsg(lua_State* L){
 	PackMessage::Instance()->Align();
 	GE::Uint32* p = reinterpret_cast<GE::Uint32*>(PackMessage::Instance()->HeadPtr());
 	GE::Uint32 len = PackMessage::Instance()->PackSize() / sizeof(GE::Uint32);
-	std::cout << "size:" <<PackMessage::Instance()->PackSize() << std::endl;
+	GELog::Instance()->Log("size:", PackMessage::Instance()->PackSize());
 	for(GE::Uint32 i = 0; i < len; i++){
-		GELog::Instance()->Log(*(p + i));
+		GELog::Instance()->Log("", *(p + i));
 	}
 	return 1;
 }
