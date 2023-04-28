@@ -101,9 +101,6 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 			this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 		}
 	}
-	// TODO 删掉这个响应
-	std::string data = "HTTP/1.1 200 OK\r\nContent-Length: 13\r\n\r\nHello, world!";
-	boost::asio::async_write(s_pConnect->Socket(), boost::asio::buffer(data), write_handle);
 	this->m_ConnectMutex.unlock();
 	this->AsyncAccept_NT();
 

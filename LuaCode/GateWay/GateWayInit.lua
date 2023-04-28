@@ -27,9 +27,12 @@ end
 local function test_send()
     print("test_send")
     local a = {}
-    a[3] = 4
-    cGameServer.DebugSendMsg(0, 12, a)
-    cGameServer.DebugSendMsg(1, 12, a)
+    local b = {}
+    a[3] = b
+    b[5] = -6
+    a[4] = -5
+    cGameServer.DebugSendMsg(0, 88, a)
+    cGameServer.DebugSendMsg(1, 88, a)
     gs_tick.reg_tick(nil, 5, test_send)
 end
 

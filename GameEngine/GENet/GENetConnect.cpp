@@ -1,8 +1,6 @@
 //
 // Created by lsjlkz on 2023/3/1.
 //
-#include "iostream"
-
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio.hpp>
 #include "boost/bind.hpp"
@@ -45,7 +43,6 @@ void GENetConnect::WriteBytes(const void * pHead, GE::Int16 uSize) {
 	}
 	// 先锁住先
 	this->m_SendBufMutex.lock();
-	GELog::Instance()->Log("WriteBytes", uSize);
 	bool ret = this->m_SendBuf.WriteBytes(pHead, uSize);
 	// 解锁
 	this->m_SendBufMutex.unlock();
@@ -59,6 +56,7 @@ void GENetConnect::WriteBytes(const void * pHead, GE::Int16 uSize) {
 	this->AsyncSendBlock();
 }
 
+#include "iostream"
 void GENetConnect::AsyncSendBlock() {
 	// 有消息要发送的话，就这里发送
 	if (this->IsShutdown()){
@@ -74,14 +72,19 @@ void GENetConnect::AsyncSendBlock() {
 		// 没有消息
 		return;
 	}
+
+
 #ifdef WINDEBUG
-	GELog::Instance()->Log("async_write,uSize", uSize);
-	GE::Int32* p = reinterpret_cast<GE::Int32*> (pHead);
-	for(GE::Uint32 i=0; i < uSize;i++){
-		std::cout << *(p + i) << " ";
+	std::cout << "AsyncSendBlock" << uSize << std::endl;
+	GE::Int8 * p = (GE::Int8*)pHead;
+	for(int i = 0; i < uSize / sizeof(GE::Int8); i++){
+		std::cout << static_cast<GE::Int32 >( *(p + i)) << "\t";
 	}
 	std::cout << std::endl;
 #endif
+
+
+
 	boost::asio::async_write(this->m_BoostSocket,
 							 boost::asio::buffer(pHead, uSize),
 							 boost::bind(&GENetConnect::HandleWriteMsg,

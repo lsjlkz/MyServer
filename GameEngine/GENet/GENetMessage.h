@@ -73,8 +73,8 @@ public:
 
 
 protected:
-	GE::Uint16 m_uSize;						// 消息体的大小
 	GE::Uint16 m_uType;						// 消息体的类型
+	GE::Uint16 m_uSize;						// 消息体的大小
 	tdMsgRedirect mRedirect;				// 重定向的数据
 };
 

@@ -19,6 +19,7 @@
 #define TableFlag				-103
 #define StringFlag				-106
 
+
 #define MAX_STACK_DEEP			30			// 最大递归层数
 
 
@@ -43,15 +44,15 @@ public:
 
 	bool 			PackMsgType(GE::Uint16 msgType);
 
-	bool			PackType(GE::Uint8 t);
+	bool			PackType(GE::Int8 t);
 
-	bool 			PackCharInt(GE::Uint8 c);
-
-	GE::Uint8& 		PackU8Ref();
-	GE::Int8&		PackI8Ref();
-	GE::Uint16& 	PackU16Ref();
-	GE::Uint32&		PackU32Ref();
-	GE::Int32&		PackIntRef();
+	GE::Uint8* 		PackU8Ref();
+	GE::Int8*		PackI8Ref();
+	GE::Uint16* 	PackU16Ref();
+	GE::Uint32*		PackU32Ref();
+	GE::Int32*		PackI32Ref();
+	bool 			PackU8(GE::Uint8 i);
+	bool 			PackI8(GE::Int8 i);
 	bool 			PackU16(GE::Uint16 i);
 	bool			PackI32(GE::Int32 i);
 	bool			PackI32Obj(GE::Int32 i);
@@ -63,7 +64,7 @@ public:
 	bool			PackBoolObj(bool b);
 
 	bool 			PackString(const char* s, GE::Uint32 size);
-	bool 			PackStringObj(const char *s, GE::Uint32 size);
+	bool 			PackStringObj(const char *s, GE::Uint16 size);
 
 	bool			PackMsg(MsgBase* pMsg);								// 打包一个msg
 

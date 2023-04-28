@@ -1,7 +1,6 @@
 //
 // Created by lsjlkz on 2022/6/2.
 //
-#include "iostream"
 
 #include "LuaGameServer.h"
 #include "GEProcess.h"
@@ -89,6 +88,7 @@ GE::Int32 LuaGameServer::PackMsg(lua_State* L){
 	return PackMessage::Instance()->PackLuaObj(L);
 }
 
+#include "iostream"
 GE::Int32 LuaGameServer::DebugPrintMsg(lua_State* L){
 	PackMessage::Instance()->Align();
 	GE::Uint32* p = reinterpret_cast<GE::Uint32*>(PackMessage::Instance()->HeadPtr());
@@ -118,12 +118,12 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 	// 获取函数分发函数
 	lua_pushstring(L, "TriggerServerDistribute");
 	lua_gettable(L, -2);
-	GE::Uint16 msg_size = 0;
 	UnpackMessage um(PackMessage::Instance()->HeadPtr());
-	um.UnpackU16(msg_size);
-	um.SetSize(msg_size);
 	GE::Uint16 msg_type = 0;
 	um.UnpackMsgType(msg_type);
+	GE::Uint16 msg_size = 0;
+	um.UnpackU16(msg_size);
+	um.SetSize(msg_size);
 	lua_pushinteger(L, msg_type);
 	um.UnpackLuaObj(L);
 	ret = lua_pcall(L, 2, 0, 0);
@@ -225,13 +225,6 @@ GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
 	PackMessage::Instance()->ClearCache();
 	PackMessage::Instance()->PackLuaObj(L);
 
-#ifdef WINDEBUG
-	GE::Int32* p = reinterpret_cast<GE::Int32*> (PackMessage::Instance()->Msg());
-	for(GE::Uint32 i=0; i < PackMessage::Instance()->PackSize() / sizeof(GE::Int32) + 1;i++){
-		std::cout << *(p + i) << " ";
-	}
-	std::cout << std::endl;
-#endif
 	GameServer::Instance()->SendMsg(sessionId, PackMessage::Instance()->Msg());
 
 	return 1;
