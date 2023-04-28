@@ -10,8 +10,8 @@ local allot = require("Server/Allot")
 local p = require("Common/Print")
 
 __G__GSTickTable = __G__GSTickTable or {}
-__G__GSTickTable._TickIDTable = {}
-__G__GSTickTable._TickSecTable = {}
+__G__GSTickTable._TickIDTable = __G__GSTickTable._TickIDTable or {}
+__G__GSTickTable._TickSecTable = __G__GSTickTable._TickSecTable or {}
 
 function __G__GSTickTable.test_reg_tick()
     print('test_reg_tick')

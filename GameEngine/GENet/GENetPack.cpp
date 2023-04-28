@@ -5,11 +5,20 @@
 #include "GENetPack.h"
 #include "GELog.h"
 
+#define UnpackTypeMsg(type,name) \
+if(m_uSize != 0 && m_nSurplusSize < sizeof(type)){\
+this->m_bIsOK = false;\
+return false;\
+}\
+name = static_cast<type>(*((type*)curBufHead));\
+curBufHead += sizeof(type);\
+m_nSurplusSize -= sizeof(type);\
+return true;
+
 
 PackMessage::PackMessage() {
 	m_pBigMsgPool = new BufPool();
 	m_pBigMsgQueue = new BufQueue();
-	this->m_uSize = 0;
 	this->NewBuf();
 }
 
@@ -40,28 +49,18 @@ void PackMessage::NewBuf() {
 	}
 	// 放到队列中
 	this->m_pBigMsgQueue->push(this->m_pCurBufHead);
-	this->m_uCurBufOffset = 0;
+	this->m_pCurPackFence = 0;
+	this->m_uSize = 0;
 	this->m_uCurBufEmpty = MSG_MAX_SIZE;
 }
 
-bool PackMessage::PackType(GE::Int32 t) {
+bool PackMessage::PackType(GE::Uint8 t) {
 	this->PackCharInt(t);
 	return false;
 }
 
-bool PackMessage::PackCharInt(GE::Int32 c) {
-	char cc = static_cast<char>(c);
-	this->PackChar(cc);
-	return true;
-}
-
-bool PackMessage::PackChar(char c) {
-	this->PackByte(&c, sizeof(char));
-	return true;
-}
-
-bool PackMessage::PackInt(GE::Int32 i) {
-	this->PackByte(&i, sizeof(GE::Int32));
+bool PackMessage::PackCharInt(GE::Uint8 c) {
+	this->PackByte(&c, sizeof(GE::Uint8));
 	return true;
 }
 
@@ -71,20 +70,25 @@ bool PackMessage::PackU16(GE::Uint16 i) {
 	return true;
 }
 
-bool PackMessage::PackIntObj(GE::Int32 i) {
-	this->PackType(IntFlag);
-	this->PackInt(i);
+bool PackMessage::PackI32(GE::Int32 i) {
+	this->PackByte(&i, sizeof(GE::Int32));
 	return true;
 }
 
-bool PackMessage::PackLong(GE::Int64 l) {
+bool PackMessage::PackI32Obj(GE::Int32 i) {
+	this->PackType(IntFlag);
+	this->PackI32(i);
+	return true;
+}
+
+bool PackMessage::PackI64(GE::Int64 l) {
 	this->PackByte(&l, sizeof(GE::Int64));
 	return true;
 }
 
-bool PackMessage::PackLongObj(GE::Int64 l) {
+bool PackMessage::PackI64Obj(GE::Int64 l) {
 	this->PackType(LongFlag);
-	this->PackLong(l);
+	this->PackI64(l);
 	return true;
 }
 
@@ -95,7 +99,7 @@ bool PackMessage::PackString(const char *s, GE::Uint32 size) {
 
 bool PackMessage::PackStringObj(const char *s, GE::Uint32 size) {
 	this->PackType(StringFlag);
-	this->PackInt(size);
+	this->PackI32(size);
 	this->PackString(s, size);
 	return true;
 }
@@ -108,24 +112,23 @@ void PackMessage::PackByte(const void *pHead, GE::Int32 size) {
 	}
 	if(size <= this->m_uCurBufEmpty){
 		// 还够用，不用重新申请
-		memcpy(this->m_pCurBufHead + this->m_uCurBufOffset, pHead, size);
-		this->m_uCurBufOffset += size;
+		memcpy(this->m_pCurBufHead + this->m_pCurPackFence, pHead, size);
+		this->m_pCurPackFence += size;
 		this->m_uSize += size;
 		this->m_uCurBufEmpty -= size;
 		return;
 	}
-	char* curP = (char *) pHead;
 	// 不够用了，重新申请一个
 	while(size > MSG_MAX_SIZE){
 		// 放入空余的位置
-		memcpy(this->m_pCurBufHead, curP, this->m_uCurBufEmpty);
-		curP += this->m_uCurBufEmpty;
+		memcpy(this->m_pCurBufHead, pHead, this->m_uCurBufEmpty);
+		pHead = (char*)pHead + this->m_uCurBufEmpty;
 		this->m_uSize += this->m_uCurBufEmpty;
 		size -= this->m_uCurBufEmpty;
 		this->NewBuf();
 	}
 	memcpy(this->m_pCurBufHead, pHead, size);
-	this->m_uCurBufOffset += size;
+	this->m_pCurPackFence += size;
 	this->m_uSize += size;
 	this->m_uCurBufEmpty -= size;
 }
@@ -165,8 +168,8 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 			this->PackType(FalseFlag);
 		}
 	}else if(lt == LUA_TNUMBER){
-		GE::Int32 i = lua_tointeger(L, index);
-		this->PackIntObj(i);
+		GE::Int64 i = lua_tointeger(L, index);
+		this->PackI64Obj(i);
 	}else if(lt == LUA_TSTRING){
 		size_t size = 0;
 		const char* s = lua_tolstring(L, index, &size);
@@ -201,27 +204,35 @@ void PackMessage::PackLuaHelp(lua_State *L, GE::Int32 index) {
 }
 
 GE::Uint8 &PackMessage::PackU8Ref(){
-	GE::Uint8*r = (GE::Uint8*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	GE::Uint8*r = (GE::Uint8*)(this->m_pCurBufHead + this->m_pCurPackFence);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Uint8));
 	return *r;
 }
 
+GE::Int8 &PackMessage::PackI8Ref(){
+	GE::Int8*r = (GE::Int8*)(this->m_pCurBufHead + this->m_pCurPackFence);
+	// 把长度打包进去，最后再改
+	this->PackByte(r, sizeof(GE::Int8));
+	return *r;
+}
+
 GE::Uint16 &PackMessage::PackU16Ref(){
-	GE::Uint16 *r = (GE::Uint16*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	GE::Uint16 *r = (GE::Uint16*)(this->m_pCurBufHead + this->m_pCurPackFence);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Uint16));
 	return *r;
 }
+
 GE::Uint32 &PackMessage::PackU32Ref() {
-	GE::Uint32*r = (GE::Uint32*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	GE::Uint32*r = (GE::Uint32*)(this->m_pCurBufHead + this->m_pCurPackFence);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Uint32));
 	return *r;
 }
 
 GE::Int32 &PackMessage::PackIntRef() {
-	GE::Int32*r = (GE::Int32*)(this->m_pCurBufHead + this->m_uCurBufOffset);
+	GE::Int32*r = (GE::Int32*)(this->m_pCurBufHead + this->m_pCurPackFence);
 	// 把长度打包进去，最后再改
 	this->PackByte(r, sizeof(GE::Int32));
 	return *r;
@@ -246,7 +257,8 @@ void PackMessage::Align() {
 
 
 bool PackMessage::PackMsgType(GE::Uint16 msgType) {
-	return this->PackU16(msgType);
+	this->PackByte(&msgType, sizeof(GE::Uint16));
+	return true;
 }
 
 bool PackMessage::PackMsg(MsgBase *pMsg) {
@@ -258,48 +270,113 @@ bool UnpackMessage::UnpackMsgType(GE::Uint16 &msgType) {
 	return this->UnpackU16(msgType);
 }
 
-bool UnpackMessage::UnpackType(GE::Int32 &flag) {
-	if(m_nSurplusSize < sizeof(char)){
-		this->m_bIsOK = false;
-		return false;
-	}
-	flag = static_cast<char>(*(curBufHead));
-	curBufHead += sizeof(char);
-	m_nSurplusSize -= sizeof(char);
-	return true;
-}
-
-bool UnpackMessage::UnpackU16(GE::Uint16 &u16) {
-	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint16)){
-		this->m_bIsOK = false;
-		return false;
-	}
-	u16 = static_cast<GE::Uint16>(*((GE::Uint16*)curBufHead));
-	curBufHead += sizeof(GE::Uint16);
-	m_nSurplusSize -= sizeof(GE::Uint16);
-	return true;
+bool UnpackMessage::UnpackType(GE::Int8 &flag) {
+	UnpackTypeMsg(GE::Int8, flag);
+//	if(m_nSurplusSize < sizeof(GE::Int8)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	flag = static_cast<GE::Int8>(*(curBufHead));
+//	curBufHead += sizeof(GE::Int8);
+//	m_nSurplusSize -= sizeof(GE::Int8);
+//	return true;
 }
 
 bool UnpackMessage::UnpackU8(GE::Uint8 &u8) {
-	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint8)){
-		this->m_bIsOK = false;
-		return false;
-	}
-	u8 = static_cast<GE::Uint8>(*((GE::Uint8*)curBufHead));
-	curBufHead += sizeof(GE::Uint8);
-	m_nSurplusSize -= sizeof(GE::Uint8);
-	return true;
+	UnpackTypeMsg(GE::Uint8, u8);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint8)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	u8 = static_cast<GE::Uint8>(*((GE::Uint8*)curBufHead));
+//	curBufHead += sizeof(GE::Uint8);
+//	m_nSurplusSize -= sizeof(GE::Uint8);
+//	return true;
 }
 
-bool UnpackMessage::UnpackInt(GE::Int32& i) {
-	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Int32)){
-		this->m_bIsOK = false;
-		return false;
-	}
-	i = static_cast<GE::Int32>(*((GE::Int32*)curBufHead));
-	curBufHead += sizeof(GE::Int32);
-	m_nSurplusSize -= sizeof(GE::Int32);
-	return true;
+bool UnpackMessage::UnpackI8(GE::Int8 &i8) {
+	UnpackTypeMsg(GE::Int8, i8);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint8)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	i8 = static_cast<GE::Int8>(*((GE::Int8*)curBufHead));
+//	curBufHead += sizeof(GE::Int8);
+//	m_nSurplusSize -= sizeof(GE::Int8);
+//	return true;
+}
+
+bool UnpackMessage::UnpackU16(GE::Uint16 &u16) {
+	UnpackTypeMsg(GE::Uint16, u16);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint16)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	u16 = static_cast<GE::Uint16>(*((GE::Uint16*)curBufHead));
+//	curBufHead += sizeof(GE::Uint16);
+//	m_nSurplusSize -= sizeof(GE::Uint16);
+//	return true;
+}
+
+bool UnpackMessage::UnpackI16(GE::Int16 &i16) {
+	UnpackTypeMsg(GE::Int16, i16);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Int16)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	i16 = static_cast<GE::Int16>(*((GE::Int16*)curBufHead));
+//	curBufHead += sizeof(GE::Int16);
+//	m_nSurplusSize -= sizeof(GE::Int16);
+//	return true;
+}
+
+bool UnpackMessage::UnpackU32(GE::Uint32& i32) {
+	UnpackTypeMsg(GE::Uint32, i32);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Uint32)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	i32 = static_cast<GE::Uint32>(*((GE::Uint32*)curBufHead));
+//	curBufHead += sizeof(GE::Uint32);
+//	m_nSurplusSize -= sizeof(GE::Uint32);
+//	return true;
+}
+
+bool UnpackMessage::UnpackI32(GE::Int32& i32) {
+	UnpackTypeMsg(GE::Int32, i32);
+//	if(m_uSize != 0 && m_nSurplusSize < sizeof(GE::Int32)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	i32 = static_cast<GE::Int32>(*((GE::Int32*)curBufHead));
+//	curBufHead += sizeof(GE::Int32);
+//	m_nSurplusSize -= sizeof(GE::Int32);
+//	return true;
+}
+
+
+bool UnpackMessage::UnpackU64(GE::Uint64 &u64) {
+	UnpackTypeMsg(GE::Uint64, u64);
+//	if(m_nSurplusSize < sizeof(GE::Uint64)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	u64 = static_cast<GE::Uint64>(*((GE::Uint64*)curBufHead));
+//	curBufHead += sizeof(GE::Uint64);
+//	m_nSurplusSize -= sizeof(GE::Uint64);
+//	return true;
+}
+
+bool UnpackMessage::UnpackI64(GE::Int64 &i64) {
+	UnpackTypeMsg(GE::Int64, i64);
+//	if(m_nSurplusSize < sizeof(GE::Int64)){
+//		this->m_bIsOK = false;
+//		return false;
+//	}
+//	i64 = static_cast<GE::Int64>(*((GE::Int64*)curBufHead));
+//	curBufHead += sizeof(GE::Int64);
+//	m_nSurplusSize -= sizeof(GE::Int64);
+//	return true;
 }
 
 bool UnpackMessage::UnpackBool(bool &b) {
@@ -313,18 +390,6 @@ bool UnpackMessage::UnpackBool(bool &b) {
 	}else{
 		b = false;
 	}
-	return true;
-}
-
-
-bool UnpackMessage::UnpackLong(GE::Int64 &l) {
-	if(m_nSurplusSize < sizeof(GE::Int64)){
-		this->m_bIsOK = false;
-		return false;
-	}
-	l = static_cast<GE::Int64>(*((GE::Int64*)curBufHead));
-	curBufHead += sizeof(GE::Int64);
-	m_nSurplusSize -= sizeof(GE::Int64);
 	return true;
 }
 
@@ -368,13 +433,13 @@ bool UnpackMessage::UnpackLuaObjHelp(lua_State *L) {
 
 	GE::Int32 top = lua_gettop(L);
 	lua_checkstack(L, top + 5);
-	GE::Int32 flag = 0;
+	GE::Int8 flag = 0;
 	this->UnpackType(flag);
 	switch(flag){
 		case IntFlag:
 		{
 			GE::Int32 i = 0;
-			if(this->UnpackInt(i)){ lua_pushinteger(L, i); }
+			if(this->UnpackI32(i)){ lua_pushinteger(L, i); }
 			else{ lua_pushinteger(L, 0); }
 			break;
 		}
@@ -382,14 +447,14 @@ bool UnpackMessage::UnpackLuaObjHelp(lua_State *L) {
 		{
 
 			GE::Int64 l = 0;
-			if(this->UnpackLong(l)){ lua_pushinteger(L, l); }
+			if(this->UnpackI64(l)){ lua_pushinteger(L, l); }
 			else{ lua_pushinteger(L, 0); }
 			break;
 		}
 		case StringFlag:
 		{
 			GE::Int32 size = 0;
-			this->UnpackInt(size);
+			this->UnpackI32(size);
 			char* str = new char(size);
 			if(this->UnpackString(str, size)) { lua_pushlstring(L, str, size); }
 			else { lua_pushnil(L); }
@@ -414,7 +479,7 @@ bool UnpackMessage::UnpackLuaObjHelp(lua_State *L) {
 		{
 			GE::Int32 size = 0;
 			// table的长度
-			this->UnpackInt(size);
+			this->UnpackI32(size);
 //			lua_createtable(L, size, 0);
 			lua_newtable(L);
 			ASSERT_LUA_TOP(L, top, 1);

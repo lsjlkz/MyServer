@@ -19,11 +19,11 @@ public:
 	~GENetBuf();
 
 public:
-	void 			Reset(GE::Uint16 uSize=0){m_uReadSize = uSize;m_uReadSize = uSize;}	// 初始化
+	void 			Reset(GE::Uint16 uSize=0){m_uWriteSize = uSize;m_uReadSize = uSize;}	// 初始化
 	void*			HeadPtr(GE::Uint16 uSize=0){return m_pHead + uSize;}						// buf头指针
 	GE::Uint16 		MaxSize(){return m_uMaxSize;}
 	GE::Uint16 		CanWriteSize(){return m_uMaxSize - m_uWriteSize;}
-	GE::Uint16 		CanReadSize(){return m_uMaxSize - m_uReadSize;}
+	GE::Uint16 		CanReadSize(){return m_uWriteSize - m_uReadSize;}
 
 	void*			WriteFence_us(){return m_pHead + m_uWriteSize;}
 	void			WriteBytes_us(const void* phead, GE::Uint16 uSize);						// 一定长度的拷到buf中

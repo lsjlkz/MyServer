@@ -43,21 +43,21 @@ public:
 
 	bool 			PackMsgType(GE::Uint16 msgType);
 
-	bool			PackType(GE::Int32 t);
+	bool			PackType(GE::Uint8 t);
 
-	bool 			PackCharInt(GE::Int32 c);
-	bool 			PackChar(char c);
+	bool 			PackCharInt(GE::Uint8 c);
 
-	bool			PackInt(GE::Int32 i);
-	GE::Uint16& 	PackU16Ref();
 	GE::Uint8& 		PackU8Ref();
+	GE::Int8&		PackI8Ref();
+	GE::Uint16& 	PackU16Ref();
 	GE::Uint32&		PackU32Ref();
 	GE::Int32&		PackIntRef();
 	bool 			PackU16(GE::Uint16 i);
-	bool			PackIntObj(GE::Int32 i);
+	bool			PackI32(GE::Int32 i);
+	bool			PackI32Obj(GE::Int32 i);
 
-	bool			PackLong(GE::Int64 l);
-	bool			PackLongObj(GE::Int64 l);
+	bool			PackI64(GE::Int64 l);
+	bool			PackI64Obj(GE::Int64 l);
 
 	bool			PackBool(bool b);
 	bool			PackBoolObj(bool b);
@@ -76,19 +76,21 @@ public:
 	void 			PackByte(const void* pHead, GE::Int32 size);
 	BufQueue*		BigMsgQueue() const{return m_pBigMsgQueue;}
 	void			NewBuf();			// 新建一个缓冲区
-	char*			HeadPtr(){return this->m_pCurBufHead;}
+	void*			HeadPtr(){return this->m_pCurBufHead;}
 
 	MsgBase*		Msg(){return reinterpret_cast<MsgBase*>(this->HeadPtr());}
 
+	GE::Uint32 		PackFence(){return this->m_pCurPackFence;}
+
 
 private:
-	bool					m_bIsOk;			// 是否有错误
+	bool					m_bIsOk;				// 是否有错误
 	BufPool*				m_pBigMsgPool;
-	BufQueue*				m_pBigMsgQueue;		// 打包的流队列
-	GE::Uint32				m_uSize;
+	BufQueue*				m_pBigMsgQueue;			// 打包的流队列
+	GE::Uint32				m_uSize;				// 当前打包所有缓冲区空间
 	char*					m_pCurBufHead;			// 当前打包的缓冲区的头
-	GE::Uint32 				m_uCurBufOffset;		// 当前打包的缓冲区偏移
-	GE::Uint32				m_uCurBufEmpty;		// 当前打包的缓冲区剩余空间
+	GE::Uint32 				m_pCurPackFence;		// 当前打包的缓冲区偏移
+	GE::Uint32				m_uCurBufEmpty;			// 当前打包的缓冲区剩余空间
 	GE::Uint32				m_uCurStackDeep;		// 栈深度，防止递归自身
 };
 
@@ -98,12 +100,16 @@ public:
 	UnpackMessage(void* pHead);
 	UnpackMessage(void* pHead, GE::Int32 nSize);
 public:
-	bool 			UnpackType(GE::Int32&flag);
+	bool 			UnpackType(GE::Int8&flag);
 	bool 			UnpackMsgType(GE::Uint16& msgType);
 	bool 			UnpackU8(GE::Uint8& u8);
+	bool 			UnpackI8(GE::Int8& i8);
 	bool 			UnpackU16(GE::Uint16& u16);
-	bool			UnpackInt(GE::Int32& i);
-	bool			UnpackLong(GE::Int64& l);
+	bool 			UnpackI16(GE::Int16& i16);
+	bool 			UnpackU32(GE::Uint32& u32);
+	bool			UnpackI32(GE::Int32& i32);
+	bool 			UnpackU64(GE::Uint64& u64);
+	bool			UnpackI64(GE::Int64& i64);
 	bool			UnpackBool(bool& b);
 	bool 			UnpackString(char* s, GE::Uint32 size);
 	bool 			UnpackLuaObj(lua_State* L);

@@ -18,6 +18,7 @@ include_directories(${BOOST_INC_DIR})
 include_directories(GameEngine CommonBase)
 
 add_compile_definitions(WIN)            # 宏定义WIN
+add_compile_definitions(WINDEBUG)            # 宏定义WIN
 
 add_compile_options(/wd4819)            # 关闭编译器对于代码中“非ANSI字符”的警告
 #add_compile_options(-O2)                # release编译优化

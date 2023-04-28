@@ -116,6 +116,7 @@ bool GENetWork::HasConnect(GE::Uint32 uSessionId) {
 void GENetWork::SendBytes_MT(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) {
 	if(!this->HasConnect(uSessionID)){
 		// 没有这个连接
+		GELog::Instance()->Log("no session", uSessionID);
 		return;
 	}
 	GENetConnect* pConnect = this->m_ConnectMgr.FindConnect(uSessionID);

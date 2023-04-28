@@ -4,6 +4,7 @@
 
 #include "GameServer.h"
 #include "GEDateTime.h"
+#include "GELog.h"
 
 
 GameServer::GameServer():m_pNetWork(nullptr),

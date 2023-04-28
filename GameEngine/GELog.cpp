@@ -2,12 +2,19 @@
 // Created by lsjlkz on 2023/4/13.
 //
 
+#include "iostream"
 #include "GELog.h"
 #include "GEDateTime.h"
 #include "GEProcess.h"
 
-
 #define FOUT(fos, s) fos<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
+#define SOUT(fos, s) std::cout<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
+
+#ifdef WINDEBUG
+#define GEOUT SOUT
+#else
+#define GEOUT FOUT
+#endif
 
 GELog::GELog():m_uLogDays(0)
 {
@@ -60,7 +67,7 @@ void GELog::WriteStream(sstream &ss) {
 	if (m_fileOS.is_open()) {
 		m_fileMutex.lock();
 //		m_fileOS << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
-		FOUT(m_fileOS, ss.str());
+		GEOUT(m_fileOS, ss.str());
 		m_fileMutex.unlock();
 	}
 }
@@ -70,7 +77,7 @@ void GELog::WriteStream(const char * s) {
 	MakeSureLogDays();
 	if (m_fileOS.is_open()) {
 		m_fileMutex.lock();
-		FOUT(m_fileOS, s);
+		GEOUT(m_fileOS, s);
 		m_fileMutex.unlock();
 	}
 }
@@ -79,7 +86,7 @@ void GELog::WriteStream(std::string s) {
 	MakeSureLogDays();
 	if (m_fileOS.is_open()) {
 		m_fileMutex.lock();
-		FOUT(m_fileOS, s);
+		GEOUT(m_fileOS, s);
 		m_fileOS.flush();
 		m_fileMutex.unlock();
 	}

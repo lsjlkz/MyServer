@@ -10,7 +10,7 @@ GENetSendBuf::GENetSendBuf(GE::Uint16 uBlockSize, GE::Uint16 uBlockNum) :
 		m_bIsHoldBlock(false),
 		m_uNewCnt(0),
 		m_pBufPool(nullptr){
-	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
+	this->m_pReadBuf = this->NewNetBuf(uBlockSize);
 	this->m_pWriteBuf = this->NewNetBuf(uBlockSize);
 	this->m_pBufQueue = new tdBufQueue();
 }
@@ -107,6 +107,7 @@ bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
 		GE::Uint16 canWriteSize = this->m_pWriteBuf->CanWriteSize();
 		// 写入部分
 		this->m_pWriteBuf->WriteBytes_us(pHead, canWriteSize);
+		this->m_pWriteBuf->MoveWriteFence_us(canWriteSize);
 		// 剩下的
 		uSize -= canWriteSize;
 		// 插入到队列中
@@ -114,12 +115,12 @@ bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
 		// 拿到一个新的
 		this->m_pWriteBuf = this->NewNetBuf(this->m_pWriteBuf->MaxSize());
 		// 继续写入剩下的
-		pHead = (const char *) pHead + canWriteSize;
+		pHead = (GE::Uint16 *) pHead + canWriteSize;
 	}
 	// 这里肯定够了
 	if(uSize){
 		this->m_pWriteBuf->WriteBytes_us(pHead, uSize);
-		this->m_pWriteBuf->MoveReadFence_us(uSize);
+		this->m_pWriteBuf->MoveWriteFence_us(uSize);
 	}
 	return true;
 }
@@ -153,5 +154,4 @@ void GENetSendBuf::ReleaseBlock() {
 	GE_WIN_ASSERT(this->m_bIsHoldBlock == true);
 	this->m_pWriteBuf->Reset();
 	this->m_bIsHoldBlock = false;
-
 }

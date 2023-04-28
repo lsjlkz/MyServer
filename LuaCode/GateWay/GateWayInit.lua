@@ -24,9 +24,19 @@ local function load_gateway_module()
     gs_tick.reg_tick(nil, 300, test_close)
 end
 
+local function test_send()
+    print("test_send")
+    local a = {}
+    a[3] = 4
+    cGameServer.DebugSendMsg(0, 12, a)
+    cGameServer.DebugSendMsg(1, 12, a)
+    gs_tick.reg_tick(nil, 5, test_send)
+end
+
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
     cGameServer.CreateNetwork(100, cDefineTable.GateWayID, 10086)
+    gs_tick.reg_tick(nil, 5, test_send)
     load_gateway_module()
 end
 

@@ -54,6 +54,7 @@ public:
 	void 				Shutdown(NetConnectState state);
 
 	bool				IsShutdown(){return m_State != enNetConnect_Work;}// 是否关闭了连接
+	GE::Uint8 			GetSocketState(){return m_State;}
 
 	BoostSocket&		Socket();
 	void				SessionID(GE::Uint32 uId){this->m_uSessionId = uId;}
