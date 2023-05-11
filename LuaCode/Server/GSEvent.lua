@@ -5,7 +5,6 @@
 ---事件的触发，因为事件在不同进程中独立，只在同一进程中关联，所以可以直接分配
 
 local cur_event_allot_id = 0
-local p = require("Common/Print")
 
 --为什么这里用负数，因为玩家身上存储了正数的索引，当玩家的数据改变后，也会触发事件
 local function allot_event_id()
