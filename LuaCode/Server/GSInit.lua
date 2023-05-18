@@ -25,6 +25,15 @@ end
 
 function __G__GSInitTable.gateway()
     local gateway_init = require("GateWay/GateWayInit")
+    local p = require("lua.pack")
+    local o = p.new()
+    local a = {}
+    a[3] = 4
+    a[4] = 5
+    a[5] = {}
+    p.pack(o, a)
+    local l = #o
+    print(l)
     gateway_init.Init()
 end
 

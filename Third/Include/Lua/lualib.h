@@ -50,6 +50,12 @@ LUAMOD_API int (luaopen_lfs)(lua_State* L);
 #define LUA_LUAMYSQLLIBNAME "luasql.mysql"
 LUAMOD_API int (luaopen_luasql_mysql)(lua_State* L);
 
+#define LUA_LUAPROTOBUFNAME "pb"
+LUAMOD_API int (luaopen_pb)(lua_State* L);
+
+#define LUA_LUAPACK "lua.pack"
+LUAMOD_API int (open_pack_obj)(lua_State* L);
+
 /* open all previous libraries */
 LUALIB_API void (luaL_openlibs) (lua_State *L);
 

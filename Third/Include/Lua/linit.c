@@ -52,6 +52,8 @@ static const luaL_Reg loadedlibs[] = {
   {LUA_DBLIBNAME, luaopen_debug},
   {LUA_LFSLIBNAME, luaopen_lfs},
   {LUA_LUAMYSQLLIBNAME, luaopen_luasql_mysql},
+  {LUA_LUAPROTOBUFNAME, luaopen_pb},
+  {LUA_LUAPACK, open_pack_obj},
   {NULL, NULL}
 };
 
