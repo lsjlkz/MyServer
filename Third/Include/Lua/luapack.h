@@ -10,7 +10,7 @@
 
 // check first is pack
 #define LUA_CHECK_BUF_TYPE(L) \
-	((Buf*) luaL_checkudata(L, 1, LUA_PACKAGE_META))
+	((LuaPackBuf*) luaL_checkudata(L, 1, LUA_PACKAGE_META))
 
 
 // check second
@@ -49,7 +49,7 @@ typedef struct {
 	size_t write_size;
 	size_t read_size;
 	char buf[MAX_BUF_SIZE];
-} Buf;
+} LuaPackBuf;
 
 
 LUA_API int pack_arg(lua_State* L);
