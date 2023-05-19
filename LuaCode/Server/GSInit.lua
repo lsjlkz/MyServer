@@ -29,11 +29,11 @@ function __G__GSInitTable.gateway()
     local o = p.new()
     local a = {}
     a[3] = 4
-    a[4] = 5
+    a[4] = "3333333"
     a[5] = {}
     p.pack(o, a)
-    local l = #o
-    print(l)
+    local b = p.unpack(o)
+    print(b[4])
     gateway_init.Init()
 end
 

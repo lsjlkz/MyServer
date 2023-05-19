@@ -20,7 +20,10 @@
 #define LUA_CHECK_LAST_ARG_TYPE(L,t) \
 	(lua_type(L, -1) == t)
 
-#define NUMBER_FLAG				-99
+#define SHORT_FLAG				-96
+#define INT_FLAG				-97
+#define LONG_FLAG				-98
+#define LONG_LONG_FLAG			-99
 #define NIL_FLAG				-100
 #define TRUE_FLAG				-101
 #define FALSE_FLAG				-102
@@ -30,42 +33,48 @@
 
 #define LUA_TYPE_FLAG char
 
-#define NUMBER long long
+#define SHORT short
+#define INT int
+#define LONG long
+#define LONG_LONG long long
+#define U_SHORT unsigned short
 
-#define TABLE_SIZE_TYPE unsigned short
+#define TABLE_SIZE_TYPE U_SHORT
 
 #define MAX_STACK_DEEP			30
 
 #define MAX_BUF_SIZE 65535
 
-#define BUF_EMPTY(io) ((MAX_BUF_SIZE)-(io->size))
-
-#define BUF_ENOUGH_ENPTY(io, t) ((BUF_EMPTY(io))>(sizeof(t)))
-
 typedef struct {
-	size_t size;
+	size_t write_size;
+	size_t read_size;
 	char buf[MAX_BUF_SIZE];
 } Buf;
 
 
 LUA_API int pack_arg(lua_State* L);
 
+LUA_API int unpack_to_arg(lua_State* L);
+
+LUA_API int print(lua_State* L);
+
 LUA_API int new_pack(lua_State* L);
 
 LUA_API int obj_len(lua_State* L);
 
 static luaL_Reg pack_functions[] = {
-	{"new", new_pack},
-	{"pack", pack_arg},
-	{NULL, NULL}
+		{"new", new_pack},
+		{"pack", pack_arg},
+		{"unpack", unpack_to_arg},
+		{NULL, NULL}
 };
 
 
 
 static luaL_Reg pack_methods[] = {
-	{"__len", obj_len},
-	{"pack", pack_arg},
-	{NULL, NULL}
+		{"__len", obj_len},
+		{"print", print},
+		{NULL, NULL}
 };
 
 LUA_API int open_pack_lib(lua_State* L) {
