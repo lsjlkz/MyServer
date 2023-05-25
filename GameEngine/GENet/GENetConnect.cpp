@@ -85,7 +85,6 @@ void GENetConnect::AsyncRecvHead() {
 	if (this->IsShutdown()){
 		return;
 	}
-	GELog::Instance()->Log("AsyncRecvHead", this->m_uSessionId);
 	m_RecvCache.Reset();
 	boost::asio::async_read(m_BoostSocket,
 							boost::asio::buffer(m_RecvCache.HeadPtr(), sizeof(MsgBase)),
@@ -101,8 +100,8 @@ void GENetConnect::AsyncRecvBody() {
 	if (this->IsShutdown()){
 		return;
 	}
-	GELog::Instance()->Log("AsyncRecvBody", this->m_uSessionId);
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
+	GELog::Instance()->Log("AsyncRecvBody", pMsg->Size());
 	boost::asio::async_read(m_BoostSocket,
 							boost::asio::buffer(m_RecvCache.WriteFence_us(), pMsg->Size() - sizeof(MsgBase)),
 							// 第一个是回调，第二个是回调的对象，也就是this
@@ -121,7 +120,9 @@ void GENetConnect::HandleReadMsgHead(const boost::system::error_code &ec, size_t
 		this->Shutdown(enNetConnect_RemoteClose);
 		return;
 	}
-	GELog::Instance()->Log("HandleReadMsgHead", this->m_uSessionId);
+	GELog::Instance()->Log("HandleReadMsgHead", uTransferredBytes);
+	// 这里只是移动写指针，并没有移动HeadPtr
+	this->m_RecvCache.MoveWriteFence_us(sizeof(MsgBase));
 	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
 	this->AsyncRecvBody();
 }
@@ -136,7 +137,12 @@ void GENetConnect::HandleReadMsgBody(const boost::system::error_code &ec, size_t
 		this->Shutdown(enNetConnect_RemoteClose);
 		return;
 	}
-	GELog::Instance()->Log("HandleReadMsgBody", this->m_uSessionId);
+	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
+	// 这里只是移动写指针，并没有移动HeadPtr
+	this->m_RecvCache.MoveWriteFence_us(pMsg->Size() - sizeof(MsgBase));
+	GELog::Instance()->Log("HandleReadMsgBody1", uTransferredBytes);
+	GELog::Instance()->Log("HandleReadMsgBody2", pMsg->Size());
+	GELog::Instance()->Log("HandleReadMsgBody3", this->m_RecvCache.CanReadSize());
 	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
 	this->AsyncRecvHead();
 }
