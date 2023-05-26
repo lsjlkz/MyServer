@@ -51,6 +51,7 @@ public:
 	void				HandleReadMsgHead(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息头的句柄
 	void 				HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息体的句柄
 	void 				HandleWriteMsg(const boost::system::error_code &ec, size_t uTransferredBytes);
+	int					RecvMsgCompletely();					// 接收消息成功
 	void				KeepAlive();							// 保持长连接
 	bool 				IsLongTimeNoRecv();						// 太长时间没接收到消息了
 
@@ -65,8 +66,11 @@ public:
 	GE::Uint32			SessionID(){return this->m_uSessionId;}
 	void 				SetWaitTime(GE::Uint32 waitTime){this->m_uWaitSeconds = waitTime;}
 
+	bool 				IsWhoClient() const;
+
 private:
 	GENetWork*			m_pNetWork;
+	GE::Uint8			m_uWho;									// 连接的类型
 
 	BoostSocket			m_BoostSocket;
 

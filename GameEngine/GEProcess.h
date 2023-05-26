@@ -23,6 +23,9 @@ public:
 private:
 	char*						m_sProcessName;
 
+
+public:
+	GE::Uint8 					uWhoClient;
 };
 
 

@@ -8,6 +8,7 @@
 #include "GENetWork.h"
 #include "GEDateTime.h"
 #include "GELog.h"
+#include "GEProcess.h"
 
 
 GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
@@ -140,9 +141,9 @@ void GENetConnect::HandleReadMsgBody(const boost::system::error_code &ec, size_t
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
 	// 这里只是移动写指针，并没有移动HeadPtr
 	this->m_RecvCache.MoveWriteFence_us(pMsg->Size() - sizeof(MsgBase));
-	GELog::Instance()->Log("HandleReadMsgBody1", uTransferredBytes);
-	GELog::Instance()->Log("HandleReadMsgBody2", pMsg->Size());
-	GELog::Instance()->Log("HandleReadMsgBody3", this->m_RecvCache.CanReadSize());
+	// 客户端已经处理好4字节对齐了的，这里保证一下
+	pMsg->Align();
+	this->RecvMsgCompletely();
 	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
 	this->AsyncRecvHead();
 }
@@ -163,6 +164,22 @@ void GENetConnect::HandleWriteMsg(const boost::system::error_code &ec, size_t uT
 	}
 	// 继续异步发送
 	this->AsyncSendBlock();
+}
+
+int GENetConnect::RecvMsgCompletely(){
+	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
+	tdMsgRedirect rd = pMsg->Redirect();
+	if(this->IsWhoClient()){
+		// 客户端转发的消息
+	}
+	// 为什么这里不直接处理消息，因为消息接收是多线程的，这里写入到缓冲区中，在主线程中遍历处理。
+	this->m_RecvBufMutex.lock();
+	bool ret = this->m_RecvBuf.WriteBytes(pMsg);
+	this->m_RecvBufMutex.unlock();
+	if(ret){
+		return 0;
+	}
+	return 1;
 }
 
 void GENetConnect::Start() {
@@ -202,5 +219,10 @@ void GENetConnect::Shutdown(NetConnectState state) {
 		GELog::Instance()->Log(e.what());
 	}
 }
+
+bool GENetConnect::IsWhoClient() const {
+	return this->m_uWho == GEProcess::Instance()->uWhoClient;
+}
+
 
 
