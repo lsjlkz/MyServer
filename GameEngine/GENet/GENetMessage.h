@@ -17,8 +17,7 @@
 class className:public MsgBase        \
 {                                     \
 public:                               \
-	className():MsgBase(sizeof(className), msgType){}\
-};
+	className():MsgBase(sizeof(className), msgType){}
 
 union tdMsgRedirect{
 	tdMsgRedirect(){}

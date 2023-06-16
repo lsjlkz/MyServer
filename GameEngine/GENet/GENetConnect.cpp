@@ -22,7 +22,9 @@ GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
 }
 
 GENetConnect::~GENetConnect() {
-	GE_SAFE_DELETE_POINT(this->m_pNetWork);
+	this->m_pNetWork = nullptr;
+	this->m_uSessionId = MAX_UINT32;
+	this->m_uWho = 0;
 }
 
 GENetConnect::BoostSocket& GENetConnect::Socket() {
@@ -169,8 +171,29 @@ void GENetConnect::HandleWriteMsg(const boost::system::error_code &ec, size_t uT
 int GENetConnect::RecvMsgCompletely(){
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
 	tdMsgRedirect rd = pMsg->Redirect();
-	if(this->IsWhoClient()){
+	if(this->IsWhoNone()){
+
+	}
+	else if(this->IsWhoClient()){
 		// 客户端转发的消息
+		if(rd.uClientRedirect != CLIENT_REDIRECT_NONE){
+			// 需要重定向到其他进程
+			GE::Uint32 uRedirectSessionID = GEProcess::Instance()->GetClientRedirect(rd.uClientRedirect);
+			if(uRedirectSessionID == MAX_UINT32){
+				// 错误了
+				return 2;
+			}
+			// 可以覆盖重定向信息了，补充为客户端的sessionId，因为之后可能会用到
+			rd.uClientSessionID = this->m_uSessionId;
+			// 这里转发到
+			this->m_pNetWork->SendBytes(uRedirectSessionID, pMsg, pMsg->Size());
+		}
+	}
+	else if(this->IsWhoGateway()){
+		// 网关的话，那就不用重定向
+	}
+	else{
+
 	}
 	// 为什么这里不直接处理消息，因为消息接收是多线程的，这里写入到缓冲区中，在主线程中遍历处理。
 	this->m_RecvBufMutex.lock();
@@ -220,9 +243,20 @@ void GENetConnect::Shutdown(NetConnectState state) {
 	}
 }
 
+void GENetConnect::SetWho(GE::Uint16 uWho){
+	this->m_uWho = uWho;
+}
+
+bool GENetConnect::IsWhoNone() const {
+	return this->m_uWho == 0;
+}
+
 bool GENetConnect::IsWhoClient() const {
 	return this->m_uWho == GEProcess::Instance()->uWhoClient;
 }
 
+bool GENetConnect::IsWhoGateway() const{
+	return this->m_uWho == GEProcess::Instance()->uWhoGateway;
+}
 
 

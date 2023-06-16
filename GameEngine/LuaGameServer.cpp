@@ -47,11 +47,50 @@ GE::Int32 LuaGameServer::SetProcessName(lua_State* L){
 	GEProcess::Instance()->SetProcessName(s, size);
 	return 1;
 }
+
+GE::Int32 LuaGameServer::SetClientRedirect(lua_State* L){
+	// 客户端重定向
+	GE::Uint32 uRedirectType = lua_tointeger(L, 1);	// 重定向类型
+	WIN_ASSERT(uRedirectType < CLIENT_REDIRECT_MAX);
+	GE::Uint32 uRedirectSessionId = lua_tointeger(L, 2);// 重定向session
+	GEProcess::Instance()->SetClientRedirect(uRedirectType, uRedirectSessionId);
+	return 1;
+}
+
 GE::Int32 LuaGameServer::LuaPrint(lua_State* L){
 	luaL_checktype(L, -1, LUA_TSTRING);
 	size_t size = 0;
 	const char* s = lua_tolstring(L, -1, &size);
 	GELog::Instance()->Log(s);
+	return 1;
+}
+
+GE::Int32 LuaGameServer::Connect(lua_State* L){
+	// 连接到某个host和端口
+	luaL_checktype(L, 1, LUA_TSTRING);	// host
+	luaL_checktype(L, 2, LUA_TNUMBER);	// port
+	luaL_checktype(L, 3, LUA_TNUMBER);	// who
+	luaL_checktype(L, 4, LUA_TNUMBER);	// sendBlockSize
+	luaL_checktype(L, 5, LUA_TNUMBER);	// sendBlockNum
+	luaL_checktype(L, 6, LUA_TNUMBER);	// recvBlockSize
+	luaL_checktype(L, 7, LUA_TNUMBER);	// recvBlockNum
+	luaL_checktype(L, 8, LUA_TNUMBER);	// waitWhoTime
+	luaL_checktype(L, 9, LUA_TNUMBER);	// waitRecvTime
+
+	size_t size = 0;
+	const char* sIP = lua_tolstring(L, 1, &size);
+	GE::Uint32 uPort = lua_tonumber(L, 2);
+	GE::Uint32 uWho = lua_tonumber(L, 3);
+
+	GEDefine::ConnectParam* pCP = new GEDefine::ConnectParam();
+	pCP->uSendBlockSize = lua_tonumber(L, 4);
+	pCP->uSendBlockNum = lua_tonumber(L, 5);
+	pCP->uRecvBlockSize = lua_tonumber(L, 6);
+	pCP->uRecvBlockNum = lua_tonumber(L, 7);
+	pCP->uWaitWhoTime = lua_tonumber(L, 8);
+	pCP->uWaitRecvTime = lua_tonumber(L, 9);
+	GE::Uint32 uSessionID = GameServer::Instance()->Connect(sIP, uPort, uWho, pCP);
+	lua_pushinteger(L, uSessionID);
 	return 1;
 }
 

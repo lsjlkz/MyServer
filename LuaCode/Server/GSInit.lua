@@ -9,28 +9,24 @@
 __G__GSInitTable = __G__GSInitTable or {}
 
 package.path = package.path .. ";../LuaCode/?.lua;"
-local cDefineTable = require("Common/CDefine")
 require("Server/ServerPrint")
 
 function __G__GSInitTable.world()
     --初始化游戏世界
+    print("__G__GSInitTable.world")
     local world_init = require("World/WorldInit")
     world_init.Init()
 end
 
 function __G__GSInitTable.logic()
+    print("__G__GSInitTable.logic")
     local logic_init = require("Logic/LogicInit")
     logic_init.Init()
 end
 
 function __G__GSInitTable.gateway()
+    print("__G__GSInitTable.gateway")
     local gateway_init = require("GateWay/GateWayInit")
-    local p = require("lua.pack")
-    local o = p.new()
-    local a = {}
-    a[3] = 4
-    p.pack(o, a)
-    o:print()
     gateway_init.Init()
 end
 

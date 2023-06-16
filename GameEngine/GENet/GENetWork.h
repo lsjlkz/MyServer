@@ -20,7 +20,7 @@ class GENetWork{
 public:
     typedef boost::asio::ip::tcp::acceptor				tdBoostAcceptor;
     typedef boost::asio::ip::address_v4					tdBoostAddV4;
-    typedef boost::asio::io_service                     tdBoostIOServer;
+    typedef boost::asio::io_context                     tdBoostIOContext;
     typedef boost::thread								tdBoostThread;
     typedef std::vector<tdBoostThread*>					tdBoostThreads;
     typedef std::vector<std::string>					tdStringVector;
@@ -38,12 +38,13 @@ public:
 
 	void					Stop_MT();
 
+	bool					Connect_MT(const char* sIP, GE::Uint32 uPort, GE::Uint32& uSessionID, GE::Uint16 uWho, void* pBindPoint, GEDefine::ConnectParam* pCP);
 	bool					HasConnect(GE::Uint32 uSessionId);
 	void					SendBytes_MT(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 不加锁，只能主线程发送，线程不安全
 	void					SendBytes(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 加锁，可以多线程发送
 
 
-	tdBoostIOServer&		IOS();
+	tdBoostIOContext&		IOS();
 
 
 	bool isRun(){return m_bIsRun;}
@@ -55,7 +56,7 @@ private:
 
 	bool 				m_bIsRun;
 	bool				m_bIsStop;
-    tdBoostIOServer     m_ioServer;
+    tdBoostIOContext    m_ioContext;
     tdBoostAcceptor*    m_pAcceptor;
 	tdBoostThreads		m_pNetWorkThreads;
 

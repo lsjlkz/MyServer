@@ -18,7 +18,6 @@ end
 local function load_logic_module()
     f.load_all_module("Common")
     f.load_all_module("Server")
-    f.load_all_module("ServerDB")
     f.load_all_module("Logic")
     gs_event.trigger_event(gs_event.AfterLoadAllScripts)
     local gsinit = require("Server/GSInit")
@@ -29,7 +28,7 @@ end
 function __G__LogicTable.Init()
     load_logic_module()
     cGameServer.SetConnectParam(100, 100, 100, 100, 100, 100)
-    cGameServer.CreateNetwork(100, cDefineTable.LogicID, 10010)
+    cGameServer.CreateNetwork(100, cDefineTable.LogicID, cDefineTable.Port_Logic)
     cGameServer.SetProcessName("Logic")
 end
 

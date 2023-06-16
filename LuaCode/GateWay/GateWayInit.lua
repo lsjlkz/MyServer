@@ -18,7 +18,6 @@ end
 local function load_gateway_module()
     f.load_all_module("Common")
     f.load_all_module("Server")
-    f.load_all_module("ServerDB")
     f.load_all_module("GateWay")
     gs_event.trigger_event(gs_event.AfterLoadAllScripts)
     gs_tick.reg_tick(nil, 300, test_close)
@@ -38,8 +37,7 @@ end
 
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
-    cGameServer.CreateNetwork(2, cDefineTable.GateWayID, 10086)
-    gs_tick.reg_tick(nil, 5, test_send)
+    cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
     load_gateway_module()
 end
 

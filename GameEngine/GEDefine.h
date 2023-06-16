@@ -33,6 +33,11 @@ void operator=(const className&) = delete;\
 
 #define GE_IS_POINT_NOT_NULL(head) ((head)!=nullptr)
 
+// 禁止拷贝
+#define GE_DISABLE_BOJ_CPY(cname)	\
+	cname(const cname&);	\
+	const cname& operator=(const cname&);
+
 namespace GE{
 
 

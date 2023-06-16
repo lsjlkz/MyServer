@@ -32,6 +32,7 @@ enum NetConnectState
 #define DefaultWaitTime 60		// 默认1分钟
 
 class GENetConnect:public boost::enable_shared_from_this<GENetConnect> {
+	GE_DISABLE_BOJ_CPY(GENetConnect);
 public:
 	typedef boost::asio::ip::tcp::socket 				BoostSocket;
 	typedef boost::shared_ptr<GENetConnect>				ConnectSharePtr;
@@ -66,7 +67,11 @@ public:
 	GE::Uint32			SessionID(){return this->m_uSessionId;}
 	void 				SetWaitTime(GE::Uint32 waitTime){this->m_uWaitSeconds = waitTime;}
 
+	void 				SetWho(GE::Uint16 who);
+
+	bool				IsWhoNone() const;
 	bool 				IsWhoClient() const;
+	bool 				IsWhoGateway() const;
 
 private:
 	GENetWork*			m_pNetWork;

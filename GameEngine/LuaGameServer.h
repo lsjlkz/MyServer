@@ -21,7 +21,9 @@ public:
 	static GE::Int32 CreateNetwork(lua_State* L);
 	static GE::Int32 SetConnectParam(lua_State* L);
 	static GE::Int32 SetProcessName(lua_State* L);
+	static GE::Int32 SetClientRedirect(lua_State* L); // 客户端重定向标记
 	static GE::Int32 LuaPrint(lua_State* L);
+	static GE::Int32 Connect(lua_State* L);
 //	static GE::Int32 CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
 	static GE::Int32 PackMsg(lua_State* L);
 	static GE::Int32 ReceiveMsg(char* bufHead);
@@ -45,8 +47,10 @@ public:
 static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"CreateNetwork", LuaGameServer::CreateNetwork},
 		{"SetProcessName", LuaGameServer::SetProcessName},
+		{"SetClientRedirect", LuaGameServer::SetClientRedirect},
 		{"LuaPrint", LuaGameServer::LuaPrint},
 		{"GetGameServerID", LuaGameServer::GetGameServerID},
+		{"Connect", LuaGameServer::Connect},
 		{"PackMsg", LuaGameServer::PackMsg},
 		{"DebugReceiveMsg", LuaGameServer::DebugReceiveMsg},
 		{"Days", LuaGameServer::Days},

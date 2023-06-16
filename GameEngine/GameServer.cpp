@@ -3,8 +3,10 @@
 //
 
 #include "GameServer.h"
+#include "GEProcess.h"
 #include "GEDateTime.h"
 #include "GELog.h"
+#include "GSDefine.h"
 
 
 GameServer::GameServer():m_pNetWork(nullptr),
@@ -23,6 +25,25 @@ GE::Int32 GameServer::CreateNetwork(GE::Int32 MaxConnect, GE::Int32 Thread, GE::
 	return 0;
 }
 
+GE::Uint32 GameServer::Connect(const char* sIP, GE::Uint32 uPort, GE::Uint16 uWho, GEDefine::ConnectParam* pCP){
+	GE::Uint32 uSessionID(MAX_UINT32);
+	if(this->m_pNetWork->Connect_MT(sIP, uPort, uSessionID, uWho, nullptr, pCP)){
+		// 连接成功
+		// 要告知对方自己是什么身份
+		GE::B4 b4;
+		// 潜规则，被动=主动+1
+		b4.U16_0() = uWho + 1;
+		// TODO 这里还有2个字节可以使用
+//		b4.U16_1() = GEProcess::Instance()->
+		MSG_Who who;
+		who.uWho = b4.UI32();
+		this->SendMsg(uSessionID, &who);
+		return uSessionID;
+	}
+	GELog::Instance()->Log("Connect", uSessionID);
+	return uSessionID;
+}
+
 void GameServer::SetGameServerID(GE::Int32 id) {
 	this->GameServerID = id;
 }
@@ -30,7 +51,7 @@ void GameServer::SetGameServerID(GE::Int32 id) {
 GE::Int32 GameServer::Init(char* argv[]) {
 	GE::Int32 id;
 	sscanf_s(argv[1], "%d", &id);
-	SetGameServerID(2);
+	SetGameServerID(id);
 	return 0;
 }
 
@@ -73,6 +94,7 @@ void GameServer::Time() {
 void GameServer::Cycle() {
 	// 消息接受等
 	// 没有消息就休眠1ms
+	// TODO 接收处理消息
 	std::this_thread::sleep_for(std::chrono::milliseconds(1));
 }
 

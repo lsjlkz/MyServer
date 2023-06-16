@@ -4,6 +4,7 @@
 
 #include <boost/asio/placeholders.hpp>
 #include <boost/asio/write.hpp>
+#include <boost/asio/connect.hpp>
 #include "GENetWork.h"
 #include "GELog.h"
 #include "GEProcess.h"
@@ -21,10 +22,10 @@ GE::Int32 GENetWork::Listen_MT(GE::Int32 uListenPort) {
         try{
 #ifdef WIN
 			// 这里开启一个
-			this->m_pAcceptor = new tdBoostAcceptor(m_ioServer, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
+			this->m_pAcceptor = new tdBoostAcceptor(m_ioContext, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
 													false);
 #elif LINUX
-			this->m_pAcceptor = new tdBoostAcceptor(m_ioServer, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
+			this->m_pAcceptor = new tdBoostAcceptor(m_ioContext, tdBoostEndPoint(tdBoostAddV4::from_string("0.0.0.0"), uListenPort),
 													true);
 #endif
 			this->AsyncAccept_NT();
@@ -53,12 +54,12 @@ void GENetWork::Stop_MT(){
 
 }
 
-GENetWork::tdBoostIOServer& GENetWork::IOS() {
-	return this->m_ioServer;
+GENetWork::tdBoostIOContext& GENetWork::IOS() {
+	return this->m_ioContext;
 }
 
 void GENetWork::BoostAsioRun(){
-	this->m_ioServer.run();
+	this->m_ioContext.run();
 }
 
 void GENetWork::AsyncAccept_NT(){
@@ -71,11 +72,6 @@ void GENetWork::AsyncAccept_NT(){
 	this->m_pAcceptor->async_accept(spConnect->Socket(),
 									boost::bind(&GENetWork::HandleAccept_NT, this, spConnect, boost::asio::placeholders::error));
 
-}
-
-void write_handle(const boost::system::error_code &ec, std::size_t bytes_transferred)
-{
-	GELog::Instance()->Log("write_handle");
 }
 
 void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const boost::system::error_code &error) {
@@ -106,11 +102,47 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 
 }
 
+bool GENetWork::Connect_MT(const char* sIP, GE::Uint32 uPort, GE::Uint32& uSessionID, GE::Uint16 uWho, void* pBindPoint, GEDefine::ConnectParam* pCP){
+	// 主线程连接
+	// 参数分别是ip，端口，连接类型，
+	// TODO 要判断是否是主线程
+	if(pCP == nullptr){
+		// 没有给的话，那就默认的参数
+		pCP = &GEProcess::Instance()->DefualConnectParam;
+	}
+	// 要解析域名
+	boost::asio::ip::tcp::resolver resolver(this->m_ioContext);
+	boost::asio::ip::tcp::resolver::query query(sIP, std::to_string(uPort));
+	auto endPoints = resolver.resolve(query);
+	GENetConnect* pConnect = new GENetConnect(this, *pCP);
+	boost::shared_ptr<GENetConnect> spConnect = boost::shared_ptr<GENetConnect>(pConnect);
+	try {
+		boost::asio::connect(spConnect->Socket(), endPoints);
+	}catch(std::exception& e) {
+		GELog::Instance()->Log("err Connect_MT", e.what());
+		return false;
+	}
+	this->m_ConnectMutex.lock();
+	bool ret = this->m_ConnectMgr.AddConnect(spConnect, uSessionID);
+	if(ret){
+		// 设置连接类型
+		pConnect->SetWho(uWho);
+		// TODO 可能还需要设置连接信息，比如session_id
+		// 留着备用
+		// 开始连接
+		pConnect->Start();
+	}
+	this->m_ConnectMutex.unlock();
+	return true;
+}
+
 bool GENetWork::HasConnect(GE::Uint32 uSessionId) {
 	return this->m_ConnectMgr.HasConnect(uSessionId);
 }
 
 void GENetWork::SendBytes_MT(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) {
+	// 主线程发送数据
+	// 参数分别是sessionId，数据地址和数据大小
 	if(!this->HasConnect(uSessionID)){
 		// 没有这个连接
 		GELog::Instance()->Log("no session", uSessionID);
@@ -125,6 +157,8 @@ void GENetWork::SendBytes_MT(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSiz
 }
 
 void GENetWork::SendBytes(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) {
+	// 非主线程发送数据
+	// 这是多线程的，需要加锁控制
 	if(!this->HasConnect(uSessionID)){
 		// 没有这个连接
 		return;

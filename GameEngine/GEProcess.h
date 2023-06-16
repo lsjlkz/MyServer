@@ -9,6 +9,8 @@
 #include "GESingleton.h"
 #include "GEDefine.h"
 
+
+
 class GEProcess: public GESingleton<GEProcess>{
 public:
 	GEProcess();
@@ -16,8 +18,14 @@ public:
 	GEDefine::ConnectParam			DefualConnectParam;
 
 	void SetProcessName(const char *processName, GE::Uint16 size);
+	void SetWhoClient(GE::Uint8 ui8);
+	void SetWhoGateway(GE::Uint8 ui8);
+
+	void SetClientRedirect(GE::Uint32 RedirectType, GE::Uint32 SessionID);
+
 
 	const char* GetProcessName(){return m_sProcessName;}
+	const GE::Uint32 GetClientRedirect(GE::Uint32 RedirectType);
 
 
 private:
@@ -26,6 +34,9 @@ private:
 
 public:
 	GE::Uint8 					uWhoClient;
+	GE::Uint8 					uWhoGateway;
+
+	GE::Uint32 					ClientRedirectArray[CLIENT_REDIRECT_MAX];
 };
 
 
