@@ -38,6 +38,9 @@ end
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
     cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
+    print(cGameServer.TestSeconds())
+    local v2 = Vector2(3,4)
+    v2:print()
     load_gateway_module()
 end
 

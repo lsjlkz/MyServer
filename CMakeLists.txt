@@ -27,43 +27,55 @@ add_definitions(-D_WIN32_WINNT=0x0601)  # 最低操作系统
 add_definitions(-DJTHREADS=4)           # 多线程编译
 
 
-add_executable(MyServer main.cpp
-        GameEngine/GESingleton.h
-        GameEngine/LuaEngine.cpp
-        GameEngine/LuaEngine.h
-        GameEngine/LuaGameServer.cpp
-        GameEngine/LuaGameServer.h
-        GameEngine/GameServer.cpp
-        GameEngine/GameServer.h
-        GameEngine/GENet/GENetWork.cpp
-        GameEngine/GENet/GENetWork.h
-        GameEngine/GSDefine.h
-        GameEngine/GENet/GENetPack.cpp
-        GameEngine/GENet/GENetPack.h
-        GameEngine/GEDefine.h
-        CommonBase/CommomHelp.cpp
-        CommonBase/CommomHelp.h
-        GameEngine/GEDateTime.cpp
-        GameEngine/GEDateTime.h
-        GameEngine/GESystemTime.cpp
-        GameEngine/GESystemTime.h
-        GameEngine/LuaEvent.cpp
-        GameEngine/LuaEvent.h
-        GameEngine/GENet/GENetConnect.cpp
-        GameEngine/GENet/GENetConnect.h
-        GameEngine/GENet/GENetConnectMgr.cpp
-        GameEngine/GENet/GENetConnectMgr.h
-        GameEngine/GEProcess.cpp
-        GameEngine/GEProcess.h
-        GameEngine/GENet/GENetSendBuf.cpp
-        GameEngine/GENet/GENetSendBuf.h
-        GameEngine/GENet/GENetBuf.cpp
-        GameEngine/GENet/GENetBuf.h 
-        GameEngine/GENet/GENetMessage.cpp 
-        GameEngine/GENet/GENetMessage.h 
-        GameEngine/GENet/GENetRecvBuf.cpp 
-        GameEngine/GENet/GENetRecvBuf.h 
-        GameEngine/GELog.cpp 
-        GameEngine/GELog.h 
-        GameEngine/LuaInclude.h)
+#add_executable(MyServer main.cpp
+#        GameEngine/GESingleton.h
+#        GameEngine/LuaEngine.cpp
+#        GameEngine/LuaEngine.h
+#        GameEngine/LuaGameServer.cpp
+#        GameEngine/LuaGameServer.h
+#        GameEngine/GameServer.cpp
+#        GameEngine/GameServer.h
+#        GameEngine/GENet/GENetWork.cpp
+#        GameEngine/GENet/GENetWork.h
+#        GameEngine/GSDefine.h
+#        GameEngine/GENet/GENetPack.cpp
+#        GameEngine/GENet/GENetPack.h
+#        GameEngine/GEDefine.h
+#        CommonBase/CommomHelp.cpp
+#        CommonBase/CommomHelp.h
+#        GameEngine/GEDateTime.cpp
+#        GameEngine/GEDateTime.h
+#        GameEngine/GESystemTime.cpp
+#        GameEngine/GESystemTime.h
+#        GameEngine/LuaEvent.cpp
+#        GameEngine/LuaEvent.h
+#        GameEngine/GENet/GENetConnect.cpp
+#        GameEngine/GENet/GENetConnect.h
+#        GameEngine/GENet/GENetConnectMgr.cpp
+#        GameEngine/GENet/GENetConnectMgr.h
+#        GameEngine/GEProcess.cpp
+#        GameEngine/GEProcess.h
+#        GameEngine/GENet/GENetSendBuf.cpp
+#        GameEngine/GENet/GENetSendBuf.h
+#        GameEngine/GENet/GENetBuf.cpp
+#        GameEngine/GENet/GENetBuf.h
+#        GameEngine/GENet/GENetMessage.cpp
+#        GameEngine/GENet/GENetMessage.h
+#        GameEngine/GENet/GENetRecvBuf.cpp
+#        GameEngine/GENet/GENetRecvBuf.h
+#        GameEngine/GELog.cpp
+#        GameEngine/GELog.h
+#        GameEngine/LuaInclude.h)
+
+AUX_SOURCE_DIRECTORY(. GAME_SRCS)
+ADD_EXECUTABLE(MyServer ${GAME_SRCS})
+
+
+ADD_SUBDIRECTORY(GameEngine)
+ADD_SUBDIRECTORY(Third/Include/LuaBridge)
+
+TARGET_LINK_LIBRARIES(MyServer GAME_ENGINE )
+TARGET_LINK_LIBRARIES(MyServer GENET )
+#TARGET_LINK_LIBRARIES(MyServer LuaBridge )
+
 

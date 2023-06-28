@@ -8,6 +8,8 @@
 #include "LuaEngine.h"
 #include "GameServer.h"
 
+#include <LuaBridge/LuaBridge.h>
+
 static void RegLuaModule();
 
 class LuaGameServer{
@@ -41,6 +43,7 @@ public:
 	static GE::Int32 LuaObjToString(lua_State* L);
 
 	static GE::Int32 DebugSendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
+	static GE::Int32 RegMsgDistribute(lua_State* L);		// 注册一个消息回调
 };
 
 
@@ -78,6 +81,18 @@ static luaL_Reg lua_reg_libs[] = {
 		{NULL, NULL}
 };
 
+struct Vector2{
+public:
+	int x=0;
+	int y=0;
+	Vector2(int _x, int _y):x(_x), y(_y){
+	}
+
+	void print(){
+		std::cout <<"x:" << x << ";y:" << y << std::endl;
+	}
+};
+
 static void RegLuaModule(){
 	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	const luaL_Reg* lua_reg = lua_reg_libs;
@@ -86,6 +101,20 @@ static void RegLuaModule(){
 		luaL_requiref(L, lua_reg->name, lua_reg->func, 1);
 		lua_pop(L, 1);
 	}
+
+	// TODO 引入luabridge库
+	luabridge::getGlobalNamespace(L)
+	.beginNamespace("cGameServer")
+	.addCFunction("TestSeconds", LuaGameServer::Seconds)
+	.endNamespace();
+	luabridge::getGlobalNamespace(L)
+	.beginClass<Vector2>("Vector2")
+			.addConstructor<void (*) (float, float)>()
+			.addFunction("print", &Vector2::print)
+			.endClass();
+
+
+
 }
 
 #endif //MYSERVER_LUAGAMESERVER_H
