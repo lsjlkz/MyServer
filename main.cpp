@@ -12,6 +12,8 @@ int main(int argc, char* argv[]) {
 
 	LuaGameServer::Init();// 初始化LuaGameServer
 
+	LuaGameServer::DoInitGSInit();
+
 	GameServer::Instance()->Loop();
 
 	return 0;

@@ -173,7 +173,6 @@ GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
 
 GE::Int32 LuaGameServer::Init() {
 	RegLuaModule();
-	LuaGameServer::DoInitGSInit();
 	return 1;
 }
 
