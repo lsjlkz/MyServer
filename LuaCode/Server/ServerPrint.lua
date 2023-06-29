@@ -5,7 +5,6 @@
 ---
 
 
-local cGameServer = require("cGameServer")
 --function print(msg)
 --    cGameServer.LuaPrint(msg)
 --end

@@ -7,6 +7,7 @@
 
 #include "LuaEngine.h"
 #include "GameServer.h"
+#include "GELog.h"
 
 #include <LuaBridge/LuaBridge.h>
 
@@ -81,39 +82,18 @@ static luaL_Reg lua_reg_libs[] = {
 		{NULL, NULL}
 };
 
-struct Vector2{
-public:
-	int x=0;
-	int y=0;
-	Vector2(int _x, int _y):x(_x), y(_y){
-	}
-
-	void print(){
-		std::cout <<"x:" << x << ";y:" << y << std::endl;
-	}
-};
-
 static void RegLuaModule(){
 	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
-	const luaL_Reg* lua_reg = lua_reg_libs;
+
+	luabridge::Namespace cGameServer = luabridge::getGlobalNamespace(L)
+			.beginNamespace("cGameServer");
+	// 使用luabridge库把cGameServer注册为全局的环境
+	const luaL_Reg* cGameServerReg = lua_reg_gameserver_func;
 	// 注册lua库
-	for(;lua_reg->func; ++lua_reg){
-		luaL_requiref(L, lua_reg->name, lua_reg->func, 1);
-		lua_pop(L, 1);
+	for(;cGameServerReg->func; ++cGameServerReg){
+		cGameServer.addCFunction(cGameServerReg->name, cGameServerReg->func);
 	}
-
-	// TODO 引入luabridge库
-	luabridge::getGlobalNamespace(L)
-	.beginNamespace("cGameServer")
-	.addCFunction("TestSeconds", LuaGameServer::Seconds)
-	.endNamespace();
-	luabridge::getGlobalNamespace(L)
-	.beginClass<Vector2>("Vector2")
-			.addConstructor<void (*) (float, float)>()
-			.addFunction("print", &Vector2::print)
-			.endClass();
-
-
+	cGameServer.endNamespace();
 
 }
 

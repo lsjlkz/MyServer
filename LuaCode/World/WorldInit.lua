@@ -7,7 +7,6 @@
 __G__WorldTable = __G__WorldTable or {}
 local cDefineTable = require("Common/CDefine")
 local f = require("Common/Module")
-local cGameServer = require("cGameServer")
 local gs_tick = require("Server/GSTick")
 local gs_event = require("Server/GSEvent")
 

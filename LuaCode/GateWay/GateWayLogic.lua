@@ -8,7 +8,7 @@
 
 __G__GateWayLogicTable = __G__GateWayLogicTable or {}
 
-local c = require("cGameServer")
+
 local cDefine = require("Common/CDefine")
 local gstick = require("Server/GSTick")
 local gsevent = require("Server/GSEvent")

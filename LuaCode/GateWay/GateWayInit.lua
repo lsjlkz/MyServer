@@ -7,7 +7,6 @@
 __G__GateWayTable = __G__GateWayTable or {}
 local cDefineTable = require("Common/CDefine")
 local f = require("Common/Module")
-local cGameServer = require("cGameServer")
 local gs_tick = require("Server/GSTick")
 local gs_event = require("Server/GSEvent")
 
@@ -38,9 +37,6 @@ end
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
     cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
-    print(cGameServer.TestSeconds())
-    local v2 = Vector2(3,4)
-    v2:print()
     load_gateway_module()
 end
 

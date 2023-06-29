@@ -4,7 +4,6 @@
 --- Desc:
 ---延迟n秒触发的方法
 
-local cGameServer = require("cGameServer")
 local gs_event = require("Server/GSEvent")
 local allot = require("Server/Allot")
 local p = require("Common/Print")

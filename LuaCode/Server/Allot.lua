@@ -3,7 +3,6 @@
 --- DateTime: 2022/7/22 17:43
 --- Desc:
 ---
-local cGameServer = require("cGameServer")
 
 __G__AllotIDTable = __G__AllotIDTable or {}
 

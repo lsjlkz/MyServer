@@ -21,7 +21,7 @@ end
 function __G__Module_Table.findindir (path, wefind, r_table, intofolder)
     for file in lfs.dir(path) do
         if file ~= "." and file ~= ".." then
-            local f = path..'\\'..file
+            local f = path..'/'..file
             if string.find(f, wefind) ~= nil then
                 table.insert(r_table, f)
             end

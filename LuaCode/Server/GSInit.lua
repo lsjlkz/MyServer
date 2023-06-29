@@ -33,7 +33,6 @@ end
 local initFuncTable = { __G__GSInitTable.world, __G__GSInitTable.gateway, __G__GSInitTable.logic}
 
 function __G__GSInitTable.main(p1, p2)
-    local cGameServer = require("cGameServer")
     initFuncTable[cGameServer.GetGameServerID()]()
     print("GSInit start...")
 end
@@ -42,7 +41,6 @@ function __G__GSInitTable.close()
     local gs_event = require("Server/GSEvent")
     print('server close...')
     gs_event.trigger_event(gs_event.BeforeServerClose)
-    local cGameServer = require("cGameServer")
     cGameServer.SetServerStop()
 end
 
