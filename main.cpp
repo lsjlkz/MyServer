@@ -1,6 +1,6 @@
 
 #include <GEDateTime.h>
-#include "LuaGameServer.h"
+#include "GameServer/Lua/LuaGameServer.h"
 
 
 int main(int argc, char* argv[]) {

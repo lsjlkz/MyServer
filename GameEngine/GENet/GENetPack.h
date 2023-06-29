@@ -9,7 +9,7 @@
 #include <queue>
 #include "GENetMessage.h"
 #include "GESingleton.h"
-#include "LuaInclude.h"
+#include "../../GameServer/Lua/LuaInclude.h"
 
 #define IntFlag					-98
 #define LongFlag				-99

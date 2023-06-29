@@ -6,10 +6,10 @@
 #define MYSERVER_LUAGAMESERVER_H
 
 #include "LuaEngine.h"
-#include "GameServer.h"
+#include "../GameServer.h"
 #include "GELog.h"
 
-#include <LuaBridge/LuaBridge.h>
+#include "LuaBridge/LuaBridge.h"
 
 static void RegLuaModule();
 

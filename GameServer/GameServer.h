@@ -9,7 +9,7 @@
 #include <thread>
 #include "GESingleton.h"
 #include "GENet/GENetWork.h"
-#include "LuaEvent.h"
+#include "Lua/LuaEvent.h"
 
 class GameServer: public GESingleton<GameServer>{
 public:
