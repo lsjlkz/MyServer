@@ -43,7 +43,7 @@ function __G__GateWayTable.Init()
     cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
 
     GSEvent.RegEvent(gs_event.AfterLoadAllScripts, test_reg)
-    GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts, 4, 5)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts, 4, 5, 1, 2)
     load_gateway_module()
 end
 

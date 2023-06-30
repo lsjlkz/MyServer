@@ -9,7 +9,7 @@
 LuaEvent::LuaEvent() {
 	this->nil = luabridge::LuaRef(LuaEngine::Instance()->GetMainLuaState(), 0);
 	for(GE::Uint32 _i = 0; _i < MAX_EVENT_PARAM; _i++){
-		zeroParams.push_back(nil);
+		zeroParams.emplace_back(nil);
 	}
 }
 
@@ -62,7 +62,7 @@ GE::Int32 LuaEvent::RegEvent(GE::Int32 event, luabridge::LuaRef callback) {
 		std::tie(it, std::ignore) = this->m_mEventFunctionList.insert({event, EventList()});
 	}
 	EventList& v = it->second;
-	v.push_back(callback);
+	v.emplace_back(callback);
 	return 1;
 }
 GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event) {
@@ -78,11 +78,11 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 	GE::Uint32 _i = params.size();
 	for(;_i < MAX_EVENT_PARAM;_i++){
 		// 补充参数0
-		params.push_back(nil);
+		params.emplace_back(nil);
 	}
 	EventList& v= it->second;
-	for(EventList::iterator _it=v.begin(); _it != v.end(); _it++){
-		luabridge::LuaRef& callback = *_it;
+	for(const auto& callback: v){
+		GE_WIN_ASSERT(callback.isFunction());
 		callback(params[0], params[1], params[2], params[3], params[4]);
 	}
 	return 0;
@@ -90,25 +90,27 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 
 
 GE::Int32 LuaEvent::sRegEvent(lua_State *L) {
-	GE::Int32 idx = luabridge::get<GE::Int32>(L, 1);
+	GE::Int32 event = luabridge::get<GE::Int32>(L, 1);
 	luabridge::LuaRef callback = luabridge::get<luabridge::LuaRef>(L, 2);
+	GE_WIN_ASSERT(callback.isFunction());
+	Instance()->RegEvent(event, callback);
 	lua_pushnil(L);
-	if(!callback.isFunction()){
-		GELog::Instance()->Log("error RegEvent not function");
-		return 1;
-	}
-	return Instance()->RegEvent(idx, callback);
+	return 1;
 }
 GE::Int32 LuaEvent::sTriggerEvent(lua_State *L) {
-	GE::Int32 idx = luabridge::get<GE::Int32>(L, 1);
+	GE::Int32 event = luabridge::get<GE::Int32>(L, 1);
 	GE::Uint32 top = lua_gettop(L);
+	// 参数必须小于(MAX_EVENT_PARAM + 1)
+	GE_WIN_ASSERT(top <= (MAX_EVENT_PARAM + 1));
 	// 参数个数
 	CallParam params;
 	GE::Int32 _i;
 	for(_i = 2; _i <= top; _i++){
 		params.push_back(luabridge::get<luabridge::LuaRef>(L, _i));
 	}
-	return Instance()->TriggerEvent(idx, params);
+	Instance()->TriggerEvent(event, params);
+	lua_pushnil(L);
+	return 1;
 }
 GE::Int32 LuaEvent::sSetCallPerIndex(lua_State *L) {
 	GE::Int32 perSecondIndex = luabridge::get<GE::Int32>(L, 1);
