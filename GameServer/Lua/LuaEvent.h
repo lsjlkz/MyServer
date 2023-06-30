@@ -15,6 +15,8 @@
 // 最大参数个数
 #define MAX_EVENT_PARAM 5
 
+// TODO 待定，可能需要拷贝构造LuaRef
+
 class LuaEvent: public GESingleton<LuaEvent>{
 
 	typedef std::vector<luabridge::LuaRef> EventList;
