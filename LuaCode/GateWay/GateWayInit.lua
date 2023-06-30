@@ -34,10 +34,18 @@ local function test_send()
     gs_tick.reg_tick(nil, 5, test_send)
 end
 
+local function test_reg(a, b, c, d, e)
+    print("test_reg" .. a .. b .. c .. d .. e)
+end
+
 function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
     cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
+
+    GSEvent.RegEvent(gs_event.AfterLoadAllScripts, test_reg)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts, 4, 5)
     load_gateway_module()
 end
+
 
 return __G__GateWayTable

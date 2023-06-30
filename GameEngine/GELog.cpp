@@ -10,6 +10,7 @@
 #define FOUT(fos, s) fos<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
 #define SOUT(fos, s) std::cout<<GEDateTime::Instance()->GetDateTimeString()<<"\t"<<s<<std::endl
 
+#define WINDEBUG
 #ifdef WINDEBUG
 #define GEOUT SOUT
 #else

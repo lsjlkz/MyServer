@@ -19,6 +19,7 @@ public:
 	void					SetGameServerID(GE::Int32 id);
 	GE::Int32				GetGameServerID(){return GameServerID;};
 	GE::Int32				Init(char* argv[]);
+	bool					OnMsg();
 
 //    TODO
 //    GE::Int32 Connect(char* ip, GE::Int32 port, )

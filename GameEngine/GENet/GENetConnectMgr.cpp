@@ -58,6 +58,7 @@ bool GENetConnectMgr::AddConnect(GENetConnect::ConnectSharePtr &spConnect, GE::U
 	this->m_pHolder.insert(std::make_pair(uid, spConnect));
 	this->m_pConnectArr[uid] = spConnect.get();
 	spConnect->SessionID(uid);
+	this->m_uConnectCnt += 1;
 	return true;
 }
 
@@ -71,6 +72,7 @@ bool GENetConnectMgr::DelConnect(GE::Uint32 uid) {
 	this->m_pConnectMutexArr[uid]->unlock();
 	// uid回池
 	this->m_freeUIDQueue.push(uid);
+	this->m_uConnectCnt -= 1;
 	return true;
 }
 
@@ -86,5 +88,40 @@ void GENetConnectMgr::ForceShutdownIllegalConnect_us() {
 //		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", (GE::Uint32)uid);
 //		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", pConnect->SessionID());
 //	}
+
+}
+
+
+GENetConnectMgr::ConnectPtr GENetConnectMgr::IterNextConnect(MsgBase** pMsg){
+	// 迭代下一个连接
+	this->m_uIterConnectIndex ++;
+	if(this->m_uIterConnectIndex >= this->m_uMaxSize){
+		this->m_uIterConnectIndex = 0;
+	}
+	GE::Uint32 maxIterCnt = this->m_uMaxSize;
+
+	for(; maxIterCnt > 0; maxIterCnt -- ){
+		if(this->m_pConnectArr[this->m_uIterConnectIndex] == nullptr || !this->m_pConnectArr[this->m_uIterConnectIndex]->ReadMsg(pMsg)){
+			this->m_uIterConnectIndex ++;
+			if(this->m_uIterConnectIndex >= this->m_uMaxSize){
+				this->m_uIterConnectIndex = 0;
+			}
+			continue;
+		}
+		// 有效链接看看有没有消息
+		return this->m_pConnectArr[this->m_uIterConnectIndex];
+	}
+//	while(this->m_pConnectArr[this->m_uIterConnectIndex] == nullptr){
+//		maxIterCnt --;
+//		if(maxIterCnt == 0){
+//			// 完全没有遍历到有效的连接
+//			return nullptr;
+//		}
+//		this->m_uIterConnectIndex ++;
+//		if(this->m_uIterConnectIndex >= this->m_uMaxSize){
+//			this->m_uIterConnectIndex = 0;
+//		}
+//	}
+	return nullptr;
 
 }

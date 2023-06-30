@@ -222,6 +222,21 @@ void GENetConnect::KeepAlive() {
 bool GENetConnect::IsLongTimeNoRecv(){
 	return (this->m_uLastestRecvSeconds + this->m_uWaitSeconds) < GEDateTime::Instance()->Seconds();
 }
+bool GENetConnect::ReadMsg(MsgBase** pMsg){
+	// 读一条消息
+	if(this->m_RecvBuf.ReadMsgFromReadBuf(pMsg)){
+		// 有消息
+		return true;
+	}
+	else{
+		// 没有消息
+		//移到下一个
+		this->m_RecvBufMutex.lock();
+		this->m_RecvBuf.MoveToNextReadBuf();
+		this->m_RecvBufMutex.unlock();
+		return false;
+	}
+}
 
 void GENetConnect::Shutdown(NetConnectState state) {
 	// 关闭socket

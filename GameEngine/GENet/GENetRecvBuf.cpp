@@ -132,7 +132,9 @@ bool GENetRecvBuf::ReadMsgFromReadBuf(MsgBase **pMsg) {
 	// 这个方法将缓冲区内的buf写入到pMsg中
 
 	// 没有可以读的了
-	GE_WIN_ASSERT(this->m_pReadBuf->CanReadSize() == 0)
+	if(this->m_pReadBuf->CanReadSize() == 0){
+		return false;
+	}
 	// 直接转换就好了
 	*pMsg = static_cast<MsgBase*>(this->m_pReadBuf->ReadFence_us());
 	this->m_pReadBuf->MoveReadFence_us((*pMsg)->Size());

@@ -14,8 +14,7 @@
 class GENetConnectMgr {
 
 
-	typedef GENetConnect			Connect;
-	typedef Connect*				ConnectPtr;
+	typedef GENetConnect*			ConnectPtr;
 	typedef boost::mutex			Mutex;
 	typedef Mutex*					MutexPtr;
 	typedef std::unordered_map<GE::Uint32, GENetConnect::ConnectSharePtr>			HolderMap;
@@ -36,6 +35,9 @@ public:
 	GE::Uint32 		ConnectCnt(){return m_pHolder.size();};		// 连接的数量
 	GE::Uint32 		FreeCnt(){return m_freeUIDQueue.size();};		// 空余的数量
 
+	ConnectPtr		IterNextConnect(MsgBase** pMsg);							// 迭代下一个连接
+
+
 private:
 	HolderMap 		m_pHolder;
 	ConnectPtr*		m_pConnectArr;
@@ -45,6 +47,9 @@ private:
 
 	GE::Uint32		m_uMaxSize;
 	GE::Uint32 		m_uConnectCnt;
+	GE::Uint32		m_uIterConnectIndex;	// 迭代当前的连接索引
+
+
 };
 
 

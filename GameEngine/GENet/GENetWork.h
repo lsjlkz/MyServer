@@ -42,7 +42,9 @@ public:
 	bool					HasConnect(GE::Uint32 uSessionId);
 	void					SendBytes_MT(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 不加锁，只能主线程发送，线程不安全
 	void					SendBytes(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 加锁，可以多线程发送
-
+	bool 					MoveToNextMsg();
+	GENetConnect*			CurConnect(){return this->m_pIterConnect;}	// 返回当前的连接
+	MsgBase*				CurMsg(){return this->m_pCurMsg;}	// 返回当前的连接
 
 	tdBoostIOContext&		IOS();
 
@@ -59,6 +61,9 @@ private:
     tdBoostIOContext    m_ioContext;
     tdBoostAcceptor*    m_pAcceptor;
 	tdBoostThreads		m_pNetWorkThreads;
+
+	GENetConnect*		m_pIterConnect;			// 迭代当前的连接
+	MsgBase*			m_pCurMsg;
 
 };
 

@@ -2,6 +2,7 @@
 // Created by lsjlkz on 2022/6/2.
 //
 
+#include <iostream>
 #include "GameServer.h"
 #include "GEProcess.h"
 #include "GEDateTime.h"
@@ -37,6 +38,7 @@ GE::Uint32 GameServer::Connect(const char* sIP, GE::Uint32 uPort, GE::Uint16 uWh
 //		b4.U16_1() = GEProcess::Instance()->
 		MSG_Who who;
 		who.uWho = b4.UI32();
+		GELog::Instance()->Log("size", who.Size());
 		this->SendMsg(uSessionID, &who);
 		return uSessionID;
 	}
@@ -93,9 +95,15 @@ void GameServer::Time() {
 
 void GameServer::Cycle() {
 	// 消息接受等
-	// 没有消息就休眠1ms
 	// TODO 接收处理消息
-	std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	bool hasNext = this->m_pNetWork->MoveToNextMsg();
+	if(hasNext){
+		// 有消息
+		this->OnMsg();
+	}
+	// 没有消息就休眠1ms
+	//std::this_thread::sleep_for(std::chrono::milliseconds(1));
+	boost::this_thread::sleep(boost::posix_time::milliseconds(1));
 }
 
 void GameServer::SetStop() {
@@ -105,4 +113,16 @@ void GameServer::SetStop() {
 
 void GameServer::SendMsg(GE::Uint32 uSessionId, MsgBase *pMsg) {
 	this->m_pNetWork->SendBytes_MT(uSessionId, pMsg, pMsg->Size());
+}
+
+
+bool GameServer::OnMsg(){
+	// 处理消息
+	std::cout << "OnMsg" << std::endl;
+	GELog::Instance()->Log("OnMsg:", this->m_pNetWork->CurConnect()->SessionID());
+
+	std::cout << "OnMsg1" << std::endl;
+	std::cout << this->m_pNetWork->CurMsg()->Size()<< std::endl;
+	std::cout << "OnMsg2" << std::endl;
+	return true;
 }

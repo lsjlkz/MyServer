@@ -266,7 +266,11 @@ GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
 	return 1;
 }
 
-
+GE::Int32 LuaGameServer::GC(lua_State *L) {
+	lua_gc(L, LUA_GCCOLLECT);
+	lua_pushnil(L);
+	return 1;
+}
 LUA_API GE::Int32 luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");
 	lua_pushvalue(L, -1);

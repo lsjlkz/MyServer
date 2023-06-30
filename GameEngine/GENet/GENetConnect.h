@@ -55,6 +55,7 @@ public:
 	int					RecvMsgCompletely();					// 接收消息成功
 	void				KeepAlive();							// 保持长连接
 	bool 				IsLongTimeNoRecv();						// 太长时间没接收到消息了
+	bool 				ReadMsg(MsgBase** pMsg);
 
 	void				Start();
 	void 				Shutdown(NetConnectState state);

@@ -171,3 +171,12 @@ void GENetWork::SendBytes(GE::Uint32 uSessionID, void *pHead, GE::Uint32 uSize) 
 	this->m_ConnectMutex.unlock();
 }
 
+bool GENetWork::MoveToNextMsg(){
+	GENetConnect* pConnect = this->m_ConnectMgr.IterNextConnect(&this->m_pCurMsg);
+	if(pConnect == nullptr){
+		// 无效连接
+		return false;
+	}
+	this->m_pIterConnect = pConnect;
+	return true;
+}

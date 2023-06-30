@@ -74,6 +74,7 @@ function __G__GSEventTable.trigger_delay_event(event_id, param1, param2, param3,
 end
 
 local function call_per_sec_delay_event()
+    print("call_per_sec_delay_event")
     if __G__GSEventTable._DelayEvent_Trigger == {} then
         return
     end
@@ -95,7 +96,8 @@ end
 
 function __G__GSEventTable.init()
     --注册每秒的事件
-    __G__GSEventTable.reg_event(__G__GSEventTable.AfterCallPerSecond, call_per_sec_delay_event)
+    GSEvent.SetCallPerIndex(__G__GSEventTable.AfterCallPerSecond, __G__GSEventTable.AfterCallPerMinute, __G__GSEventTable.AfterCallPerHour, __G__GSEventTable.AfterCallPerDay)
+    GSEvent.RegEvent(__G__GSEventTable.AfterCallPerSecond, call_per_sec_delay_event)
 end
 
 function __G__GSEventTable.test()

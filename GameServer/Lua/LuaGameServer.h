@@ -15,7 +15,6 @@ static void RegLuaModule();
 
 class LuaGameServer{
 private:
-	std::unordered_map<GE::Int32, GE::Int32> map;
 public:
 	static GE::Int32 Init();
 	static GE::Int32 DoInitGSInit();
@@ -44,6 +43,7 @@ public:
 	static GE::Int32 LuaObjToString(lua_State* L);
 
 	static GE::Int32 DebugSendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
+	static GE::Int32 GC(lua_State* L);						// 回收辣鸡
 	static GE::Int32 RegMsgDistribute(lua_State* L);		// 注册一个消息回调
 };
 
@@ -70,6 +70,7 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"SetConnectParam", LuaGameServer::SetConnectParam},
 		{"DebugSendMsg", LuaGameServer::DebugSendMsg},
 		{"DebugPrintMsg", LuaGameServer::DebugPrintMsg},
+		{"GC", LuaGameServer::GC},
 		{NULL, NULL}
 };
 
