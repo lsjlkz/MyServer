@@ -38,7 +38,7 @@ local function load_data()
     end
     con:close()
     print("load persistent data end...cnt:", cnt)
-    gs_event.trigger_event(gs_event.AfterLoadAllPersistentData)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllPersistentData)
 end
 
 
@@ -56,9 +56,9 @@ local function save_data()
 end
 
 function __G__PersistentDataTable.init()
-    gs_event.reg_event(gs_event.AfterLoadAllScripts, load_data)
-    gs_event.reg_event(gs_event.BeforeServerClose, save_data)
-    gs_event.reg_event(gs_event.AfterLoadAllPersistentData, __G__PersistentDataTable.after_load_all_persistent_data)
+    GSEvent.RegEvent(gs_event.AfterLoadAllScripts, load_data)
+    GSEvent.RegEvent(gs_event.BeforeServerClose, save_data)
+    GSEvent.RegEvent(gs_event.AfterLoadAllPersistentData, __G__PersistentDataTable.after_load_all_persistent_data)
 end
 
 function __G__PersistentDataTable.after_load_all_persistent_data()

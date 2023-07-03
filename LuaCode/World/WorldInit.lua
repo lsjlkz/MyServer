@@ -7,7 +7,6 @@
 __G__WorldTable = __G__WorldTable or {}
 local cDefineTable = require("Common/CDefine")
 local f = require("Common/Module")
-local gs_tick = require("Server/GSTick")
 local gs_event = require("Server/GSEvent")
 
 local function test_close()
@@ -19,8 +18,8 @@ local function load_world_module()
     f.load_all_module("Server")
     f.load_all_module("ServerDB")
     f.load_all_module("World")
-    gs_event.trigger_event(gs_event.AfterLoadAllScripts)
-    gs_tick.reg_tick(nil, 3, test_close)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
+    cGameServer.RegTick(3, nil, test_close, 3)
 end
 
 

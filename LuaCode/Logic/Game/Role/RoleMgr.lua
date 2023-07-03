@@ -38,9 +38,9 @@ function __G__RoleMgrTable.LoadRole(role_id, role_name, int_table, obj_table)
 end
 
 function __G__RoleMgrTable.init()
-    gs_event.reg_event(gs_event.AfterLoadAllScripts, __G__RoleMgrTable.after_load_script)
-    gs_event.reg_event(gs_event.BeforeServerClose, __G__RoleMgrTable.before_server_close)
-    gs_event.reg_event(gs_event.AfterLoadAllRole, __G__RoleMgrTable.after_load_all_role)
+    GSEvent.RegEvent(gs_event.AfterLoadAllScripts, __G__RoleMgrTable.after_load_script)
+    GSEvent.RegEvent(gs_event.BeforeServerClose, __G__RoleMgrTable.before_server_close)
+    GSEvent.RegEvent(gs_event.AfterLoadAllRole, __G__RoleMgrTable.after_load_all_role)
 end
 
 function __G__RoleMgrTable.before_server_close()
@@ -66,7 +66,7 @@ end
 
 function __G__RoleMgrTable.after_load_script()
     __G__RoleMgrTable.load_role()
-    gs_event.trigger_event(gs_event.AfterLoadAllRole)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllRole)
 end
 
 function __G__RoleMgrTable.after_load_all_role()

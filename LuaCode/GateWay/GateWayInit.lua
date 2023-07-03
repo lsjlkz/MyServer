@@ -7,7 +7,6 @@
 __G__GateWayTable = __G__GateWayTable or {}
 local cDefineTable = require("Common/CDefine")
 local f = require("Common/Module")
-local gs_tick = require("Server/GSTick")
 local gs_event = require("Server/GSEvent")
 
 local function test_close()
@@ -18,8 +17,8 @@ local function load_gateway_module()
     f.load_all_module("Common")
     f.load_all_module("Server")
     f.load_all_module("GateWay")
-    gs_event.trigger_event(gs_event.AfterLoadAllScripts)
-    gs_tick.reg_tick(nil, 300, test_close)
+    GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
+    cGameServer.RegTick(300, nil, test_close, nil)
 end
 
 local function test_send()
@@ -31,7 +30,7 @@ local function test_send()
     a[4] = -5
     cGameServer.DebugSendMsg(0, 88, a)
     cGameServer.DebugSendMsg(1, 88, a)
-    gs_tick.reg_tick(nil, 5, test_send)
+    cGameServer.RegTick(5, nil, test_send, nil)
 end
 
 local function test_reg(a, b, c, d, e)
@@ -51,7 +50,7 @@ function __G__GateWayTable.Init()
 
     GSEvent.RegEvent(gs_event.AfterLoadAllScripts, test_reg)
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts, 4, 5, 1, 2)
-    cGameServer.RegTick(3, 0, test_tick, 5)
+    cGameServer.RegTick(3, nil, test_tick, 5)
     load_gateway_module()
 end
 

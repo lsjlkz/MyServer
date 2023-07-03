@@ -39,31 +39,11 @@ __G__GSEventTable.TestDelayEvent = make_event()
 __G__GSEventTable.AfterLoadAllRole = make_event()
 __G__GSEventTable.AfterLoadAllPersistentData = make_event()
 
-
-
-function __G__GSEventTable.reg_event(event_id, func, reg_param)
-    if __G__GSEventTable._Event_Function[event_id] == nil then
-        __G__GSEventTable._Event_Function[event_id] = {}
-    end
-    table.insert(__G__GSEventTable._Event_Function[event_id], {func, reg_param})
-end
-
 function __G__GSEventTable.reg_delay_event(event_id, func, reg_param)
     if __G__GSEventTable._DelayEvent_Function[event_id] == nil then
         __G__GSEventTable._DelayEvent_Function[event_id] = {}
     end
     table.insert(__G__GSEventTable._DelayEvent_Function[event_id], {func, reg_param})
-end
-
-function __G__GSEventTable.trigger_event(event_id, param1, param2, param3, param4)
-    if __G__GSEventTable._Event_Function[event_id] == nil then
-        return
-    end
-    for _, v in ipairs(__G__GSEventTable._Event_Function[event_id]) do
-        func = v[1]
-        reg_param = v[2]
-        func(reg_param, param1, param2, param3, param4)
-    end
 end
 
 function __G__GSEventTable.trigger_delay_event(event_id, param1, param2, param3, param4)

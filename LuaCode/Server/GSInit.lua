@@ -40,7 +40,7 @@ end
 function __G__GSInitTable.close()
     local gs_event = require("Server/GSEvent")
     print('server close...')
-    gs_event.trigger_event(gs_event.BeforeServerClose)
+    GSEvent.TriggerEvent(gs_event.BeforeServerClose)
     cGameServer.SetServerStop()
 end
 
