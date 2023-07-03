@@ -41,6 +41,9 @@ public:
 	static GE::Int32 Second(lua_State* L);
 	static GE::Int32 SetServerStop(lua_State* L);
 	static GE::Int32 LuaObjToString(lua_State* L);
+	static GE::Int32 RegTick(lua_State* L);
+	static GE::Int32 TriggerTick(lua_State* L);
+	static GE::Int32 UnregTick(lua_State* L);
 
 	static GE::Int32 DebugSendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
 	static GE::Int32 GC(lua_State* L);						// 回收辣鸡
@@ -67,6 +70,9 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"Second", LuaGameServer::Second},
 		{"SetServerStop", LuaGameServer::SetServerStop},
 		{"LuaObjToString", LuaGameServer::LuaObjToString},
+		{"RegTick", LuaGameServer::RegTick},
+		{"TriggerTick", LuaGameServer::TriggerTick},
+		{"UnregTick", LuaGameServer::UnregTick},
 		{"SetConnectParam", LuaGameServer::SetConnectParam},
 		{"DebugSendMsg", LuaGameServer::DebugSendMsg},
 		{"DebugPrintMsg", LuaGameServer::DebugPrintMsg},

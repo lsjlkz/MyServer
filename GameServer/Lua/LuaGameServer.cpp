@@ -7,6 +7,7 @@
 #include "GELog.h"
 #include "GENet/GENetPack.h"
 #include "GEDateTime.h"
+#include "LuaTick.h"
 
 GE::Int32 LuaGameServer::CreateNetwork(lua_State* L) {
 	luaL_checktype(L, 1, LUA_TNUMBER);
@@ -255,6 +256,29 @@ GE::Int32 LuaGameServer::LuaObjToString(lua_State *L) {
 	return PackMessage::Instance()->PackLuaObj(L);
 }
 
+GE::Int32 LuaGameServer::RegTick(lua_State *L) {
+	GE::Uint64 seconds = luabridge::get<GE::Uint64>(L, 1);
+	luabridge::LuaRef owner = luabridge::get<luabridge::LuaRef>(L, 2);
+	luabridge::LuaRef callback = luabridge::get<luabridge::LuaRef>(L, 3);
+	luabridge::LuaRef param = luabridge::get<luabridge::LuaRef>(L, 4);
+	GE::Uint64 tickID = LuaTick::Instance()->RegTick(seconds, owner, callback, param);
+	luabridge::push(L, tickID);
+	return 1;
+}
+
+
+GE::Int32 LuaGameServer::TriggerTick(lua_State *L) {
+	return 1;
+}
+
+
+GE::Int32 LuaGameServer::UnregTick(lua_State *L) {
+	return 1;
+}
+
+
+
+
 GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
 
 	GE::Uint32 sessionId = lua_tointeger(L, -3);
@@ -271,6 +295,7 @@ GE::Int32 LuaGameServer::GC(lua_State *L) {
 	lua_pushnil(L);
 	return 1;
 }
+
 LUA_API GE::Int32 luaopen_luagameserver_libs(lua_State *L) {
 	luaL_newmetatable(L, "__G__LuaGameServerTable");
 	lua_pushvalue(L, -1);

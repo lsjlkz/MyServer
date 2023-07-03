@@ -8,6 +8,7 @@
 #include "GEDateTime.h"
 #include "GELog.h"
 #include "GSDefine.h"
+#include "Lua/LuaTick.h"
 
 
 GameServer::GameServer():m_pNetWork(nullptr),
@@ -76,6 +77,7 @@ void GameServer::Time() {
 		return;
 	this->lastUpdateSecond = GEDateTime::Instance()->Second();
 	LuaEvent::Instance()->CCallLuaPerSecond();
+	LuaTick::Instance()->AfterCallPerSecond();
 
 	if(this->lastUpdateMinute == GEDateTime::Instance()->Minute())
 		return;
