@@ -50,7 +50,6 @@ GE::Int32 LuaEngine::LoadFile(const char *filepath) {
 		GELog::Instance()->Log("lua engine not init");
 		return 1;
 	}
-	std::cout << "LoadFile4" << L << filepath <<std::endl;
 	GE::Int32 ret = luaL_loadfile(this->GetMainLuaState(), filepath);
 	if(ret){
 		GELog::Instance()->Log("load lua file error:", filepath);

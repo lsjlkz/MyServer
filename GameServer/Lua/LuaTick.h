@@ -13,16 +13,16 @@
 
 class Tick{
 public:
-	Tick(GE::Uint64 tickID, const luabridge::LuaRef& owner, const luabridge::LuaRef& callback, const luabridge::LuaRef& param):m_uTickID(tickID), m_rOwner(owner), m_rCallback(callback), m_rParam(param){}
+	Tick(GE::Uint64 tickID, const luabridge::LuaRef& owner, const luabridge::LuaRef& callback, const luabridge::LuaRef& param) noexcept :m_uTickID(tickID), m_rOwner(owner), m_rCallback(callback), m_rParam(param){}
 	~Tick();
 
-	GE::Uint64 AutoTriggerSeconds();
+	GE::Uint64 AutoTriggerSeconds() const;
 	bool IsOverTime();
 	bool IsBelongToMe(const luabridge::LuaRef& owner){return owner.rawequal(this->m_rOwner);}	//	是否属于我 TODO 不确定是否用这个比较
 	void Call();		// 主动触发回调
 	void Call(const luabridge::LuaRef& callArgv);	// 带参数的触发
 
-	bool operator<(Tick& other);	// 比较
+	bool operator<(Tick& other) const;	// 比较
 
 
 private:

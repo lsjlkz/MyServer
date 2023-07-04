@@ -24,6 +24,7 @@ function __G__GateWayLogicTable.connect_logic(owner, callargv, regparam)
         cGameServer.RegTick(10, nil, __G__GateWayLogicTable.connect_logic, nil)
         return false
     end
+    print("connected" .. uSessionId)
     cGameServer.SetClientRedirect(cDefine.EndPoint_GatewayLogic, uSessionId)
     return true
 end

@@ -5,7 +5,6 @@
 #include "LuaTick.h"
 #include "LuaTickUID.h"
 #include "GEDateTime.h"
-#include "GESingleton.h"
 #include "GELog.h"
 
 Tick::~Tick() {
@@ -19,12 +18,12 @@ Tick::~Tick() {
 }
 
 
-GE::Uint64 Tick::AutoTriggerSeconds() {
-	return this->m_uTickID & GEUID_TARGET_SECONDS_BIT;
+GE::Uint64 Tick::AutoTriggerSeconds() const {
+	return (this->m_uTickID >> GEUID_TARGET_SECONDS_OFFSET) & GEUID_TARGET_SECONDS_BIT;
 }
 
 bool Tick::IsOverTime() {
-	return this->AutoTriggerSeconds() < GEDateTime::Instance()->Seconds();
+	return this->AutoTriggerSeconds() < (GEDateTime::Instance()->Seconds() & GEUID_TARGET_SECONDS_BIT);
 }
 
 void Tick::Call() {
@@ -35,22 +34,21 @@ void Tick::Call(const luabridge::LuaRef& callArgv) {
 	this->m_rCallback(this->m_rOwner, callArgv, this->m_rParam);
 }
 
-bool Tick::operator<(Tick &other) {
+bool Tick::operator<(Tick &other) const {
 	// 为什么这里是大于，因为这个优先队列是最大堆
-	return this->AutoTriggerSeconds() > other.AutoTriggerSeconds();
+	return this->m_uTickID > other.m_uTickID;
 }
 
 
-LuaTick::LuaTick() {
-
-}
+LuaTick::LuaTick() = default;
 
 GE::Uint64 LuaTick::RegTick(GE::Uint64 seconds, const luabridge::LuaRef& owner, const luabridge::LuaRef& callback, const luabridge::LuaRef& param) {
 	//
-	GE::Uint64 tickID = LuaTickUID::Instance()->AllotUID(seconds);
-	Tick* tick = new Tick(tickID, owner, callback, param);
-	m_pTickMap.insert(std::make_pair(tickID, tick));
-	return tickID;
+	GE::Uint64 uTargetSeconds = GEDateTime::Instance()->Seconds() + seconds;
+	GE::Uint64 uTickID = LuaTickUID::Instance()->AllotUID(uTargetSeconds);
+	Tick* tick = new Tick(uTickID, owner, callback, param);
+	m_pTickMap.insert(std::make_pair(uTickID, tick));
+	return uTickID;
 }
 
 bool LuaTick::TriggerTick(GE::Uint64 m_uTickID, const luabridge::LuaRef& owner, const luabridge::LuaRef& callArgv) {
@@ -72,6 +70,7 @@ bool LuaTick::TriggerTick(GE::Uint64 m_uTickID, const luabridge::LuaRef& owner, 
 		return false;
 	}
 	m_pTickMap.erase(it);
+	delete it->second;
 	return true;
 }
 
@@ -88,6 +87,7 @@ bool LuaTick::UnregTick(GE::Uint64 m_uTickID, const luabridge::LuaRef &owner) {
 		}
 		// 因为不需要有其他处理，所以可以直接删掉
 		m_pTickMap.erase(it);
+		delete it->second;
 		return true;
 	}
 	return true;
@@ -102,8 +102,11 @@ void LuaTick::AfterCallPerSecond() {
 		if(tick->IsOverTime()){
 			tick->Call();
 			m_pTickMap.erase(it++);
+			delete tick;
 		}else{
+			// 后面都没超时
 			it++;
+//			return;
 		}
 	}
 }

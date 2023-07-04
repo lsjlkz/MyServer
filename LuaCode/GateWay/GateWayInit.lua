@@ -18,7 +18,9 @@ local function load_gateway_module()
     f.load_all_module("Server")
     f.load_all_module("GateWay")
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
-    cGameServer.RegTick(300, nil, test_close, nil)
+    cGameServer.RegTick(150, nil, cGameServer.SetServerStop, nil)
+    cGameServer.RegTick(200, nil, cGameServer.SetServerStop, nil)
+    cGameServer.RegTick(300, nil, cGameServer.SetServerStop, nil)
 end
 
 local function test_send()

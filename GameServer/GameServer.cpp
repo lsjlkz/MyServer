@@ -120,11 +120,8 @@ void GameServer::SendMsg(GE::Uint32 uSessionId, MsgBase *pMsg) {
 
 bool GameServer::OnMsg(){
 	// 处理消息
-	std::cout << "OnMsg" << std::endl;
 	GELog::Instance()->Log("OnMsg:", this->m_pNetWork->CurConnect()->SessionID());
 
-	std::cout << "OnMsg1" << std::endl;
 	std::cout << this->m_pNetWork->CurMsg()->Size()<< std::endl;
-	std::cout << "OnMsg2" << std::endl;
 	return true;
 }
