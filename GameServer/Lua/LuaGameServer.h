@@ -28,7 +28,6 @@ public:
 	static GE::Int32 Connect(lua_State* L);
 //	static GE::Int32 CallLuaFunc(lua_State* L);		// 暂时没发现有什么用，或许跨lua线程调用会有用，但是现在不是很必须
 	static GE::Int32 PackMsg(lua_State* L);
-	static GE::Int32 ReceiveMsg(char* bufHead);
 	static GE::Int32 DebugPrintMsg(lua_State* L);
 	static GE::Int32 DebugReceiveMsg(lua_State* L);
 	static GE::Int32 Days(lua_State* L);
@@ -44,6 +43,7 @@ public:
 	static GE::Int32 RegTick(lua_State* L);
 	static GE::Int32 TriggerTick(lua_State* L);
 	static GE::Int32 UnregTick(lua_State* L);
+	static GE::Int32 LoadModule(lua_State* L);				// 加载一个包
 
 	static GE::Int32 DebugSendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
 	static GE::Int32 GC(lua_State* L);						// 回收辣鸡
@@ -73,6 +73,7 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"RegTick", LuaGameServer::RegTick},
 		{"TriggerTick", LuaGameServer::TriggerTick},
 		{"UnregTick", LuaGameServer::UnregTick},
+		{"LoadModule", LuaGameServer::LoadModule},
 		{"SetConnectParam", LuaGameServer::SetConnectParam},
 		{"DebugSendMsg", LuaGameServer::DebugSendMsg},
 		{"DebugPrintMsg", LuaGameServer::DebugPrintMsg},

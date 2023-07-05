@@ -23,6 +23,7 @@ public:
 	bool Del();
 
 	GE::Int32 LoadFile(const char* filepath);
+	GE::Int32 LoadModule(const char* pkgName);
 	GE::Int32 DoFile(const char* filepath);
 
 

@@ -6,7 +6,6 @@
 
 __G__GateWayTable = __G__GateWayTable or {}
 local cDefineTable = require("Common/CDefine")
-local f = require("Common/Module")
 local gs_event = require("Server/GSEvent")
 
 local function test_close()
@@ -14,9 +13,9 @@ local function test_close()
 end
 
 local function load_gateway_module()
-    f.load_all_module("Common")
-    f.load_all_module("Server")
-    f.load_all_module("GateWay")
+    cGameServer.LoadModule("Common")
+    cGameServer.LoadModule("Server")
+    cGameServer.LoadModule("GateWay")
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
     cGameServer.RegTick(150, nil, cGameServer.SetServerStop, nil)
     cGameServer.RegTick(200, nil, cGameServer.SetServerStop, nil)

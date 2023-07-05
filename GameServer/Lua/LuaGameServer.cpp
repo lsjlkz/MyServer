@@ -145,33 +145,6 @@ GE::Int32 LuaGameServer::DebugReceiveMsg(lua_State* L) {
 	return 1;
 }
 
-GE::Int32 LuaGameServer::ReceiveMsg(char *bufHead) {
-	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
-	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Common/Game/GSMessage.lua");
-	if(ret){
-		return ret;
-	}
-	// 获取元表
-	lua_getglobal(L, "__G__GSMessageTable");
-	// 获取函数分发函数
-	lua_pushstring(L, "TriggerServerDistribute");
-	lua_gettable(L, -2);
-	UnpackMessage um(PackMessage::Instance()->HeadPtr());
-	GE::Uint16 msg_type = 0;
-	um.UnpackMsgType(msg_type);
-	GE::Uint16 msg_size = 0;
-	um.UnpackU16(msg_size);
-	um.SetSize(msg_size);
-	lua_pushinteger(L, msg_type);
-	um.UnpackLuaObj(L);
-	ret = lua_pcall(L, 2, 0, 0);
-	if(ret){
-		GELog::Instance()->Log("ReceiveMsg lua call err");
-		return ret;
-	}
-	return 0;
-}
-
 GE::Int32 LuaGameServer::Init() {
 	RegLuaModule();
 	return 1;
@@ -180,7 +153,7 @@ GE::Int32 LuaGameServer::Init() {
 GE::Int32 LuaGameServer::DoInitGSInit() {
 	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	// luaserver初始化
-	GE::Int32 ret = LuaEngine::Instance()->DoFile("../LuaCode/Server/GSInit.lua");
+	GE::Int32 ret = LuaEngine::Instance()->LoadFile("../LuaCode/Server/GSInit.lua");
 	if(ret){
 		return ret;
 	}
@@ -276,8 +249,11 @@ GE::Int32 LuaGameServer::UnregTick(lua_State *L) {
 	return 1;
 }
 
-
-
+GE::Int32 LuaGameServer::LoadModule(lua_State *L) {
+	const char* pkgName = luabridge::get<const char*>(L, 1);
+	LuaEngine::Instance()->LoadModule(pkgName);
+	return 0;
+}
 
 GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
 

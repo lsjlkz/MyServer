@@ -33,8 +33,8 @@ end
 local initFuncTable = { __G__GSInitTable.world, __G__GSInitTable.gateway, __G__GSInitTable.logic}
 
 function __G__GSInitTable.main(p1, p2)
-    initFuncTable[cGameServer.GetGameServerID()]()
     print("GSInit start...")
+    initFuncTable[cGameServer.GetGameServerID()]()
 end
 
 function __G__GSInitTable.close()
