@@ -10,7 +10,7 @@
 #include "GEProcess.h"
 
 GENetWork::GENetWork(GE::Int32 uMaxConnect, GE::Int32 Thread):m_ConnectMgr(uMaxConnect),m_pAcceptor(nullptr) {
-	// TODO 网络层研究一下
+	// 多个线程
 	for(GE::Int32 i = 0; i < Thread; ++i){
 		this->m_pNetWorkThreads.push_back(NULL);
 	}
@@ -126,7 +126,7 @@ bool GENetWork::Connect_MT(const char* sIP, GE::Uint32 uPort, GE::Uint32& uSessi
 	bool ret = this->m_ConnectMgr.AddConnect(spConnect, uSessionID);
 	if(ret){
 		// 设置连接类型
-		pConnect->SetWho(uWho);
+		pConnect->Who(uWho);
 		// TODO 可能还需要设置连接信息，比如session_id
 		// 留着备用
 		// 开始连接
@@ -179,4 +179,11 @@ bool GENetWork::MoveToNextMsg(){
 	}
 	this->m_pIterConnect = pConnect;
 	return true;
+}
+
+void GENetWork::DisConnect_MT(GE::Uint32 uSessionID) {
+	if(!this->m_ConnectMgr.HasConnect(uSessionID)){
+		return;
+	}
+	this->m_ConnectMgr.DelConnect(uSessionID);
 }

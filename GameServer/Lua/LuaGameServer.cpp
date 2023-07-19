@@ -8,6 +8,8 @@
 #include "GENet/GENetPack.h"
 #include "GEDateTime.h"
 #include "LuaTick.h"
+#include "LuaConst.h"
+#include "LuaServerMsg.h"
 
 GE::Int32 LuaGameServer::CreateNetwork(lua_State* L) {
 	luaL_checktype(L, 1, LUA_TNUMBER);
@@ -252,7 +254,12 @@ GE::Int32 LuaGameServer::UnregTick(lua_State *L) {
 GE::Int32 LuaGameServer::LoadModule(lua_State *L) {
 	const char* pkgName = luabridge::get<const char*>(L, 1);
 	LuaEngine::Instance()->LoadModule(pkgName);
-	return 0;
+	return 1;
+}
+
+GE::Int32 LuaGameServer::SetConnectedLuaCallback(lua_State *L) {
+	LuaConst::Instance()->ConnectedLuaFunction = new LuaFunction(luabridge::get<luabridge::LuaRef>(L, -1));
+	return 1;
 }
 
 GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
@@ -269,6 +276,13 @@ GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
 GE::Int32 LuaGameServer::GC(lua_State *L) {
 	lua_gc(L, LUA_GCCOLLECT);
 	lua_pushnil(L);
+	return 1;
+}
+
+GE::Int32 LuaGameServer::RegMsgDistribute(lua_State *L) {
+	GE::Uint16 uIndex = luabridge::get<GE::Uint16>(L, -2);
+	luabridge::LuaRef callback = luabridge::get<luabridge::LuaRef>(L, -1);
+	LuaServerMsgMgr::Instance()->RegServerMsg(uIndex, callback);
 	return 1;
 }
 

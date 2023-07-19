@@ -18,14 +18,6 @@ void GEProcess::SetProcessName(const char *processName, GE::Uint16 size) {
 	memcpy(m_sProcessName, processName, size);
 }
 
-void GEProcess::SetWhoClient(GE::Uint8 ui8){
-	this->uWhoClient = ui8;
-}
-
-void GEProcess::SetWhoGateway(GE::Uint8 ui8) {
-	this->uWhoGateway = ui8;
-}
-
 void GEProcess::SetClientRedirect(GE::Uint32 RedirectType, GE::Uint32 SessionID){
 	this->ClientRedirectArray[RedirectType] = SessionID;
 }

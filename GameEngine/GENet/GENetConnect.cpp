@@ -9,6 +9,7 @@
 #include "GEDateTime.h"
 #include "GELog.h"
 #include "GEProcess.h"
+#include "GSDefine.h"
 
 
 GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
@@ -168,7 +169,16 @@ void GENetConnect::HandleWriteMsg(const boost::system::error_code &ec, size_t uT
 	this->AsyncSendBlock();
 }
 
+void GENetConnect::RemoteEndPoint(std::string &sIP, GE::Uint16 &uPort) {
+	GE_WIN_ASSERT(this->Socket().is_open());
+	sIP = this->Socket().remote_endpoint().address().to_string();
+	uPort = this->Socket().remote_endpoint().port();
+}
+
+
 int GENetConnect::RecvMsgCompletely(){
+	// TODO
+	// 项目中主线程会迭代所有的链接，知道找到一个有效且有消息的连接，这里是否可以把session写入到一个vector中来迭代
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
 	tdMsgRedirect rd = pMsg->Redirect();
 	if(this->IsWhoNone()){
@@ -258,20 +268,22 @@ void GENetConnect::Shutdown(NetConnectState state) {
 	}
 }
 
-void GENetConnect::SetWho(GE::Uint16 uWho){
+void GENetConnect::Who(GE::Uint16 uWho){
 	this->m_uWho = uWho;
 }
 
 bool GENetConnect::IsWhoNone() const {
-	return this->m_uWho == 0;
+	return this->m_uWho == EndPoindType::EndPoint_None;
 }
 
 bool GENetConnect::IsWhoClient() const {
-	return this->m_uWho == GEProcess::Instance()->uWhoClient;
+	// 是否是客户端连接
+	return this->m_uWho == EndPoindType::EndPoint_ClientGateway_;
 }
 
 bool GENetConnect::IsWhoGateway() const{
-	return this->m_uWho == GEProcess::Instance()->uWhoGateway;
+	// 是否是网关
+	return this->m_uWho == EndPoindType::EndPoint_GatewayLogic_ || this->m_uWho == EndPoindType::EndPoint_GatewayWorld_;
 }
 
 

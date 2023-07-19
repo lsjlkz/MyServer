@@ -19,7 +19,11 @@ public:
 	void					SetGameServerID(GE::Int32 id);
 	GE::Int32				GetGameServerID(){return GameServerID;};
 	GE::Int32				Init(char* argv[]);
+	void DisConnect(GE::Uint32 uSessionID);
 	bool					OnMsg();
+	bool 					OnMsgEx();
+	bool					OnDeclareIdentity();		// 表明身份
+	bool					OnSetWho();					// 设置身份
 
 //    TODO
 //    GE::Int32 Connect(char* ip, GE::Int32 port, )

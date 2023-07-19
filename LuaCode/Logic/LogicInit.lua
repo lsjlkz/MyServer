@@ -8,9 +8,6 @@ __G__LogicTable = __G__LogicTable or {}
 local cDefineTable = require("Common/CDefine")
 local gs_event = require("Server/GSEvent")
 
-local function test_close()
-    cGameServer.SetServerStop()
-end
 
 local function load_logic_module()
     cGameServer.LoadModule("Common")
@@ -19,6 +16,7 @@ local function load_logic_module()
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
     local gsinit = require("Server/GSInit")
     cGameServer.RegTick(300, nil, gsinit.close, nil)
+
 
 end
 

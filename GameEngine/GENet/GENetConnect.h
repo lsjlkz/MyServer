@@ -52,6 +52,7 @@ public:
 	void				HandleReadMsgHead(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息头的句柄
 	void 				HandleReadMsgBody(const boost::system::error_code &ec, size_t uTransferredBytes);					// 接收消息体的句柄
 	void 				HandleWriteMsg(const boost::system::error_code &ec, size_t uTransferredBytes);
+	void 				RemoteEndPoint(std::string& sIP, GE::Uint16& uPort);
 	int					RecvMsgCompletely();					// 接收消息成功
 	void				KeepAlive();							// 保持长连接
 	bool 				IsLongTimeNoRecv();						// 太长时间没接收到消息了
@@ -68,7 +69,8 @@ public:
 	GE::Uint32			SessionID(){return this->m_uSessionId;}
 	void 				SetWaitTime(GE::Uint32 waitTime){this->m_uWaitSeconds = waitTime;}
 
-	void 				SetWho(GE::Uint16 who);
+	void 				Who(GE::Uint16 who);
+	GE::Uint16 			Who(){return this->m_uWho;}
 
 	bool				IsWhoNone() const;
 	bool 				IsWhoClient() const;

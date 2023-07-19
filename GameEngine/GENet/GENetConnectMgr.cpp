@@ -82,9 +82,9 @@ void GENetConnectMgr::ForceShutdownIllegalConnect_us() {
 //	for (auto& [uid, sharePtr] : this->m_pHolder) {
 //		GENetConnect *pConnect = sharePtr.get();
 //		GELog::Instance()->Log("IsLongTimeNoRecv", pConnect->IsLongTimeNoRecv());
-////		if(pConnect->IsLongTimeNoRecv()){
-////			DelConnect(uid);
-////		}
+//		if(pConnect->IsLongTimeNoRecv()){
+//			DelConnect(uid);
+//		}
 //		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", (GE::Uint32)uid);
 //		GELog::Instance()->Log("ForceShutdownIllegalConnect_us", pConnect->SessionID());
 //	}
@@ -94,34 +94,29 @@ void GENetConnectMgr::ForceShutdownIllegalConnect_us() {
 
 GENetConnectMgr::ConnectPtr GENetConnectMgr::IterNextConnect(MsgBase** pMsg){
 	// 迭代下一个连接
-	this->m_uIterConnectIndex ++;
-	if(this->m_uIterConnectIndex >= this->m_uMaxSize){
-		this->m_uIterConnectIndex = 0;
-	}
 	GE::Uint32 maxIterCnt = this->m_uMaxSize;
 
 	for(; maxIterCnt > 0; maxIterCnt -- ){
-		if(this->m_pConnectArr[this->m_uIterConnectIndex] == nullptr || !this->m_pConnectArr[this->m_uIterConnectIndex]->ReadMsg(pMsg)){
-			this->m_uIterConnectIndex ++;
-			if(this->m_uIterConnectIndex >= this->m_uMaxSize){
-				this->m_uIterConnectIndex = 0;
-			}
+		this->m_uIterConnectIndex ++;
+		if(this->m_uIterConnectIndex >= this->m_uMaxSize){
+			this->m_uIterConnectIndex = 0;
+		}
+		GENetConnect* geNetConnect = this->m_pConnectArr[this->m_uIterConnectIndex];
+		if(geNetConnect == nullptr){
+			continue;
+		}
+		// TODO 这里可以用一些方法来检测，是否断线了，或者需要处理
+		if(geNetConnect->IsLongTimeNoRecv()){
+			// 太久没有接收消息了
+			// TODO
+			this->DelConnect(geNetConnect->SessionID());
+			continue;
+		}
+		if(!geNetConnect->ReadMsg(pMsg)){
 			continue;
 		}
 		// 有效链接看看有没有消息
-		return this->m_pConnectArr[this->m_uIterConnectIndex];
+		return geNetConnect;
 	}
-//	while(this->m_pConnectArr[this->m_uIterConnectIndex] == nullptr){
-//		maxIterCnt --;
-//		if(maxIterCnt == 0){
-//			// 完全没有遍历到有效的连接
-//			return nullptr;
-//		}
-//		this->m_uIterConnectIndex ++;
-//		if(this->m_uIterConnectIndex >= this->m_uMaxSize){
-//			this->m_uIterConnectIndex = 0;
-//		}
-//	}
 	return nullptr;
-
 }

@@ -9,6 +9,8 @@
 #include "GELog.h"
 #include "GSDefine.h"
 #include "Lua/LuaTick.h"
+#include "Lua/LuaConst.h"
+#include "Lua/LuaServerMsg.h"
 
 
 GameServer::GameServer():m_pNetWork(nullptr),
@@ -121,7 +123,67 @@ void GameServer::SendMsg(GE::Uint32 uSessionId, MsgBase *pMsg) {
 bool GameServer::OnMsg(){
 	// 处理消息
 	GELog::Instance()->Log("OnMsg:", this->m_pNetWork->CurConnect()->SessionID());
-
-	std::cout << this->m_pNetWork->CurMsg()->Size()<< std::endl;
+	GELog::Instance()->Log("OnMsg:", this->m_pNetWork->CurConnect()->IsWhoNone());
+	if(this->m_pNetWork->CurConnect()->IsWhoNone()){
+		// 没有身份，那应该是要表明身份
+		return this->OnDeclareIdentity();
+	}
+	GELog::Instance()->Log("OnMsg", this->m_pNetWork->CurConnect()->Who());
+	// 不是表明身份的
+	if(this->m_pNetWork->CurConnect()->IsWhoGateway()){
+		// 网关发过来的
+		this->OnMsgEx();
+	}
 	return true;
+}
+bool GameServer::OnMsgEx(){
+	GELog::Instance()->Log("OnMsgEx");
+	GE::Uint16 uMsgType = this->m_pNetWork->CurMsg()->Type();
+	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
+	GE::Uint16 top = lua_gettop(L);
+	lua_push_buf_to_stack(L, this->m_pNetWork->CurMsg()->Body(), this->m_pNetWork->CurMsg()->BodySize());
+	luabridge::LuaRef rParam = luabridge::LuaRef::fromStack(L, top + 1);
+	LuaServerMsgMgr::Instance()->CallServerMsg(uMsgType, this->m_pNetWork->CurConnect()->SessionID(), rParam);
+	return true;
+}
+
+bool GameServer::OnDeclareIdentity(){
+	if(!this->OnSetWho()){
+		this->DisConnect(this->m_pNetWork->CurConnect()->SessionID());
+	}
+	return true;
+}
+
+bool GameServer::OnSetWho(){
+	MsgBase* pMsg = this->m_pNetWork->CurMsg();
+	GE::Uint16 uSize = pMsg->Size();
+	GE::Uint16 uMsgType = pMsg->Type();
+	std::cout << "OnSetWho" << 1 << std::endl;
+	if(uMsgType != CMsg_Who){
+		// 居然不是表明身份
+		return false;
+	}
+	std::cout << "OnSetWho" << 2 << std::endl;
+	if(uSize != sizeof(MSG_Who)){
+		return false;
+	}
+	std::cout << "OnSetWho" << 3 << std::endl;
+	MSG_Who* pMsgWho = (MSG_Who*)pMsg;
+	GE::B4 b4= pMsgWho->uWho;
+	GE::Uint16 uWhoType = b4.U16_0();
+	if(uWhoType == EndPoindType::EndPoint_None){
+		GELog::Instance()->Log("error set who", this->m_pNetWork->CurConnect()->SessionID());
+		return false;
+	}
+	std::cout << "OnSetWho" << 4 << std::endl;
+	this->m_pNetWork->CurConnect()->Who(uWhoType);
+	std::string sIP;
+	GE::Uint16 uPort;
+	this->m_pNetWork->CurConnect()->RemoteEndPoint(sIP, uPort);
+	LuaConst::Instance()->ConnectedLuaFunction->Call(this->m_pNetWork->CurConnect()->SessionID(), sIP, uPort);
+	return true;
+}
+
+void GameServer::DisConnect(GE::Uint32 uSessionID) {
+	this->m_pNetWork->DisConnect_MT(uSessionID);
 }

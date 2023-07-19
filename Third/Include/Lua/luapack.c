@@ -8,8 +8,6 @@
 #include "luapack.h"
 #include <stdlib.h>
 
-static int stackDeep = 0;
-
 
 #define WRITE_BUF_EMPTY(_io) ((MAX_BUF_SIZE)-(_io->write_size))
 #define READ_BUF_EMPTY(_io) ((_io->write_size)-(_io->read_size))
@@ -17,11 +15,6 @@ static int stackDeep = 0;
 #define WRITE_BUF_ENOUGH_ENPTY(_io, _T) ((WRITE_BUF_EMPTY(_io))>(sizeof(_T)))
 #define READ_BUF_ENOUGH_ENPTY(_io, _T) ((READ_BUF_EMPTY(_io))>=(sizeof(_T)))
 
-
-#define LUA_ERROR(_L, _b, _msg) \
-	if(!(_b)){ \
-		luaL_error(_L, _msg); \
-	}
 
 #define WRITE_BUF_CHECK_OVERFLOW(_L, _io, _Size) LUA_ERROR(_L, (WRITE_BUF_EMPTY((_io)) >= (_Size)), "err pack overflow")
 #define READ_BUF_CHECK_OVERFLOW(_L, _io, _Size) LUA_ERROR(_L, (READ_BUF_EMPTY((_io)) >= (_Size)), "err unpack overflow")
@@ -51,6 +44,7 @@ LUA_API int pack_arg(lua_State* L){
 
 LUA_API int unpack_to_arg(lua_State* L) {
 	LuaPackBuf* io = (LuaPackBuf*)LUA_CHECK_BUF_TYPE(L);
+	stackDeep = 0;
 	io->read_size = 0;
 	unpack_to_arg_help(L, io);
 	return 1;
@@ -254,6 +248,8 @@ static int pack_arg_help(lua_State* L, LuaPackBuf* io, int index) {
 
 
 static int unpack_to_arg_help(lua_State* L, LuaPackBuf* io) {
+	stackDeep++;
+	LUA_ERROR(L, stackDeep <= MAX_STACK_DEEP, "stack overflow");
 	int top = lua_gettop(L);
 	LUA_TYPE_FLAG t = 0;
 	lua_checkstack(L, top + 5);
@@ -323,6 +319,7 @@ static int unpack_to_arg_help(lua_State* L, LuaPackBuf* io) {
 			lua_pushnil(L);
 			break;
 	}
+	stackDeep--;
 	return 1;
 }
 

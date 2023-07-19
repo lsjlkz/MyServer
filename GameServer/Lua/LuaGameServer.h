@@ -44,6 +44,7 @@ public:
 	static GE::Int32 TriggerTick(lua_State* L);
 	static GE::Int32 UnregTick(lua_State* L);
 	static GE::Int32 LoadModule(lua_State* L);				// 加载一个包
+	static GE::Int32 SetConnectedLuaCallback(lua_State* L);	// 创建一个连接后的回调
 
 	static GE::Int32 DebugSendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
 	static GE::Int32 GC(lua_State* L);						// 回收辣鸡
@@ -74,9 +75,11 @@ static const luaL_Reg lua_reg_gameserver_func[] = {
 		{"TriggerTick", LuaGameServer::TriggerTick},
 		{"UnregTick", LuaGameServer::UnregTick},
 		{"LoadModule", LuaGameServer::LoadModule},
+		{"SetConnectedLuaCallback", LuaGameServer::SetConnectedLuaCallback},
 		{"SetConnectParam", LuaGameServer::SetConnectParam},
 		{"DebugSendMsg", LuaGameServer::DebugSendMsg},
 		{"DebugPrintMsg", LuaGameServer::DebugPrintMsg},
+		{"RegMsgDistribute", LuaGameServer::RegMsgDistribute},
 		{"GC", LuaGameServer::GC},
 		{NULL, NULL}
 };

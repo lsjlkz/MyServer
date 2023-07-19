@@ -40,6 +40,7 @@ public:
 
 	bool					Connect_MT(const char* sIP, GE::Uint32 uPort, GE::Uint32& uSessionID, GE::Uint16 uWho, void* pBindPoint, GEDefine::ConnectParam* pCP);
 	bool					HasConnect(GE::Uint32 uSessionId);
+	void					DisConnect_MT(GE::Uint32 uSessionID);
 	void					SendBytes_MT(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 不加锁，只能主线程发送，线程不安全
 	void					SendBytes(GE::Uint32 uSessionID, void* pHead, GE::Uint32 uSize);		// 加锁，可以多线程发送
 	bool 					MoveToNextMsg();
@@ -50,6 +51,7 @@ public:
 
 
 	bool isRun(){return m_bIsRun;}
+
 
 private:
 

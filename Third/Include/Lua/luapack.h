@@ -8,6 +8,11 @@
 
 #define LUA_PACKAGE_META "LUA_PACK_META"
 
+#define LUA_ERROR(_L, _b, _msg) \
+	if(!(_b)){ \
+		luaL_error(_L, _msg); \
+	}
+
 // check first is pack
 #define LUA_CHECK_BUF_TYPE(L) \
 	((LuaPackBuf*) luaL_checkudata(L, 1, LUA_PACKAGE_META))
@@ -20,15 +25,15 @@
 #define LUA_CHECK_LAST_ARG_TYPE(L,t) \
 	(lua_type(L, -1) == t)
 
-#define SHORT_FLAG				-96
-#define INT_FLAG				-97
-#define LONG_FLAG				-98
-#define LONG_LONG_FLAG			-99
-#define NIL_FLAG				-100
-#define TRUE_FLAG				-101
-#define FALSE_FLAG				-102
-#define TABLE_FLAG				-103
-#define STRING_FLAG				-106
+#define SHORT_FLAG				1
+#define INT_FLAG				2
+#define LONG_FLAG				3
+#define LONG_LONG_FLAG			4
+#define NIL_FLAG				5
+#define TRUE_FLAG				6
+#define FALSE_FLAG				7
+#define TABLE_FLAG				8
+#define STRING_FLAG				9
 
 
 #define LUA_TYPE_FLAG char
@@ -50,6 +55,20 @@ typedef struct {
 	size_t read_size;
 	char buf[MAX_BUF_SIZE];
 } LuaPackBuf;
+
+
+static int stackDeep = 0;
+
+static LuaPackBuf globalIO;
+
+
+LUA_API int lua_push_buf_to_stack(lua_State* L, void* pHead, size_t size) {
+	LUA_ERROR(L, size <= MAX_BUF_SIZE, "to long buf");
+	stackDeep = 0;
+	globalIO.write_size = size;
+	globalIO.read_size = 0;
+	unpack_to_arg_help(L, &globalIO);
+}
 
 
 LUA_API int pack_arg(lua_State* L);
