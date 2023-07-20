@@ -101,6 +101,7 @@ bool GENetSendBuf::WriteBytes(const void *pHead, GE::Uint16 uSize) {
 	while(this->m_pWriteBuf->CanWriteSize() < uSize){
 		if(this->m_pBufQueue->size() > this->m_uBlockNum){
 			// 已经超了
+			GELog::Instance()->Log("write bytes error too long");
 			return false;
 		}
 		// 不够长度了
@@ -137,7 +138,7 @@ bool GENetSendBuf::HoldBlock(void **pHead, GE::Uint16 &uSize) {
 		this->m_pReadBuf = this->m_pBufQueue->front();
 		this->m_pBufQueue->pop();
 	} else {
-		// 队列为空，读写的buf
+		// 队列为空，读正在写的buf
 		if (!this->m_pWriteBuf->CanReadSize()) {
 			return false;
 		}
@@ -152,6 +153,7 @@ bool GENetSendBuf::HoldBlock(void **pHead, GE::Uint16 &uSize) {
 
 void GENetSendBuf::ReleaseBlock() {
 	GE_WIN_ASSERT(this->m_bIsHoldBlock == true);
-	this->m_pWriteBuf->Reset();
+	// 因为刚才发送的东西是从readbuf中获取到的，所以这里可以重置
+	this->m_pReadBuf->Reset();
 	this->m_bIsHoldBlock = false;
 }

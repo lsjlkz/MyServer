@@ -23,8 +23,8 @@ end
 function __G__LogicTable.Init()
     load_logic_module()
     cGameServer.SetConnectParam(100, 100, 100, 100, 100, 100)
-    cGameServer.CreateNetwork(100, cDefineTable.LogicID, cDefineTable.Port_Logic)
     cGameServer.SetProcessName("Logic")
+    cGameServer.CreateNetwork(100, cDefineTable.LogicID, cDefineTable.Port_Logic)
 end
 
 return __G__LogicTable

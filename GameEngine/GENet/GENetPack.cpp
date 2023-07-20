@@ -5,6 +5,14 @@
 #include "GENetPack.h"
 #include "GELog.h"
 
+#define MAX_BUF_SIZE 65535
+typedef struct {
+	size_t write_size;
+	size_t read_size;
+	char buf[MAX_BUF_SIZE];
+} LuaPackBufRef;
+
+
 #define UnpackTypeMsg(type,name) \
 if(m_uSize != 0 && m_nSurplusSize < sizeof(type)){\
 this->m_bIsOK = false;\
@@ -139,6 +147,7 @@ void PackMessage::PackByte(const void *pHead, GE::Int32 size) {
 	this->m_uCurBufEmpty -= size;
 }
 
+#include "iostream"
 bool PackMessage::PackLuaObj(lua_State *L) {
 	if(GE_IS_POINT_NULL(this->m_pBigMsgQueue)){
 		return false;
@@ -151,10 +160,21 @@ bool PackMessage::PackLuaObj(lua_State *L) {
 	GE::Int16 msg_type = (GE::Int16) lua_tointeger(L, -2);
 	this->PackMsgType(msg_type);
 	GE::Uint16* size = this->PackU16Ref();
-	this->m_uCurStackDeep = 0;
-	this->PackLuaHelp(L, -1);
-	// size是引用，这里改变size
-	*size = this->PackSize();
+	void** pHead = new void*();
+	GE::Int32 ret = lua_pack_top_to_buf(L, pHead);
+	if (!ret){
+		GELog::Instance()->Log("error lua_pack_top_to_buf");
+		return false;
+	}
+
+	// TODO 先写入一个，重定向占位
+	GE::Uint32* redirect = this->PackU32Ref();
+
+	LuaPackBufRef* io = reinterpret_cast<LuaPackBufRef*>(*pHead);
+	this->PackByte((void*)io->buf, io->write_size);
+
+//	 size是引用，这里改变size
+	*size = io->write_size + sizeof(MsgBase);
 	return true;
 }
 

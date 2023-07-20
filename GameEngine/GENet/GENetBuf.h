@@ -19,7 +19,7 @@ public:
 	~GENetBuf();
 
 public:
-	void 			Reset(GE::Uint16 uSize=0){m_uWriteSize = uSize;m_uReadSize = uSize;}	// 初始化
+	void 			Reset(GE::Uint16 uSize=0);	// 初始化
 	void*			HeadPtr(GE::Uint16 uSize=0){return m_pHead + uSize;}						// buf头指针
 	GE::Uint16 		MaxSize(){return m_uMaxSize;}
 	GE::Uint16 		CanWriteSize(){return m_uMaxSize - m_uWriteSize;}
@@ -32,7 +32,7 @@ public:
 	void 			MoveReadFence_us(GE::Uint16 uSize){m_uReadSize += uSize;}
 
 
-private:
+public:
 	char*			m_pHead;		// buff头指针
 	GE::Uint16 		m_uReadSize;	// 已经读的长度
 	GE::Uint16 		m_uWriteSize;	// 已经写的长度

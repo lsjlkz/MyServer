@@ -17,12 +17,14 @@ public:
 	LuaFunction(luabridge::LuaRef callback);
 
 
-// TODO 不知道为什么这个不行
-//	template<typename... args>
-//	luabridge::LuaRef Call(args &&... arguments);
+	// 模板的实现不能放到cpp
+	template<typename... args>
+	luabridge::LuaRef Call(args &&... arguments){
+		return function(std::forward<args>(arguments)...);
+	}
 
 public:
-	luabridge::LuaRef Call;
+	luabridge::LuaRef function;
 };
 
 

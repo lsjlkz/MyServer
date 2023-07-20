@@ -19,3 +19,8 @@ GENetBuf::~GENetBuf() {
 void GENetBuf::WriteBytes_us(const void* phead, GE::Uint16 uSize){
 	std::memcpy((this->m_pHead + this->m_uWriteSize), phead, uSize);
 }
+
+void GENetBuf::Reset(GE::Uint16 uSize) {
+	m_uWriteSize = uSize;
+	m_uReadSize = uSize;
+}

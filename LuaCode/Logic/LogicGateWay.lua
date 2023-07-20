@@ -13,7 +13,12 @@ local msg = require("Server/GSMessage")
 
 
 local function test_recv_gateway(p1, p2)
-    print('test_recv_gateway' .. p1 .. p2)
+    session_id = p1
+    print('test_recv_gateway', p1, p2)
+    for i, v in ipairs(p2) do
+        print(i .."\t" .. v)
+    end
+    cGameServer.SendMsg(session_id, msg.TestGatewayLogic, "successfully and back")
 
 end
 

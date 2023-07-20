@@ -17,6 +17,7 @@
 
 class LuaServerMsg {
 public:
+	LuaServerMsg(GE::Int32 _id, const luabridge::LuaRef& _callback):id(_id), callback(_callback){}
 	void Call(GE::Uint32 uSessionID, const luabridge::LuaRef& rParam);
 private:
 	GE::Int32 id;
@@ -26,6 +27,7 @@ private:
 
 class LuaClientMsg{
 public:
+	LuaClientMsg(GE::Int32 _id, const luabridge::LuaRef& _callback):id(_id), callback(_callback){}
 	void Call(LuaRole* pRole, const luabridge::LuaRef& rParam);
 private:
 	GE::Int32 id;

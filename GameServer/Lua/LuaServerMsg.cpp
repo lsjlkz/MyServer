@@ -15,7 +15,9 @@ void LuaClientMsg::Call(LuaRole *pRole, const luabridge::LuaRef& rParam) {
 
 bool LuaServerMsgMgr::RegServerMsg(GE::Uint16 uMsgType, luabridge::LuaRef callback) {
 	GE_WIN_ASSERT(this->msgMgr.find(uMsgType) == this->msgMgr.end())
-	this->msgMgr.insert(std::make_pair(uMsgType, callback));
+	LuaServerMsg oMsg(uMsgType, callback);
+	auto p = std::make_pair(uMsgType, oMsg);
+	this->msgMgr.insert(p);
 	return true;
 }
 
@@ -26,6 +28,11 @@ bool LuaServerMsgMgr::CallServerMsg(GE::Uint16 uMsgType, GE::Uint32 uSessionID, 
 		return false;
 	}
 	LuaServerMsg luaServerMsg = it->second;
-	luaServerMsg.Call(uSessionID, rParam);
+	try {
+		luaServerMsg.Call(uSessionID, rParam);
+	}catch (const std::exception e){
+		GELog::Instance()->Log("error server msg exception", e.what());
+	}
+
 	return true;
 }

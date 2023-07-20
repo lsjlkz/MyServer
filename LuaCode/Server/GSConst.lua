@@ -7,7 +7,7 @@
 __G__GSConstTable = __G__GSConstTable or {}
 
 function __G__GSConstTable.connected_callback(uSessionID, sIP, uPort)
-    print("connected_callback" .. uSessionID .. sIP .. uPort)
+    print("connected_callback(" .. uSessionID .. "\t".. sIP .. "\t".. uPort .. ")")
 end
 
 

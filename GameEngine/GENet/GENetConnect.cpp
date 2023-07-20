@@ -18,8 +18,9 @@ GENetConnect::GENetConnect(GENetWork *pNetWork, GEDefine::ConnectParam &CP):
 	m_RecvBuf(CP.uRecvBlockSize, CP.uRecvBlockNum),
 	m_SendBuf(CP.uSendBlockSize, CP.uSendBlockNum),
 	m_RecvCache(CP.uRecvBlockSize),
-	m_State(enNetConnect_Work),
-	m_uWaitSeconds(DefaultWaitTime){
+	m_State(NetConnectState::enNetConnect_Work),
+	m_uWaitSeconds(DefaultWaitTime),
+	m_uWho(EndPoindType::EndPoint_None){
 }
 
 GENetConnect::~GENetConnect() {
@@ -53,7 +54,7 @@ void GENetConnect::WriteBytes(const void * pHead, GE::Int16 uSize) {
 	if(!ret){
 		// 没有写入成功
 		GELog::Instance()->Log("write send buf error", this->SessionID());
-		this->Shutdown(enNetConnect_SendBufFull);
+		this->Shutdown(NetConnectState::enNetConnect_SendBufFull);
 		return;
 	}
 	// 异步发送
@@ -105,7 +106,6 @@ void GENetConnect::AsyncRecvBody() {
 		return;
 	}
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
-	GELog::Instance()->Log("AsyncRecvBody", pMsg->Size());
 	boost::asio::async_read(m_BoostSocket,
 							boost::asio::buffer(m_RecvCache.WriteFence_us(), pMsg->Size() - sizeof(MsgBase)),
 							// 第一个是回调，第二个是回调的对象，也就是this
@@ -121,10 +121,9 @@ void GENetConnect::HandleReadMsgHead(const boost::system::error_code &ec, size_t
 	}
 	if (ec)
 	{
-		this->Shutdown(enNetConnect_RemoteClose);
+		this->Shutdown(NetConnectState::enNetConnect_RemoteClose);
 		return;
 	}
-	GELog::Instance()->Log("HandleReadMsgHead", uTransferredBytes);
 	// 这里只是移动写指针，并没有移动HeadPtr
 	this->m_RecvCache.MoveWriteFence_us(sizeof(MsgBase));
 	this->m_uLastestRecvSeconds = GEDateTime::Instance()->Seconds();
@@ -138,7 +137,7 @@ void GENetConnect::HandleReadMsgBody(const boost::system::error_code &ec, size_t
 	}
 	if (ec)
 	{
-		this->Shutdown(enNetConnect_RemoteClose);
+		this->Shutdown(NetConnectState::enNetConnect_RemoteClose);
 		return;
 	}
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
@@ -162,7 +161,7 @@ void GENetConnect::HandleWriteMsg(const boost::system::error_code &ec, size_t uT
 
 	if (ec)
 	{
-		this->Shutdown(enNetConnect_RemoteClose);
+		this->Shutdown(NetConnectState::enNetConnect_RemoteClose);
 		return;
 	}
 	// 继续异步发送

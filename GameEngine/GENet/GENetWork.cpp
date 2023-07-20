@@ -78,7 +78,7 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 	// 客户端请求连接
 	this->m_ConnectMutex.lock();
 	if(error){
-		s_pConnect->Shutdown(enNetConnect_ConnectFull);
+		s_pConnect->Shutdown(NetConnectState::enNetConnect_ConnectFull);
 	}else{
 		if(this->m_ConnectMgr.FreeCnt() >= 1){
 			// 可以连接
@@ -87,13 +87,13 @@ void GENetWork::HandleAccept_NT(GENetConnect::ConnectSharePtr s_pConnect, const 
 				s_pConnect->Start();
 			}else{
 				// 先关闭连接
-				s_pConnect->Shutdown(enNetConnect_ConnectFull);
+				s_pConnect->Shutdown(NetConnectState::enNetConnect_ConnectFull);
 				// 然后再尝试清理
 				this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 			}
 		}else{
 			// 满了
-			s_pConnect->Shutdown(enNetConnect_ConnectFull);
+			s_pConnect->Shutdown(NetConnectState::enNetConnect_ConnectFull);
 			this->m_ConnectMgr.ForceShutdownIllegalConnect_us();
 		}
 	}

@@ -262,11 +262,13 @@ GE::Int32 LuaGameServer::SetConnectedLuaCallback(lua_State *L) {
 	return 1;
 }
 
-GE::Int32 LuaGameServer::DebugSendMsg(lua_State *L) {
+GE::Int32 LuaGameServer::SendMsg(lua_State *L) {
 
 	GE::Uint32 sessionId = lua_tointeger(L, -3);
 	PackMessage::Instance()->ClearCache();
-	PackMessage::Instance()->PackLuaObj(L);
+	if(!PackMessage::Instance()->PackLuaObj(L)){
+		return 1;
+	}
 
 	GameServer::Instance()->SendMsg(sessionId, PackMessage::Instance()->Msg());
 

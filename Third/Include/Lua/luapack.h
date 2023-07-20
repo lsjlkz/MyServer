@@ -2,6 +2,9 @@
 // Created by lsjlkz on 2023/5/17.
 //
 
+#include <stdio.h>
+#include <string.h>
+
 #include "lua.h"
 #include "lualib.h"
 #include "lauxlib.h"
@@ -11,6 +14,11 @@
 #define LUA_ERROR(_L, _b, _msg) \
 	if(!(_b)){ \
 		luaL_error(_L, _msg); \
+	}
+
+#define LUA_ASSERT(_b)\
+	if(!(_b)){\
+		abort();\
 	}
 
 // check first is pack
@@ -65,9 +73,25 @@ static LuaPackBuf globalIO;
 LUA_API int lua_push_buf_to_stack(lua_State* L, void* pHead, size_t size) {
 	LUA_ERROR(L, size <= MAX_BUF_SIZE, "to long buf");
 	stackDeep = 0;
+	memcpy(globalIO.buf, pHead, size);
 	globalIO.write_size = size;
 	globalIO.read_size = 0;
 	unpack_to_arg_help(L, &globalIO);
+	return 1;
+}
+
+LUA_API int lua_pack_top_to_buf(lua_State* L, void** pHead) {
+	stackDeep = 0;
+	globalIO.write_size = 0;
+	globalIO.read_size = 0;
+	LuaPackBuf* io = &globalIO;
+	*pHead = io;
+	io->write_size = 0;
+	if (!LUA_CHECK_TYPE_CAN_PACK(L)) {
+		return 0;
+	}
+	pack_arg_help(L, io, -1);
+	return 1;
 }
 
 

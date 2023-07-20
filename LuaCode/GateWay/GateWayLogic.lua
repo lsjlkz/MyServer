@@ -31,15 +31,22 @@ function __G__GateWayLogicTable.connect_logic(owner, callargv, regparam)
 
     __G__GateWayLogicTable.GatewayLogicSessionID = uSessionId
 
+    cGameServer.RegMsgDistribute(msg.TestGatewayLogic, __G__GateWayLogicTable.test_recv_logic)
+
     __G__GateWayLogicTable.test_send_to_logic()
 
     cGameServer.SetClientRedirect(cDefine.EndPoint_GatewayLogic, uSessionId)
     return true
 end
 
+function __G__GateWayLogicTable.test_recv_logic(p1, p2)
+    print("test_recv_logic" .. p1 .. p2)
+
+end
+
 function __G__GateWayLogicTable.test_send_to_logic()
     print('test_send_to_logic')
-    cGameServer.DebugSendMsg(__G__GateWayLogicTable.GatewayLogicSessionID, msg.TestGatewayLogic, {3, 4, 5})
+    cGameServer.SendMsg(__G__GateWayLogicTable.GatewayLogicSessionID, msg.TestGatewayLogic, {3, 4, 5})
 end
 
 function __G__GateWayLogicTable.after_load_script()

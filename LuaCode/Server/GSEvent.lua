@@ -54,7 +54,7 @@ function __G__GSEventTable.trigger_delay_event(event_id, param1, param2, param3,
 end
 
 local function call_per_sec_delay_event()
-    print("call_per_sec_delay_event")
+    -- TODO 这个改到C层
     if __G__GSEventTable._DelayEvent_Trigger == {} then
         return
     end

@@ -13,8 +13,10 @@ __G__CDefineTable.RedirectToLogic = 1
 --连接类型
 __G__CDefineTable.EndPoint_ClientGateway = 5
 __G__CDefineTable.EndPoint_GatewayClient = 6
-__G__CDefineTable.EndPoint_LogicGateway = 7
-__G__CDefineTable.EndPoint_GatewayLogic = 8
+__G__CDefineTable.EndPoint_GatewayWorld = 7
+__G__CDefineTable.EndPoint_WorldGateway = 8
+__G__CDefineTable.EndPoint_GatewayLogic = 9
+__G__CDefineTable.EndPoint_LogicGateway = 10
 
 
 --监听端口

@@ -469,6 +469,7 @@ LUA_API int (lua_setcstacklimit) (lua_State *L, unsigned int limit);
 
 
 LUA_API int (lua_push_buf_to_stack)(lua_State* L, void* pHead, size_t size);
+LUA_API int (lua_pack_top_to_buf)(lua_State* L, void** pHead);
 
 
 struct lua_Debug {

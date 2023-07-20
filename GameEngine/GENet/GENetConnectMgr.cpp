@@ -66,7 +66,7 @@ bool GENetConnectMgr::DelConnect(GE::Uint32 uid) {
 	// 删除一个连接
 	GE_ASSERT(GE_IS_POINT_NOT_NULL(this->m_pConnectArr[uid]));
 	this->m_pConnectMutexArr[uid]->lock();
-	this->m_pConnectArr[uid]->Shutdown(enNetConnect_LocalClose);
+	this->m_pConnectArr[uid]->Shutdown(NetConnectState::enNetConnect_LocalClose);
 	this->m_pConnectArr[uid] = nullptr;
 	this->m_pHolder.erase(uid);
 	this->m_pConnectMutexArr[uid]->unlock();
