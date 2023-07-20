@@ -121,6 +121,7 @@ void GameServer::SendMsg(GE::Uint32 uSessionId, MsgBase *pMsg) {
 
 bool GameServer::OnMsg(){
 	// 处理消息
+	GELog::Instance()->Log("OnMsg ", this->m_pNetWork->CurConnect()->SessionID(), "\t", this->m_pNetWork->CurConnect()->Who());
 	if(this->m_pNetWork->CurConnect()->IsWhoNone()){
 		// 没有身份，那应该是要表明身份
 		return this->OnDeclareIdentity();
@@ -138,6 +139,13 @@ bool GameServer::OnMsg(){
 }
 bool GameServer::OnMsgEx(){
 	GE::Uint16 uMsgType = this->m_pNetWork->CurMsg()->Type();
+	switch(uMsgType){
+		case CMsgType::CMsg_Ping:
+			// 心跳包
+			this->m_pNetWork->CurConnect()->WritePong();
+		case CMsgType::CMsg_Pong:
+			return true;
+	}
 	lua_State* L = LuaEngine::Instance()->GetMainLuaState();
 	lua_push_buf_to_stack(L, this->m_pNetWork->CurMsg()->Body(), this->m_pNetWork->CurMsg()->BodySize());
 
@@ -159,9 +167,11 @@ bool GameServer::OnSetWho(){
 	GE::Uint16 uMsgType = pMsg->Type();
 	if(uMsgType != CMsg_Who){
 		// 居然不是表明身份
+		GELog::Instance()->Log("error set who not set who", this->m_pNetWork->CurConnect()->SessionID());
 		return false;
 	}
 	if(uSize != sizeof(MSG_Who)){
+		GELog::Instance()->Log("error set who too short", this->m_pNetWork->CurConnect()->SessionID());
 		return false;
 	}
 	MSG_Who* pMsgWho = (MSG_Who*)pMsg;

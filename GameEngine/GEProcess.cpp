@@ -19,6 +19,7 @@ void GEProcess::SetProcessName(const char *processName, GE::Uint16 size) {
 }
 
 void GEProcess::SetClientRedirect(GE::Uint32 RedirectType, GE::Uint32 SessionID){
+	GELog::Instance()->Log("SetClientRedirect ", RedirectType, "\t", SessionID);
 	this->ClientRedirectArray[RedirectType] = SessionID;
 }
 

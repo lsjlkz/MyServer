@@ -46,7 +46,7 @@ public:
 	static GE::Int32 LoadModule(lua_State* L);				// 加载一个包
 	static GE::Int32 SetConnectedLuaCallback(lua_State* L);	// 创建一个连接后的回调
 
-	static GE::Int32 SendMsg(lua_State* L);			// 测试发送一个数据		Param:sessionId, data
+	static GE::Int32 SendMsg(lua_State* L);					// 发送一个数据		Param:sessionId, data
 	static GE::Int32 GC(lua_State* L);						// 回收辣鸡
 	static GE::Int32 RegMsgDistribute(lua_State* L);		// 注册一个消息回调
 };

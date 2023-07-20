@@ -109,7 +109,8 @@ GENetConnectMgr::ConnectPtr GENetConnectMgr::IterNextConnect(MsgBase** pMsg){
 		if(geNetConnect->IsLongTimeNoRecv()){
 			// 太久没有接收消息了
 			// TODO
-			this->DelConnect(geNetConnect->SessionID());
+			geNetConnect->WritePing();
+//			this->DelConnect(geNetConnect->SessionID());
 			continue;
 		}
 		if(!geNetConnect->ReadMsg(pMsg)){

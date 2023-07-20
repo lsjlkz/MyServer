@@ -8,6 +8,8 @@ __G__GSMessageTable = __G__GSMessageTable or {}
 
 
 -- TODO 这个模块将会被干掉，改成字符串hash
-__G__GSMessageTable.TestGatewayLogic = 0
+-- 从512开始，前面的保留给CMsg
+__G__GSMessageTable.TestGatewayLogic = 512
+__G__GSMessageTable.TestClientLogic = 513
 
 return __G__GSMessageTable

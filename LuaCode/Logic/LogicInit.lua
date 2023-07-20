@@ -14,8 +14,6 @@ local function load_logic_module()
     cGameServer.LoadModule("Server")
     cGameServer.LoadModule("Logic")
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
-    local gsinit = require("Server/GSInit")
-    cGameServer.RegTick(300, nil, gsinit.close, nil)
 
 
 end

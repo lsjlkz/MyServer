@@ -17,9 +17,6 @@ local function load_gateway_module()
     cGameServer.LoadModule("Server")
     cGameServer.LoadModule("GateWay")
     GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts)
-    cGameServer.RegTick(150, nil, cGameServer.SetServerStop, nil)
-    cGameServer.RegTick(200, nil, cGameServer.SetServerStop, nil)
-    cGameServer.RegTick(300, nil, cGameServer.SetServerStop, nil)
 end
 
 local function test_reg(a, b, c, d, e)
@@ -34,9 +31,6 @@ function __G__GateWayTable.Init()
     cGameServer.SetProcessName("GateWay")
     cGameServer.CreateNetwork(2, cDefineTable.GateWayID, cDefineTable.Port_Gateway)
 
-    --GSEvent.RegEvent(gs_event.AfterLoadAllScripts, test_reg)
-    --GSEvent.TriggerEvent(gs_event.AfterLoadAllScripts, 4, 5, 1, 2)
-    --cGameServer.RegTick(3, nil, test_tick, 5)
     load_gateway_module()
 end
 

@@ -176,15 +176,18 @@ void GENetConnect::RemoteEndPoint(std::string &sIP, GE::Uint16 &uPort) {
 
 
 int GENetConnect::RecvMsgCompletely(){
+	GELog::Instance()->Log("RecvMsgCompletely");
 	// TODO
 	// 项目中主线程会迭代所有的链接，知道找到一个有效且有消息的连接，这里是否可以把session写入到一个vector中来迭代
 	MsgBase* pMsg = static_cast<MsgBase*>(m_RecvCache.HeadPtr());
 	tdMsgRedirect rd = pMsg->Redirect();
+	GELog::Instance()->Log("Who", this->Who());
 	if(this->IsWhoNone()){
 
 	}
 	else if(this->IsWhoClient()){
 		// 客户端转发的消息
+		GELog::Instance()->Log("uClientRedirect", rd.uClientRedirect);
 		if(rd.uClientRedirect != CLIENT_REDIRECT_NONE){
 			// 需要重定向到其他进程
 			GE::Uint32 uRedirectSessionID = GEProcess::Instance()->GetClientRedirect(rd.uClientRedirect);
@@ -194,15 +197,17 @@ int GENetConnect::RecvMsgCompletely(){
 			}
 			// 可以覆盖重定向信息了，补充为客户端的sessionId，因为之后可能会用到
 			rd.uClientSessionID = this->m_uSessionId;
+			GELog::Instance()->Log("redirect to ", uRedirectSessionID);
 			// 这里转发到
 			this->m_pNetWork->SendBytes(uRedirectSessionID, pMsg, pMsg->Size());
 		}
+		return 0;
 	}
 	else if(this->IsWhoGateway()){
 		// 网关的话，那就不用重定向
 	}
 	else{
-
+		// TODO
 	}
 	// 为什么这里不直接处理消息，因为消息接收是多线程的，这里写入到缓冲区中，在主线程中遍历处理。
 	this->m_RecvBufMutex.lock();
@@ -231,6 +236,7 @@ void GENetConnect::KeepAlive() {
 bool GENetConnect::IsLongTimeNoRecv(){
 	return (this->m_uLastestRecvSeconds + this->m_uWaitSeconds) < GEDateTime::Instance()->Seconds();
 }
+
 bool GENetConnect::ReadMsg(MsgBase** pMsg){
 	// 读一条消息
 	if(this->m_RecvBuf.ReadMsgFromReadBuf(pMsg)){
@@ -245,6 +251,18 @@ bool GENetConnect::ReadMsg(MsgBase** pMsg){
 		this->m_RecvBufMutex.unlock();
 		return false;
 	}
+}
+
+void GENetConnect::WritePing(){
+	MsgBase msg;
+	msg.Type(CMsgType::CMsg_Ping);
+	this->WriteBytes(&msg, sizeof(MsgBase));
+}
+
+void GENetConnect::WritePong(){
+	MsgBase msg;
+	msg.Type(CMsgType::CMsg_Pong);
+	this->WriteBytes(&msg, sizeof(MsgBase));
 }
 
 void GENetConnect::Shutdown(NetConnectState state) {

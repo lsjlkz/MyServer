@@ -16,8 +16,8 @@ enum EndPoindType {
 	EndPoint_GM_,					//GM工具（被动）
 	EndPoint_IO,					//IO工具（主动）
 	EndPoint_IO_,					//IO工具（被动）
-	EndPoint_ClientGateway,				//客户端（主动）
-	EndPoint_ClientGateway_,				//客户端（被动）
+	EndPoint_ClientGateway,			//客户端（主动）
+	EndPoint_ClientGateway_,		//客户端（被动）
 	EndPoint_GatewayWorld,			//网关连世界（主动）
 	EndPoint_GatewayWorld_,			//网关连世界（被动）
 	EndPoint_GatewayLogic,			//网关连逻辑（主动）

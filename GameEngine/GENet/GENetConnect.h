@@ -58,6 +58,9 @@ public:
 	bool 				IsLongTimeNoRecv();						// 太长时间没接收到消息了
 	bool 				ReadMsg(MsgBase** pMsg);
 
+	void 				WritePing();							// 发送一个心跳包
+	void 				WritePong();							// 回复一个心跳包
+
 	void				Start();
 	void 				Shutdown(NetConnectState state);
 

@@ -35,7 +35,8 @@ function __G__GateWayLogicTable.connect_logic(owner, callargv, regparam)
 
     __G__GateWayLogicTable.test_send_to_logic()
 
-    cGameServer.SetClientRedirect(cDefine.EndPoint_GatewayLogic, uSessionId)
+    -- 设置重定向到逻辑进程的session
+    cGameServer.SetClientRedirect(cDefine.RedirectToLogic, uSessionId)
     return true
 end
 
