@@ -12,9 +12,6 @@ Tick::~Tick() {
 	// 是否需要手动析构？
 	// 应该不需要手动析构
 	// 因为这个不是new的，而是拷贝构造的，会自动析构
-//	this->m_rOwner.pop();
-//	this->m_rCallback.pop();
-//	this->m_rParam.pop();
 }
 
 
@@ -27,11 +24,11 @@ bool Tick::IsOverTime() {
 }
 
 void Tick::Call() {
-	this->m_rCallback(this->m_rOwner, 0, this->m_rParam);
+	this->m_rLuaFunctionProxy.Call(this->m_rOwner, 0, this->m_rParam);
 }
 
 void Tick::Call(const luabridge::LuaRef& callArgv) {
-	this->m_rCallback(this->m_rOwner, callArgv, this->m_rParam);
+	this->m_rLuaFunctionProxy.Call(this->m_rOwner, callArgv, this->m_rParam);
 }
 
 bool Tick::operator<(Tick &other) const {

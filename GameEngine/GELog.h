@@ -22,24 +22,30 @@ public:
 public:
 	GELog();
 
-	void Log(const char* msg);
+	template <typename T>
+	void WriteToStream(sstream &s, T&& t){
+		s << t;
+	}
 
-	void Log(const char* msg, const char* msg2);
+	// 这个不能删，不定长参数需要用
+	template <typename T, typename ...Args>
+	void WriteToStream(sstream& s, T&& t, Args &&... arguments){
+		s << t;
+		WriteToStream(s, std::forward<Args>(arguments)...);
+	}
 
-	void Log(const char *msg, GE::Int32 value);
-
-	void Log(const char *msg, GE::Uint32 value);
-
-	void Log(const char *msg, GE::Int64 value);
-	void Log(const char *msg, GE::Uint64 value);
+	template <typename ...Args>
+	void Log(Args &&... arguments){
+		sstream s;
+		WriteToStream(s, std::forward<Args>(arguments)...);
+		WriteOutStream(s.str());
+	}
 
 	void MakeSureLogDays();
 
 	void NewLogFile();
 
-	void WriteStream(sstream &ss);
-	void WriteStream(const char* s);
-	void WriteStream(std::string s);
+	void WriteOutStream(std::string s);
 
 private:
 	boost::mutex m_fileMutex;

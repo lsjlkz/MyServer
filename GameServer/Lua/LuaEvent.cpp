@@ -57,11 +57,11 @@ GE::Int32 LuaEvent::SetCallPerIndex(GE::Int32 perSecondIndex, GE::Int32 perMinut
 
 GE::Int32 LuaEvent::RegEvent(GE::Int32 event, luabridge::LuaRef callback) {
 	// 注册一个事件和回调
-	EventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
+	tdEventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
 	if(it == this->m_mEventFunctionList.end()){
-		std::tie(it, std::ignore) = this->m_mEventFunctionList.insert({event, EventList()});
+		std::tie(it, std::ignore) = this->m_mEventFunctionList.insert({event, tdEventList()});
 	}
-	EventList& v = it->second;
+	tdEventList& v = it->second;
 	v.emplace_back(callback);
 	return 1;
 }
@@ -71,7 +71,7 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event) {
 
 GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 	// 触发一个事件
-	EventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
+	tdEventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
 	if(it == this->m_mEventFunctionList.end()){
 		return 0;
 	}
@@ -80,7 +80,7 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 		// 补充参数0
 		params.emplace_back(nil);
 	}
-	EventList& v= it->second;
+	tdEventList& v= it->second;
 	for(const auto& callback: v){
 		GE_WIN_ASSERT(callback.isFunction());
 		callback(params[0], params[1], params[2], params[3], params[4]);
@@ -89,7 +89,7 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 }
 
 
-GE::Int32 LuaEvent::sRegEvent(lua_State *L) {
+GE::Int32 LuaEvent::LuaRegEvent(lua_State *L) {
 	GE::Int32 event = luabridge::get<GE::Int32>(L, 1);
 	luabridge::LuaRef callback = luabridge::get<luabridge::LuaRef>(L, 2);
 	GE_WIN_ASSERT(callback.isFunction());
@@ -97,7 +97,7 @@ GE::Int32 LuaEvent::sRegEvent(lua_State *L) {
 	lua_pushnil(L);
 	return 1;
 }
-GE::Int32 LuaEvent::sTriggerEvent(lua_State *L) {
+GE::Int32 LuaEvent::LuaTriggerEvent(lua_State *L) {
 	GE::Int32 event = luabridge::get<GE::Int32>(L, 1);
 	GE::Uint32 top = lua_gettop(L);
 	// 参数必须小于(MAX_EVENT_PARAM + 1)
@@ -112,7 +112,7 @@ GE::Int32 LuaEvent::sTriggerEvent(lua_State *L) {
 	lua_pushnil(L);
 	return 1;
 }
-GE::Int32 LuaEvent::sSetCallPerIndex(lua_State *L) {
+GE::Int32 LuaEvent::LuaSetCallPerIndex(lua_State *L) {
 	GE::Int32 perSecondIndex = luabridge::get<GE::Int32>(L, 1);
 	GE::Int32 perMinuteIndex = luabridge::get<GE::Int32>(L, 2);
 	GE::Int32 perHourIndex = luabridge::get<GE::Int32>(L, 3);
@@ -125,8 +125,8 @@ GE::Int32 LuaEvent::sSetCallPerIndex(lua_State *L) {
 void RegLuaEvent(){
 	luabridge::getGlobalNamespace(LuaEngine::Instance()->GetMainLuaState())
 	.beginNamespace("GSEvent")
-	.addCFunction("RegEvent", &LuaEvent::sRegEvent)
-	.addCFunction("TriggerEvent", &LuaEvent::sTriggerEvent)
-	.addCFunction("SetCallPerIndex", &LuaEvent::sSetCallPerIndex)
+	.addCFunction("RegEvent", &LuaEvent::LuaRegEvent)
+	.addCFunction("TriggerEvent", &LuaEvent::LuaTriggerEvent)
+	.addCFunction("SetCallPerIndex", &LuaEvent::LuaSetCallPerIndex)
 	.endNamespace();
 }

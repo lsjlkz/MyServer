@@ -3,6 +3,7 @@
 //
 
 #include "iostream"
+
 #include "GELog.h"
 #include "GEDateTime.h"
 #include "GEProcess.h"
@@ -23,67 +24,8 @@ GELog::GELog():m_uLogDays(0)
 	FS::create_directories("../Log/");
 }
 
-void GELog::Log(const char *msg) {
-	// TODO
-	WriteStream(msg);
-}
 
-void GELog::Log(const char *msg, const char *msg2) {
-	// TODO
-	sstream s;
-	s << msg << "\t" << msg2;
-	WriteStream(s.str());
-}
-
-void GELog::Log(const char *msg, GE::Int32 value) {
-	// TODO
-	sstream s;
-	s << msg << "\t" << value;
-	WriteStream(s.str());
-}
-
-void GELog::Log(const char *msg, GE::Uint32 value) {
-	// TODO
-	sstream s;
-	s << msg << "\t" << value;
-	WriteStream(s.str());
-}
-
-void GELog::Log(const char *msg, GE::Int64 value) {
-	// TODO
-	sstream s;
-	s << msg << "\t" << value;
-	WriteStream(s.str());
-}
-
-void GELog::Log(const char *msg, GE::Uint64 value) {
-	// TODO
-	sstream s;
-	s << msg << "\t" << value;
-	WriteStream(s.str());
-}
-
-void GELog::WriteStream(sstream &ss) {
-	MakeSureLogDays();
-	if (m_fileOS.is_open()) {
-		m_fileMutex.lock();
-//		m_fileOS << GEDateTime::Instance()->GetDateTimeString() << "\t" << ss.str() << std::endl;
-		GEOUT(m_fileOS, ss.str());
-		m_fileMutex.unlock();
-	}
-}
-
-
-void GELog::WriteStream(const char * s) {
-	MakeSureLogDays();
-	if (m_fileOS.is_open()) {
-		m_fileMutex.lock();
-		GEOUT(m_fileOS, s);
-		m_fileMutex.unlock();
-	}
-}
-
-void GELog::WriteStream(std::string s) {
+void GELog::WriteOutStream(std::string s) {
 	MakeSureLogDays();
 	if (m_fileOS.is_open()) {
 		m_fileMutex.lock();

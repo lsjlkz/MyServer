@@ -258,12 +258,12 @@ GE::Int32 LuaGameServer::LoadModule(lua_State *L) {
 }
 
 GE::Int32 LuaGameServer::SetConnectedLuaCallback(lua_State *L) {
-	LuaConst::Instance()->ConnectedLuaFunction = new LuaFunction(luabridge::get<luabridge::LuaRef>(L, -1));
+	LuaConst::Instance()->ConnectedLuaFunction = new LuaFunctionProxy(luabridge::get<luabridge::LuaRef>(L, -1));
 	return 1;
 }
 
 GE::Int32 LuaGameServer::SendMsg(lua_State *L) {
-
+	// 这个接口不需要重定向，因为是服务器之间的消息发送
 	GE::Uint32 sessionId = lua_tointeger(L, -3);
 	PackMessage::Instance()->ClearCache();
 	if(!PackMessage::Instance()->PackLuaObj(L)){

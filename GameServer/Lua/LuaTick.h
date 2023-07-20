@@ -10,10 +10,11 @@
 #include "GEDefine.h"
 #include "GESingleton.h"
 #include "LuaBridge/LuaBridge.h"
+#include "LuaFunctionProxy.h"
 
 class Tick{
 public:
-	Tick(GE::Uint64 tickID, const luabridge::LuaRef& owner, const luabridge::LuaRef& callback, const luabridge::LuaRef& param) noexcept :m_uTickID(tickID), m_rOwner(owner), m_rCallback(callback), m_rParam(param){}
+	Tick(GE::Uint64 tickID, const luabridge::LuaRef& owner, const luabridge::LuaRef& callback, const luabridge::LuaRef& param) noexcept :m_uTickID(tickID), m_rOwner(owner), m_rLuaFunctionProxy(callback), m_rParam(param){}
 	~Tick();
 
 	GE::Uint64 AutoTriggerSeconds() const;
@@ -28,7 +29,7 @@ public:
 private:
 	GE::Uint64 m_uTickID;
 	luabridge::LuaRef m_rOwner;	// 任务所有者
-	luabridge::LuaRef m_rCallback;	// 任务回调
+	LuaFunctionProxy m_rLuaFunctionProxy;
 	luabridge::LuaRef m_rParam;	// 任务参数
 };
 

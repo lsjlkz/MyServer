@@ -19,8 +19,8 @@
 
 class LuaEvent: public GESingleton<LuaEvent>{
 
-	typedef std::vector<luabridge::LuaRef> EventList;
-	typedef std::unordered_map<GE::Int32 , EventList> EventMap;
+	typedef std::vector<luabridge::LuaRef> tdEventList;
+	typedef std::unordered_map<GE::Int32 , tdEventList> tdEventMap;
 	typedef std::vector<luabridge::LuaRef> CallParam;
 
 	public:
@@ -37,13 +37,13 @@ class LuaEvent: public GESingleton<LuaEvent>{
 		GE::Int32 RegEvent(GE::Int32 event, luabridge::LuaRef);
 		GE::Int32 TriggerEvent(GE::Int32 event);
 		GE::Int32 TriggerEvent(GE::Int32 event, CallParam params);
-		static GE::Int32 sRegEvent(lua_State* L);
-		static GE::Int32 sTriggerEvent(lua_State* L);
-		static GE::Int32 sSetCallPerIndex(lua_State* L);
+		static GE::Int32 LuaRegEvent(lua_State* L);
+		static GE::Int32 LuaTriggerEvent(lua_State* L);
+		static GE::Int32 LuaSetCallPerIndex(lua_State* L);
 
 
 private:
-		EventMap m_mEventFunctionList;
+		tdEventMap m_mEventFunctionList;
 
 		GE::Int32 	i_mCallPerSecondIndex = 0;
 		GE::Int32 	i_mCallPerMinuteIndex = 0;

@@ -6,11 +6,11 @@
 #include "GELog.h"
 
 void LuaServerMsg::Call(GE::Uint32 uSessionID, const luabridge::LuaRef& rParam) {
-	this->callback(uSessionID, rParam);
+	this->luaFunctionProxy.Call(uSessionID, rParam);
 }
 
 void LuaClientMsg::Call(LuaRole *pRole, const luabridge::LuaRef& rParam) {
-	this->callback(*pRole, rParam);
+	this->luaFunctionProxy.Call(*pRole, rParam);
 }
 
 bool LuaServerMsgMgr::RegServerMsg(GE::Uint16 uMsgType, luabridge::LuaRef callback) {

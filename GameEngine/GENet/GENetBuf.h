@@ -32,7 +32,7 @@ public:
 	void 			MoveReadFence_us(GE::Uint16 uSize){m_uReadSize += uSize;}
 
 
-public:
+private:
 	char*			m_pHead;		// buff头指针
 	GE::Uint16 		m_uReadSize;	// 已经读的长度
 	GE::Uint16 		m_uWriteSize;	// 已经写的长度

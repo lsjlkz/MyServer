@@ -42,9 +42,9 @@ public:
 
 	void			ClearCache();
 
-	bool 			PackMsgType(GE::Uint16 msgType);
+	bool 			PackMsgType(GE::Uint16 msgType);	// 这个是消息的type
 
-	bool			PackType(GE::Int8 t);
+	bool			PackType(GE::Int8 t);	// 这个是对象的type
 
 	GE::Uint8* 		PackU8Ref();
 	GE::Int8*		PackI8Ref();
@@ -69,7 +69,8 @@ public:
 	bool			PackMsg(MsgBase* pMsg);								// 打包一个msg
 
 	bool 			PackLuaObj(lua_State* L);							// 打包一个lua的对象
-	void 			PackLuaHelp(lua_State* L, GE::Int32 index);
+
+//	void 			PackLuaHelp(lua_State* L, GE::Int32 index);
 
 	void			Align();											// 4字节对齐
 

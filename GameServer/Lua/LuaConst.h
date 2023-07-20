@@ -7,13 +7,13 @@
 #ifndef MYSERVER_LUACONST_H
 #define MYSERVER_LUACONST_H
 
-#include "LuaFunction.h"
+#include "LuaFunctionProxy.h"
 #include "GESingleton.h"
 
 
 class LuaConst: public GESingleton<LuaConst>{
 public:
-	LuaFunction* ConnectedLuaFunction = nullptr;
+	LuaFunctionProxy* ConnectedLuaFunction = nullptr;
 };
 
 
