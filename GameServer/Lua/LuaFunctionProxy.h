@@ -23,7 +23,7 @@ public:
 		return r_luaFunction(std::forward<args>(arguments)...);
 	}
 
-public:
+private:
 	luabridge::LuaRef r_luaFunction;
 };
 

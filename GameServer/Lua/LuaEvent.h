@@ -11,6 +11,7 @@
 #include "GESingleton.h"
 #include "LuaEngine.h"
 #include "LuaBridge/LuaBridge.h"
+#include "LuaFunctionProxy.h"
 
 // 最大参数个数
 #define MAX_EVENT_PARAM 5
@@ -19,7 +20,7 @@
 
 class LuaEvent: public GESingleton<LuaEvent>{
 
-	typedef std::vector<luabridge::LuaRef> tdEventList;
+	typedef std::vector<LuaFunctionProxy> tdEventList;
 	typedef std::unordered_map<GE::Int32 , tdEventList> tdEventMap;
 	typedef std::vector<luabridge::LuaRef> CallParam;
 
@@ -32,14 +33,21 @@ class LuaEvent: public GESingleton<LuaEvent>{
 		GE::Int32 CCallLuaPerDay();
 
 
-		static GE::Int32 SetCallPerIndex(GE::Int32 perSecondIndex, GE::Int32 perMinuteIndex, GE::Int32 perHourIndex, GE::Int32 perDayIndex);
+		static GE::Int32	SetCallPerIndex(GE::Int32 perSecondIndex, GE::Int32 perMinuteIndex, GE::Int32 perHourIndex, GE::Int32 perDayIndex);
 
-		GE::Int32 RegEvent(GE::Int32 event, luabridge::LuaRef);
-		GE::Int32 TriggerEvent(GE::Int32 event);
-		GE::Int32 TriggerEvent(GE::Int32 event, CallParam params);
-		static GE::Int32 LuaRegEvent(lua_State* L);
-		static GE::Int32 LuaTriggerEvent(lua_State* L);
-		static GE::Int32 LuaSetCallPerIndex(lua_State* L);
+		GE::Int32			RegEvent(GE::Int32 event, const luabridge::LuaRef& callback);
+		GE::Int32			TriggerEvent(GE::Int32 event);
+		GE::Int32			TriggerEvent(GE::Int32 event, CallParam params);
+
+		template <typename... Args>
+		void 				CallTriggerEvent(tdEventList &v, Args&&... args){
+			for (LuaFunctionProxy functionProxy : v) {
+				functionProxy.Call(std::forward<Args>(args)...);
+			}
+		}
+		static GE::Int32	LuaRegEvent(lua_State* L);
+		static GE::Int32	LuaTriggerEvent(lua_State* L);
+		static GE::Int32	LuaSetCallPerIndex(lua_State* L);
 
 
 private:

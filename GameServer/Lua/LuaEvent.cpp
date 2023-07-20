@@ -2,9 +2,9 @@
 // Created by lsjlkz on 2022/7/22.
 //
 
-#include "LuaEvent.h"
 #include "GELog.h"
 #include "LuaEngine.h"
+#include "LuaEvent.h"
 
 LuaEvent::LuaEvent() {
 	this->nil = luabridge::LuaRef(LuaEngine::Instance()->GetMainLuaState(), 0);
@@ -55,9 +55,9 @@ GE::Int32 LuaEvent::SetCallPerIndex(GE::Int32 perSecondIndex, GE::Int32 perMinut
 	return 1;
 }
 
-GE::Int32 LuaEvent::RegEvent(GE::Int32 event, luabridge::LuaRef callback) {
+GE::Int32 LuaEvent::RegEvent(GE::Int32 event, const luabridge::LuaRef& callback) {
 	// 注册一个事件和回调
-	tdEventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
+	auto it = Instance()->m_mEventFunctionList.find(event);
 	if(it == this->m_mEventFunctionList.end()){
 		std::tie(it, std::ignore) = this->m_mEventFunctionList.insert({event, tdEventList()});
 	}
@@ -71,21 +71,37 @@ GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event) {
 
 GE::Int32 LuaEvent::TriggerEvent(GE::Int32 event, CallParam params) {
 	// 触发一个事件
-	tdEventMap::iterator it = Instance()->m_mEventFunctionList.find(event);
+	auto it = Instance()->m_mEventFunctionList.find(event);
 	if(it == this->m_mEventFunctionList.end()){
 		return 0;
 	}
 	GE::Uint32 _i = params.size();
-	for(;_i < MAX_EVENT_PARAM;_i++){
-		// 补充参数0
-		params.emplace_back(nil);
-	}
 	tdEventList& v= it->second;
-	for(const auto& callback: v){
-		GE_WIN_ASSERT(callback.isFunction());
-		callback(params[0], params[1], params[2], params[3], params[4]);
+	switch (_i){
+		case 0:
+			this->CallTriggerEvent(v);
+			break;
+		case 1:
+			this->CallTriggerEvent(v, params[0]);
+			break;
+		case 2:
+			this->CallTriggerEvent(v, params[0], params[1]);
+			break;
+		case 3:
+			this->CallTriggerEvent(v, params[0], params[1], params[2]);
+			break;
+		case 4:
+			this->CallTriggerEvent(v, params[0], params[1], params[2], params[3]);
+			break;
+		case 5:
+			this->CallTriggerEvent(v, params[0], params[1], params[2], params[3], params[4]);
+			break;
+		default:
+			// too many?
+			this->CallTriggerEvent(v);
+			break;
 	}
-	return 0;
+	return 1;
 }
 
 
