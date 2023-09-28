@@ -41,6 +41,11 @@ public:
 		WriteOutStream(s.str());
 	}
 
+	template <typename ...Args>
+	void E(Args &&... arguments){
+		this->Log("error", std::forward<Args>(arguments)...);
+	}
+
 	void MakeSureLogDays();
 
 	void NewLogFile();
